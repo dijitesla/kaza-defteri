@@ -1,0 +1,80 @@
+# Test APK'sı üretir ve GitHub Releases'e yükler.
+# Bu APK Android'in test anahtarıyla (debug.keystore) imzalanır: telefona kurup denemek içindir,
+# Play Store'a yüklenemez. Mağaza sürümü için EAS ya da kalıcı bir imza anahtarı gerekir.
+name: APK oluştur
+
+on:
+  push:
+    branches: [main, claude/awesome-dijkstra-p8rc68]
+    paths-ignore: ['docs/**', '**/*.md']
+  workflow_dispatch:
+
+concurrency:
+  group: apk-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write # Release oluşturmak için
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Bağımlılıkları kur
+        run: npm ci
+
+      - name: Tip denetimi ve testler
+        run: npm run kontrol
+
+      - name: Android projesini üret
+        run: npx expo prebuild --platform android --no-install
+        env:
+          CI: 1
+
+      - name: APK derle
+        working-directory: android
+        # Yalnızca telefon işlemcileri (emülatör mimarileri derleme süresini uzatır).
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+
+      - name: APK'yı adlandır
+        id: apk
+        run: |
+          SURUM=$(node -p "require('./app.json').expo.version")
+          AD="kaza-defteri-${SURUM}-test-${GITHUB_RUN_NUMBER}.apk"
+          mv android/app/build/outputs/apk/release/app-release.apk "$AD"
+          echo "ad=$AD" >> "$GITHUB_OUTPUT"
+          echo "surum=$SURUM" >> "$GITHUB_OUTPUT"
+
+      - name: Release'e yükle
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-test-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: Test APK ${{ steps.apk.outputs.surum }} (${{ github.run_number }})
+          body: |
+            Telefona kurup denemek için test sürümü. Play Store sürümü değildir.
+            Dal: ${{ github.ref_name }}, commit: ${{ github.sha }}
+          prerelease: true
+          files: ${{ steps.apk.outputs.ad }}
+
+      - name: Yedek olarak sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.apk.outputs.ad }}
+          path: ${{ steps.apk.outputs.ad }}
+          retention-days: 14
