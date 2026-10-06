@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { renk, yaziTipi } from '../tema';
+import { useBildirimCevaplari } from '../useBildirimCevaplari';
 import { useVeri, VeriSaglayici } from '../veri';
 
 SplashScreen.preventAutoHideAsync();
@@ -28,6 +29,7 @@ export default function KokDuzen() {
 function Gezinme() {
   const { veri } = useVeri();
   const kurulumTamam = veri.ayarlar.kurulumTamam;
+  useBildirimCevaplari();
 
   useEffect(() => {
     SplashScreen.hide();

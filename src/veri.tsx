@@ -1,6 +1,9 @@
 // Uygulama verisi: yükleme, ekranlara dağıtma ve her değişiklikte depolamaya yazma.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { AppState } from 'react-native';
+import { bildirimleriPlanla } from './bildirimler';
 import { depolama } from './depolama';
+import { bildirimCevabi } from './logic/bildirimPlani';
 import * as islem from './logic/islemler';
 import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, Vakit } from './types';
 
@@ -21,6 +24,10 @@ interface VeriIslemleri {
   vakitCevapla: (gun: string, vakit: Vakit, cevap: 'kilindi' | 'kilinamadi') => string | null;
   /** Son işlemi geri alır; beklenenId verilirse yalnızca o işlem sıradaysa. */
   geriAl: (beklenenId?: string) => boolean;
+  /** Bildirim düğmesi cevabını kaydeder (zaten cevaplanmış vakit için bir şey yapmaz). */
+  bildirimCevabiIsle: (bildirimVerisi: unknown, eylem: string) => void;
+  /** Bildirimleri iptal edip yeniden planlar; ayar değişikliklerinden sonra çağrılır. */
+  bildirimleriYenile: () => void;
 }
 
 const VeriBaglami = createContext<VeriIslemleri | null>(null);
@@ -52,12 +59,22 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
   const [veri, setVeri] = useState<Veri | null>(null);
   const son = useRef<Veri | null>(null);
 
+  const bildirimleriYenile = useCallback(() => {
+    const v = son.current;
+    if (v) bildirimleriPlanla(v.ayarlar, v.gunluk);
+  }, []);
+
   useEffect(() => {
     veriYukle().then((v) => {
       son.current = v;
       setVeri(v);
+      bildirimleriYenile(); // her açılışta (SPEC 6.3)
     });
-  }, []);
+    const abonelik = AppState.addEventListener('change', (durum) => {
+      if (durum === 'active') bildirimleriYenile();
+    });
+    return () => abonelik.remove();
+  }, [bildirimleriYenile]);
 
   /** Borç verisini günceller ve yazar. */
   const uygula = useCallback((yeni: islem.VeriDurumu) => {
@@ -66,7 +83,11 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     son.current = v;
     setVeri(v);
     if (yeni.kaza !== onceki.kaza) depolama.kazaYaz(yeni.kaza);
-    if (yeni.gunluk !== onceki.gunluk) depolama.gunlukYaz(yeni.gunluk);
+    if (yeni.gunluk !== onceki.gunluk) {
+      depolama.gunlukYaz(yeni.gunluk);
+      // Cevaplanan vaktin sorusu iptal olur; geri alınan cevabın sorusu yeniden planlanır.
+      bildirimleriPlanla(v.ayarlar, v.gunluk);
+    }
     if (yeni.islemler !== onceki.islemler) depolama.islemleriYaz(yeni.islemler);
   }, []);
 
@@ -77,6 +98,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     const v: Veri = { ...son.current!, ayarlar: k.ayarlar, kaza: k.kaza };
     son.current = v;
     setVeri(v);
+    bildirimleriPlanla(v.ayarlar, v.gunluk);
   }, []);
 
   const kazaKil = useCallback(
@@ -109,9 +131,22 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     [uygula],
   );
 
+  const bildirimCevabiIsle = useCallback(
+    (bildirimVerisi: unknown, eylem: string) => {
+      const v = son.current;
+      if (!v) return;
+      const c = bildirimCevabi(v.gunluk, bildirimVerisi, eylem);
+      if (c) vakitCevapla(c.gun, c.vakit, c.cevap);
+    },
+    [vakitCevapla],
+  );
+
   const deger = useMemo(
-    () => (veri ? { veri, kurulumTamamla, kazaKil, vakitCevapla, geriAl } : null),
-    [veri, kurulumTamamla, kazaKil, vakitCevapla, geriAl],
+    () =>
+      veri
+        ? { veri, kurulumTamamla, kazaKil, vakitCevapla, geriAl, bildirimCevabiIsle, bildirimleriYenile }
+        : null,
+    [veri, kurulumTamamla, kazaKil, vakitCevapla, geriAl, bildirimCevabiIsle, bildirimleriYenile],
   );
 
   return <VeriBaglami.Provider value={deger}>{children(deger !== null)}</VeriBaglami.Provider>;

@@ -1,6 +1,6 @@
-import * as Notifications from 'expo-notifications';
 import { useState } from 'react';
-import { Platform, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { bildirimIzniIste } from '../../bildirimler';
 import { AnahtarSatiri } from '../../bilesenler/AnahtarSatiri';
 import { Dugme } from '../../bilesenler/Dugme';
 import { Ekran } from '../../bilesenler/Ekran';
@@ -13,17 +13,6 @@ import { renk, yaziTipi } from '../../tema';
 import { VAKITLER, type Ayarlar } from '../../types';
 
 type SoruDakika = Ayarlar['bildirim']['soruDakika'];
-
-async function bildirimIzniIste(): Promise<void> {
-  // Android 13+ izin penceresi, en az bir bildirim kanalı varken gösterilir.
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('vakit', {
-      name: t('uygulama.ad'),
-      importance: Notifications.AndroidImportance.HIGH,
-    });
-  }
-  await Notifications.requestPermissionsAsync();
-}
 
 export default function KurulumHatirlatma() {
   const { taslak, guncelle } = useTaslak();
