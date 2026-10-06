@@ -14,7 +14,7 @@ Türkçe, Android öncelikli bir mobil uygulama. Ana işlev kaza namazı borcunu
 - Expo (güncel SDK) + React Native + TypeScript, Expo Router ile gezinme.
 - Depolama: AsyncStorage (JSON). Veri küçük olduğu için SQLite kullanma.
 - Vakit hesabı: `adhan` kütüphanesi, `CalculationMethod.Turkey()`, kullanıcı başına vakit bazlı dakika düzeltmesi.
-- Reklam: `react-native-google-mobile-ads` (AdMob, AB için UMP onayı). Reklam birimi kimlikleri `src/reklam.ts`, uygulama kimlikleri `app.json`.
+- Reklam: `react-native-google-mobile-ads` (AdMob, AB için UMP onayı). Reklam birimi kimlikleri `src/reklam.ts`, uygulama kimlikleri `app.json` (eklenti ayarı ve kökteki `react-native-google-mobile-ads` anahtarı; ikisi aynı olmalı).
 - Bildirim: `expo-notifications`. Konum: `expo-location` (yalnızca ön planda, tek seferlik). Yedekleme: `expo-file-system`, `expo-sharing`, `expo-document-picker`.
 - Yazı tipleri: Lora (başlık ve büyük sayılar), Poppins (arayüz), `@expo-google-fonts` ile.
 - Kod hem Android hem iOS'ta çalışacak şekilde yazılır; yayın önce Android.

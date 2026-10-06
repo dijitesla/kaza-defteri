@@ -4,8 +4,9 @@ import mobileAds, { AdsConsent, AdsConsentPrivacyOptionsRequirementStatus, TestI
 
 /**
  * Gerçek banner reklam birimi kimlikleri (AdMob > Uygulamalar > Reklam birimleri).
- * Boş kaldıkça Google'ın test reklamı gösterilir. Uygulama kimlikleri app.json'daki
- * react-native-google-mobile-ads eklentisinde.
+ * Boş kaldıkça Google'ın test reklamı gösterilir. Uygulama kimlikleri app.json'da İKİ yerde:
+ * expo.plugins içindeki react-native-google-mobile-ads eklentisi ve kökteki
+ * "react-native-google-mobile-ads" anahtarı (kütüphanenin Android derleme betiği bunu okur).
  */
 const BANNER_KIMLIKLERI = { android: '', ios: '' };
 
