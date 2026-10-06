@@ -12,15 +12,30 @@ for (const satir of md.split('\n')) {
   if (m) metinler[m[1]] = m[2];
 }
 
+// "Vakit adları: Sabah, Öğle, ..." satırı; sıra src/types.ts içindeki KAZA_VAKITLERI ile aynı.
+const vakitSatiri = md.match(/Vakit adları:\s*(.+?)\.\s*$/m);
+if (!vakitSatiri) throw new Error('METINLER.md içinde "Vakit adları" satırı bulunamadı');
+const vakitAdlari = vakitSatiri[1].split(',').map((s) => s.trim());
+const vakitAnahtarlari = ['sabah', 'ogle', 'ikindi', 'aksam', 'yatsi', 'vitir'];
+if (vakitAdlari.length !== vakitAnahtarlari.length) throw new Error('Vakit adı sayısı 6 değil');
+const vakitGovde = vakitAnahtarlari
+  .map((k, i) => `  ${k}: ${JSON.stringify(vakitAdlari[i])},`)
+  .join('\n');
+
 const govde = Object.entries(metinler)
   .map(([k, v]) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)},`)
   .join('\n');
 
 const cikti = `// Bu dosya otomatik üretilir. Elle düzenleme; docs/METINLER.md dosyasını değiştirip \`npm run metinler\` çalıştır.
+import type { KazaVakit } from './types';
 
 export const METINLER = {
 ${govde}
 } as const;
+
+export const VAKIT_ADLARI: Record<KazaVakit, string> = {
+${vakitGovde}
+};
 
 export type MetinAnahtari = keyof typeof METINLER;
 

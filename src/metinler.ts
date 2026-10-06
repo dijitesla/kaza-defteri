@@ -1,4 +1,5 @@
 // Bu dosya otomatik üretilir. Elle düzenleme; docs/METINLER.md dosyasını değiştirip `npm run metinler` çalıştır.
+import type { KazaVakit } from './types';
 
 export const METINLER = {
   "uygulama.ad": "Kaza Defteri",
@@ -119,6 +120,15 @@ export const METINLER = {
   "hakkinda.gizlilik": "Tüm verilerin yalnızca bu telefonda saklanır. Uygulama internete veri göndermez, reklam ve takip içermez.",
   "hakkinda.surum": "Sürüm {surum}",
 } as const;
+
+export const VAKIT_ADLARI: Record<KazaVakit, string> = {
+  sabah: "Sabah",
+  ogle: "Öğle",
+  ikindi: "İkindi",
+  aksam: "Akşam",
+  yatsi: "Yatsı",
+  vitir: "Vitir",
+};
 
 export type MetinAnahtari = keyof typeof METINLER;
 

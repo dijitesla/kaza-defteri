@@ -1,35 +1,50 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import { olcu, renk, yaziTipi } from '../tema';
 
 interface Props {
   metin: string;
   onPress: () => void;
   pasif?: boolean;
+  yukleniyor?: boolean;
+  tur?: 'birincil' | 'metin';
 }
 
-export function Dugme({ metin, onPress, pasif }: Props) {
+export function Dugme({ metin, onPress, pasif, yukleniyor, tur = 'birincil' }: Props) {
+  const kapali = pasif || yukleniyor;
   return (
     <Pressable
       onPress={onPress}
-      disabled={pasif}
+      disabled={kapali}
       accessibilityRole="button"
-      accessibilityState={{ disabled: !!pasif }}
-      style={({ pressed }) => [stil.dugme, (pressed || pasif) && { opacity: pasif ? 0.45 : 0.8 }]}
+      accessibilityState={{ disabled: !!kapali, busy: !!yukleniyor }}
+      style={({ pressed }) => [
+        stil.taban,
+        tur === 'birincil' && stil.birincil,
+        pasif && stil.pasif,
+        pressed && stil.basili,
+      ]}
     >
-      <Text style={stil.metin}>{metin}</Text>
+      {yukleniyor ? (
+        <ActivityIndicator color={renk.gece} />
+      ) : (
+        <Text style={[stil.metin, tur === 'metin' && stil.metinTuru]}>{metin}</Text>
+      )}
     </Pressable>
   );
 }
 
 const stil = StyleSheet.create({
-  dugme: {
+  taban: {
     minHeight: olcu.dokunmaMin,
     borderRadius: olcu.dugmeYaricap,
-    backgroundColor: renk.altin,
     paddingHorizontal: 20,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  birincil: { backgroundColor: renk.altin },
+  pasif: { opacity: 0.45 },
+  basili: { opacity: 0.8 },
   metin: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece },
+  metinTuru: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.ikincilMetin },
 });

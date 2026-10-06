@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { depolama } from '../depolama';
 import { KurulumBaglami } from '../kurulumDurumu';
 import { renk, yaziTipi } from '../tema';
+import type { Ayarlar, KazaDurumu } from '../types';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,9 +30,10 @@ export default function KokDuzen() {
     if (hazir) SplashScreen.hide();
   }, [hazir]);
 
-  const kurulumTamamla = useCallback(async () => {
-    const a = await depolama.ayarlariOku();
-    await depolama.ayarlariYaz({ ...a, kurulumTamam: true });
+  const kurulumTamamla = useCallback(async (veri: { ayarlar: Ayarlar; kaza: KazaDurumu }) => {
+    // Önce borç, sonra kurulumTamam içeren ayarlar: yarıda kesilirse kurulum yeniden açılır.
+    await depolama.kazaYaz(veri.kaza);
+    await depolama.ayarlariYaz(veri.ayarlar);
     setKurulumTamam(true);
   }, []);
 
