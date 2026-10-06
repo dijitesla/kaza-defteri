@@ -39,7 +39,8 @@
     "web": "expo start --web",
     "test": "jest",
     "typecheck": "tsc --noEmit",
-    "metinler": "node scripts/metinler-uret.js"
+    "metinler": "node scripts/metinler-uret.js",
+    "kontrol": "tsc --noEmit && jest"
   },
   "private": true,
   "jest": {

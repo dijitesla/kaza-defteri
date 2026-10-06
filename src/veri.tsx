@@ -64,6 +64,30 @@ async function veriYukle(): Promise<Veri> {
   return { ayarlar, kaza, gunluk, islemler };
 }
 
+/**
+ * Depolama okuması başarısız olursa birkaç kez yeniden dener. Varsayılan veriyle devam ETMEZ:
+ * aksi halde kurulum yeniden açılır ve kullanıcının kayıtlı verisinin üzerine yazılabilirdi.
+ */
+async function yuklemeyiDene(deneme = 0): Promise<Veri> {
+  try {
+    return await veriYukle();
+  } catch (e) {
+    if (deneme >= 4) throw e;
+    await new Promise((r) => setTimeout(r, 300 * (deneme + 1)));
+    return yuklemeyiDene(deneme + 1);
+  }
+}
+
+/**
+ * Arka planda yazma. Bir yazma başarısız olursa bir kez daha denenir; bellekteki veri doğru kalır
+ * ve bir sonraki değişiklikte tamamı yeniden yazılır.
+ */
+function yaz(islem: () => Promise<void>): void {
+  islem().catch(() => {
+    setTimeout(() => islem().catch(() => {}), 500);
+  });
+}
+
 export function VeriSaglayici({ children }: { children: (hazir: boolean) => ReactNode }) {
   const [veri, setVeri] = useState<Veri | null>(null);
   const son = useRef<Veri | null>(null);
@@ -74,7 +98,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
   }, []);
 
   useEffect(() => {
-    veriYukle().then((v) => {
+    yuklemeyiDene().then((v) => {
       son.current = v;
       setVeri(v);
       bildirimleriYenile(); // her açılışta (SPEC 6.3)
@@ -91,10 +115,10 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     const v: Veri = { ...onceki, ...yeni };
     son.current = v;
     setVeri(v);
-    if (yeni.ayarlar !== onceki.ayarlar) depolama.ayarlariYaz(yeni.ayarlar);
-    if (yeni.kaza !== onceki.kaza) depolama.kazaYaz(yeni.kaza);
-    if (yeni.gunluk !== onceki.gunluk) depolama.gunlukYaz(yeni.gunluk);
-    if (yeni.islemler !== onceki.islemler) depolama.islemleriYaz(yeni.islemler);
+    if (yeni.ayarlar !== onceki.ayarlar) yaz(() => depolama.ayarlariYaz(yeni.ayarlar));
+    if (yeni.kaza !== onceki.kaza) yaz(() => depolama.kazaYaz(yeni.kaza));
+    if (yeni.gunluk !== onceki.gunluk) yaz(() => depolama.gunlukYaz(yeni.gunluk));
+    if (yeni.islemler !== onceki.islemler) yaz(() => depolama.islemleriYaz(yeni.islemler));
     // Cevaplanan vaktin sorusu iptal olur; geri alınan cevabın sorusu yeniden planlanır.
     if (yeni.gunluk !== onceki.gunluk || yeni.ayarlar !== onceki.ayarlar) {
       bildirimleriPlanla(v.ayarlar, v.gunluk);

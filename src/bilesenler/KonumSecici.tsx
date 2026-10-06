@@ -16,12 +16,13 @@ const KONUM_ZAMAN_ASIMI_MS = 20_000;
 async function gpsKonumu(): Promise<Konum | null> {
   const izin = await Location.requestForegroundPermissionsAsync();
   if (izin.status !== 'granted') return null;
+  let zamanlayici: ReturnType<typeof setTimeout> | undefined;
   const konum = await Promise.race([
     Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
-    new Promise<never>((_, reddet) =>
-      setTimeout(() => reddet(new Error('zaman aşımı')), KONUM_ZAMAN_ASIMI_MS),
-    ),
-  ]);
+    new Promise<never>((_, reddet) => {
+      zamanlayici = setTimeout(() => reddet(new Error('zaman aşımı')), KONUM_ZAMAN_ASIMI_MS);
+    }),
+  ]).finally(() => clearTimeout(zamanlayici));
   return { ad: t('konum.gpsAdi'), enlem: konum.coords.latitude, boylam: konum.coords.longitude };
 }
 

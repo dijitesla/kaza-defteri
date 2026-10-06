@@ -106,8 +106,9 @@ export function bildirimPlani(g: PlanGirdisi): PlanliBildirim[] {
     }
   }
 
+  // Geçersiz zamanlar (ör. kutup bölgelerinde hesaplanamayan vakit) planlanmaz.
   const gelecek = liste
-    .filter((b) => b.zaman.getTime() > g.simdi.getTime())
+    .filter((b) => Number.isFinite(b.zaman.getTime()) && b.zaman.getTime() > g.simdi.getTime())
     .sort((x, y) => x.zaman.getTime() - y.zaman.getTime());
 
   // Planın son soru bildirimi: kullanıcı uygulamayı açmazsa hatırlatmalar burada biter (SPEC 6.3).

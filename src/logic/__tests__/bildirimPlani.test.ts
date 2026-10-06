@@ -155,3 +155,12 @@ describe('bildirimCevabi', () => {
     expect(bildirimVerisiOku({ gun: 'dün', vakit: 'ogle', tur: 'soru' })).toBeNull();
   });
 });
+
+describe('bildirimPlani: geçersiz zaman', () => {
+  it('hesaplanamayan vakit (NaN) planlanmaz', () => {
+    const bozuk = (gun: string) => ({ ...araliklar(gun), yatsi: { giris: new Date(NaN), cikis: new Date(NaN) } });
+    const p = bildirimPlani({ ayarlar: ayarlar(), gunluk: {}, bugun: BUGUN, simdi: SIMDI, araliklar: bozuk });
+    expect(p.some((b) => b.veri.vakit === 'yatsi')).toBe(false);
+    expect(p.length).toBeGreaterThan(0);
+  });
+});

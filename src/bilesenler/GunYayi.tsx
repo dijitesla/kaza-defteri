@@ -15,7 +15,10 @@ const EGRI = { x: [14, 110, 206], y: [58, -12, 58], g: 220, y0: 70 };
 const NOKTALAR = [0.06, 0.3, 0.55, 0.77, 0.95]; // beş vaktin eğri üzerindeki konumu
 const KESIK_SAYISI = 36;
 const ETIKET_GENISLIK = 76;
-const ETIKET_YUKSEKLIK = 40;
+const ETIKET_YUKSEKLIK = 48;
+// Yaydaki etiketlerin yeri sabit; çok büyük yazı tipinde üst üste binmesinler diye sınır.
+// Vakitler ekranın geri kalanında (geri sayım kartı, bildirimler) sınırsız büyür.
+const ETIKET_BUYUTME_SINIRI = 1.3;
 
 function egriNoktasi(t: number) {
   const a = (1 - t) * (1 - t);
@@ -72,13 +75,13 @@ export function GunYayi({ vakitler }: { vakitler: YayVakti[] }) {
                     daireStili[v.durum],
                   ]}
                 >
-                  <Text style={stil.isaret}>{ACIKLAMA[v.durum]}</Text>
+                  <Text style={stil.isaret} maxFontSizeMultiplier={1}>{ACIKLAMA[v.durum]}</Text>
                 </View>
                 <View style={[stil.etiket, { left: sol, top: y + r + 2 }]}>
-                  <Text style={[stil.etiketMetin, etiketStili[v.durum]]} numberOfLines={1}>
+                  <Text style={[stil.etiketMetin, etiketStili[v.durum]]} numberOfLines={1} maxFontSizeMultiplier={ETIKET_BUYUTME_SINIRI}>
                     {v.ad}
                   </Text>
-                  <Text style={[stil.etiketMetin, etiketStili[v.durum]]} numberOfLines={1}>
+                  <Text style={[stil.etiketMetin, etiketStili[v.durum]]} numberOfLines={1} maxFontSizeMultiplier={ETIKET_BUYUTME_SINIRI}>
                     {v.saat}
                   </Text>
                 </View>
