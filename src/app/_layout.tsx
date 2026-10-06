@@ -4,11 +4,9 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { depolama } from '../depolama';
-import { KurulumBaglami } from '../kurulumDurumu';
+import { useEffect } from 'react';
 import { renk, yaziTipi } from '../tema';
-import type { Ayarlar, KazaDurumu } from '../types';
+import { useVeri, VeriSaglayici } from '../veri';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -18,34 +16,25 @@ export default function KokDuzen() {
     Poppins_400Regular,
     Poppins_600SemiBold,
   });
-  const [kurulumTamam, setKurulumTamam] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    depolama.ayarlariOku().then((a) => setKurulumTamam(a.kurulumTamam));
-  }, []);
-
-  const hazir = (fontlarHazir || fontHatasi != null) && kurulumTamam !== null;
-
-  useEffect(() => {
-    if (hazir) SplashScreen.hide();
-  }, [hazir]);
-
-  const kurulumTamamla = useCallback(async (veri: { ayarlar: Ayarlar; kaza: KazaDurumu }) => {
-    // Önce borç, sonra kurulumTamam içeren ayarlar: yarıda kesilirse kurulum yeniden açılır.
-    await depolama.kazaYaz(veri.kaza);
-    await depolama.ayarlariYaz(veri.ayarlar);
-    setKurulumTamam(true);
-  }, []);
-
-  const baglam = useMemo(
-    () => ({ kurulumTamam: !!kurulumTamam, kurulumTamamla }),
-    [kurulumTamam, kurulumTamamla],
-  );
-
-  if (!hazir) return null;
+  const fontlar = fontlarHazir || fontHatasi != null;
 
   return (
-    <KurulumBaglami.Provider value={baglam}>
+    <VeriSaglayici>
+      {(veriHazir) => (veriHazir && fontlar ? <Gezinme /> : null)}
+    </VeriSaglayici>
+  );
+}
+
+function Gezinme() {
+  const { veri } = useVeri();
+  const kurulumTamam = veri.ayarlar.kurulumTamam;
+
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
+
+  return (
+    <>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -65,6 +54,6 @@ export default function KokDuzen() {
           <Stack.Screen name="kurulum" />
         </Stack.Protected>
       </Stack>
-    </KurulumBaglami.Provider>
+    </>
   );
 }

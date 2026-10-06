@@ -9,6 +9,9 @@ export const KAZA_VAKITLERI: readonly KazaVakit[] = [...VAKITLER, 'vitir'];
 
 export interface Ayarlar {
   kurulumTamam: boolean;
+  // Kurulumun bittiği an (ISO). Bundan önce çıkmış vakitler "cevapsız" sayılmaz.
+  // SPEC'teki modele eklendi; eski kayıtlarda yoksa ilk açılışta yazılır.
+  kurulumZamani?: string;
   konum: { ad: string; enlem: number; boylam: number };
   mezhep: Mezhep;
   ozelGun: { acik: boolean; aydaGun: number };
@@ -43,6 +46,9 @@ export interface Islem {
   zaman: string; // ISO
   tur: IslemTuru;
   vakit?: KazaVakit;
+  // 'YYYY-MM-DD'. Günlük vakit durumunu da değiştiren işlemlerde (kılınamadı) dolu;
+  // geri alırken o günün durumu da geri alınır. SPEC'teki modele eklendi.
+  gun?: string;
   degisim: Partial<Record<KazaVakit, number>>; // kalan üzerindeki etki, ör. { sabah: -1 }
   geriAlinanId?: string;
 }

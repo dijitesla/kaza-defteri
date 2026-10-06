@@ -5,7 +5,7 @@ import { AnahtarSatiri } from '../../bilesenler/AnahtarSatiri';
 import { Dugme } from '../../bilesenler/Dugme';
 import { Ekran } from '../../bilesenler/Ekran';
 import { Secenekler } from '../../bilesenler/Secenekler';
-import { useKurulum } from '../../kurulumDurumu';
+import { useVeri } from '../../veri';
 import { useTaslak } from '../../kurulumTaslagi';
 import { kurulumVerisiOlustur } from '../../logic/kurulum';
 import { t, VAKIT_ADLARI } from '../../metinler';
@@ -27,7 +27,7 @@ async function bildirimIzniIste(): Promise<void> {
 
 export default function KurulumHatirlatma() {
   const { taslak, guncelle } = useTaslak();
-  const { kurulumTamamla } = useKurulum();
+  const { kurulumTamamla } = useVeri();
   const [kaydediliyor, setKaydediliyor] = useState(false);
   const b = taslak.bildirim;
 

@@ -22,6 +22,7 @@ export function kurulumVerisiOlustur(
   const ayarlar: Ayarlar = {
     ...varsayilanAyarlar(),
     kurulumTamam: true,
+    kurulumZamani: bugun.toISOString(),
     konum: t.konum,
     mezhep: t.hesap.mezhep,
     ozelGun: t.hesap.ozelGun,
