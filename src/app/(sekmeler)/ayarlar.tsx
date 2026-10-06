@@ -16,6 +16,7 @@ import { girisZamani, gununVakitleri } from '../../logic/vakitler';
 import { t, VAKIT_ADLARI } from '../../metinler';
 import { olcu, renk, yaziTipi } from '../../tema';
 import { VAKITLER, type Ayarlar, type Vakit } from '../../types';
+import { gizlilikSecenegiGerekli, gizlilikSecenekleriniAc } from '../../reklam';
 import { yedekAl, yedekSec } from '../../yedekleme';
 import { useVeri } from '../../veri';
 
@@ -41,6 +42,11 @@ export default function AyarlarEkrani() {
   const [izin, setIzin] = useState<{ izinVar: boolean; tekrarSorulabilir: boolean } | null>(null);
   const [saatAcik, setSaatAcik] = useState(false);
   const [yedekMesgul, setYedekMesgul] = useState(false);
+  const [reklamGizlilik, setReklamGizlilik] = useState(false);
+
+  useEffect(() => {
+    gizlilikSecenegiGerekli().then(setReklamGizlilik);
+  }, []);
 
   const izniDenetle = useCallback(() => {
     bildirimIzniDurumu().then(setIzin).catch(() => {});
@@ -115,7 +121,7 @@ export default function AyarlarEkrani() {
   };
 
   return (
-    <Ekran baslik={t('ayar.baslik')}>
+    <Ekran baslik={t('ayar.baslik')} reklam>
       {izin && !izin.izinVar ? (
         <Uyari metin={t('ayar.izinYok')} dugme={t('ayar.izinVer')} onPress={izinVer} />
       ) : null}
@@ -197,6 +203,10 @@ export default function AyarlarEkrani() {
         <Dugme metin={t('ayar.yedekAl')} onPress={yedegiAl} yukleniyor={yedekMesgul} />
         <Dugme tur="metin" metin={t('ayar.geriYukle')} onPress={geriYukle} pasif={yedekMesgul} />
       </Bolum>
+
+      {reklamGizlilik ? (
+        <SatirDugme baslik={t('ayar.reklamGizlilik')} sag="›" onPress={gizlilikSecenekleriniAc} />
+      ) : null}
 
       <Bolum baslik={t('ayar.hakkinda')}>
         <Text style={stil.metin}>{t('hakkinda.metin')}</Text>

@@ -3,7 +3,8 @@
 Türkçe, Android öncelikli bir mobil uygulama. Ana işlev kaza namazı borcunu hesaplamak ve takip etmek. Yan işlev namaz vakti hatırlatıcısı ve her vakit için "Kıldın mı?" bildirimi.
 
 ## Değişmez kurallar
-- Sunucu yok, üyelik yok, reklam yok, analitik yok. Tüm veri telefonda kalır. Uygulama internet olmadan tam çalışmalı.
+- Sunucu yok, üyelik yok, analitik yok. Kullanıcının kaza ve namaz verisi telefonda kalır. Uygulama internet olmadan tam çalışmalı.
+- Gelir modeli: Google AdMob banner reklam (`react-native-google-mobile-ads`), yalnızca sekme ekranlarının altında. Kurulumda ve Kaza kıl ekranında reklam yok. Reklam yüklenemezse (internet yok, onay yok) yer kaplamaz.
 - Uygulama dini hüküm vermez. Hesap yalnızca kullanıcının girdiği bilgiye dayanır ve formül ekranda açıkça gösterilir.
 - Kullanıcının açık cevabı olmadan kaza borcuna asla ekleme yapma. Cevapsız vakit "cevapsız" olarak kalır.
 - Borcu değiştiren her işlem kayıt defterine (log) yazılır ve geri alınabilir.
@@ -13,6 +14,7 @@ Türkçe, Android öncelikli bir mobil uygulama. Ana işlev kaza namazı borcunu
 - Expo (güncel SDK) + React Native + TypeScript, Expo Router ile gezinme.
 - Depolama: AsyncStorage (JSON). Veri küçük olduğu için SQLite kullanma.
 - Vakit hesabı: `adhan` kütüphanesi, `CalculationMethod.Turkey()`, kullanıcı başına vakit bazlı dakika düzeltmesi.
+- Reklam: `react-native-google-mobile-ads` (AdMob, AB için UMP onayı). Reklam birimi kimlikleri `src/reklam.ts`, uygulama kimlikleri `app.json`.
 - Bildirim: `expo-notifications`. Konum: `expo-location` (yalnızca ön planda, tek seferlik). Yedekleme: `expo-file-system`, `expo-sharing`, `expo-document-picker`.
 - Yazı tipleri: Lora (başlık ve büyük sayılar), Poppins (arayüz), `@expo-google-fonts` ile.
 - Kod hem Android hem iOS'ta çalışacak şekilde yazılır; yayın önce Android.

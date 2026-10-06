@@ -2,15 +2,17 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { olcu, renk, yaziTipi } from '../tema';
+import { ReklamBandi } from './ReklamBandi';
 
 interface Props {
   baslik: string;
   ust?: string; // başlığın üstündeki küçük satır, ör. "Kurulum, 1 / 3"
   alt?: ReactNode; // ekranın altına sabitlenen alan, ör. "Devam et" düğmesi
+  reklam?: boolean; // en altta banner reklam (yalnızca sekme ekranları)
   children?: ReactNode;
 }
 
-export function Ekran({ baslik, ust, alt, children }: Props) {
+export function Ekran({ baslik, ust, alt, reklam, children }: Props) {
   return (
     <SafeAreaView style={stil.kap} edges={alt ? ['top', 'left', 'right', 'bottom'] : ['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={stil.icerik} keyboardShouldPersistTaps="handled">
@@ -21,6 +23,7 @@ export function Ekran({ baslik, ust, alt, children }: Props) {
         {children}
       </ScrollView>
       {alt ? <View style={stil.alt}>{alt}</View> : null}
+      {reklam ? <ReklamBandi /> : null}
     </SafeAreaView>
   );
 }

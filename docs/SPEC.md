@@ -194,3 +194,9 @@ Ekran düzeni için `docs/tasarim.html` dosyasına bak.
 - Bildirim izni yok: Ayarlar'ın üstünde uyarı satırı ve "İzin ver" düğmesi.
 - Kaza borcu 0: kaza kıl ekranında tebrik metni, kutucuklar pasif.
 - Yedek dosyası geçersiz: hata metni, veri değişmez.
+
+## 10. Reklam
+- Google AdMob banner (uyarlanabilir, sabit) Bugün, Geçmiş ve Ayarlar ekranlarının en altında. Kurulum, Kaza kıl ve alt ekranlarda reklam yok.
+- Reklamdan önce Google UMP ile onay toplanır (AB'de onay penceresi). Onay seçeneğini değiştirme satırı Ayarlar'da yalnızca gerekli olduğunda görünür.
+- Reklam yüklenemezse (internet yok, onay yok, dolum yok) banner hiç yer kaplamaz; uygulamanın hiçbir işlevi reklama bağlı değildir.
+- Gerçek reklam birimi kimlikleri girilene kadar Google test reklamları gösterilir.

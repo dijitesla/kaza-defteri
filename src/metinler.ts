@@ -109,6 +109,7 @@ export const METINLER = {
   "ayar.yedekAl": "Yedek al",
   "ayar.yedekAlAlt": "Telefon değiştirmeden önce yedeğini al ve güvenli bir yere kaydet.",
   "ayar.geriYukle": "Yedekten geri yükle",
+  "ayar.reklamGizlilik": "Reklam gizlilik seçenekleri",
   "ayar.hakkinda": "Hakkında",
   "yedek.onayBaslik": "Yedek geri yüklensin mi?",
   "yedek.onayGovde": "Bu yedekte kalan kaza: {n}. Yedek tarihi: {tarih}. Mevcut verilerin yerine geçecek.",
@@ -117,7 +118,7 @@ export const METINLER = {
   "yedek.hata": "Bu dosya Kaza Defteri yedeği değil ya da bozuk. Mevcut verilerin değişmedi.",
   "hakkinda.metin": "Kaza Defteri, kaza namazı borcunu kendi girdiğin bilgilere göre hesaplamana ve takip etmene yardımcı olur. Dini bir hüküm bildirmez. Hesaplama ve vakitlerle ilgili emin olmadığın durumlar için müftülüğe danışabilirsin.",
   "hakkinda.vakit": "Namaz vakitleri telefonunda astronomik olarak hesaplanır. Resmi takvimle birkaç dakikalık fark olabilir; Ayarlar'dan düzeltebilirsin.",
-  "hakkinda.gizlilik": "Tüm verilerin yalnızca bu telefonda saklanır. Uygulama internete veri göndermez, reklam ve takip içermez.",
+  "hakkinda.gizlilik": "Kaza ve namaz kayıtların yalnızca bu telefonda saklanır, hiçbir yere gönderilmez. Uygulama ücretsizdir ve Google AdMob aracılığıyla reklam gösterir.",
   "hakkinda.surum": "Sürüm {surum}",
 } as const;
 

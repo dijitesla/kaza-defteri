@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ReklamBandi } from '../../bilesenler/ReklamBandi';
 import { etkiMetni, geriAlinabilir, gunlereGore, islemAciklamasi, ozet } from '../../logic/islemler';
 import { sayiBicimle } from '../../logic/kazaHesap';
 import { gunAnahtari, gunAyMetni, gunEkle, saatMetni } from '../../logic/tarih';
@@ -60,6 +61,7 @@ export default function Gecmis() {
           />
         )}
       />
+      <ReklamBandi />
     </SafeAreaView>
   );
 }

@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GeriAlCubugu, useGeriAlCubugu } from '../../bilesenler/GeriAlCubugu';
 import { GunYayi } from '../../bilesenler/GunYayi';
+import { ReklamBandi } from '../../bilesenler/ReklamBandi';
 import { cevapsizVakitler, yayDurumu, type CevapsizVakit } from '../../logic/gunluk';
 import { toplam } from '../../logic/islemler';
 import { sayiBicimle } from '../../logic/kazaHesap';
@@ -69,68 +70,71 @@ export default function Bugun() {
 
   return (
     <SafeAreaView style={stil.kap} edges={['top', 'left', 'right']}>
-      <ScrollView contentContainerStyle={stil.icerik}>
-        <View>
-          <Text style={stil.konum}>{konum.ad}</Text>
-          <Text style={stil.tarih} accessibilityRole="header">
-            {uzunTarihMetni(simdi)}
-          </Text>
-        </View>
-
-        <View style={stil.geriSayim}>
-          <View style={{ flex: 1 }}>
-            <Text style={stil.geriSayimUst}>{siradakiBaslik(siradaki.vakit)}</Text>
-            <Text style={[buyukSayi, stil.geriSayimSure]}>
-              {kalanSureMetni(siradaki.zaman.getTime() - simdi.getTime())}
+      <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={stil.icerik}>
+          <View>
+            <Text style={stil.konum}>{konum.ad}</Text>
+            <Text style={stil.tarih} accessibilityRole="header">
+              {uzunTarihMetni(simdi)}
             </Text>
           </View>
-          <View style={stil.geriSayimSag}>
-            <Text style={stil.geriSayimUst}>{VAKIT_ADLARI[siradaki.vakit]}</Text>
-            <Text style={stil.geriSayimSaat}>{saatMetni(siradaki.zaman)}</Text>
-          </View>
-        </View>
 
-        <GunYayi vakitler={yay} />
-
-        {ilkCevapsiz ? (
-          <View style={stil.bant}>
-            <Text style={stil.bantMetin}>{cevapsizMetni(ilkCevapsiz, bugun)}</Text>
-            <View style={stil.bantDugmeler}>
-              <BantDugmesi metin={t('bugun.kildim')} birincil onPress={() => cevapla(ilkCevapsiz, 'kilindi')} />
-              <BantDugmesi metin={t('bugun.kilamadim')} onPress={() => cevapla(ilkCevapsiz, 'kilinamadi')} />
+          <View style={stil.geriSayim}>
+            <View style={{ flex: 1 }}>
+              <Text style={stil.geriSayimUst}>{siradakiBaslik(siradaki.vakit)}</Text>
+              <Text style={[buyukSayi, stil.geriSayimSure]}>
+                {kalanSureMetni(siradaki.zaman.getTime() - simdi.getTime())}
+              </Text>
+            </View>
+            <View style={stil.geriSayimSag}>
+              <Text style={stil.geriSayimUst}>{VAKIT_ADLARI[siradaki.vakit]}</Text>
+              <Text style={stil.geriSayimSaat}>{saatMetni(siradaki.zaman)}</Text>
             </View>
           </View>
-        ) : null}
 
-        <View style={stil.kaza}>
-          <View style={{ flex: 1 }}>
-            <Text style={stil.kazaUst}>{t('bugun.kalanKaza')}</Text>
-            <Text style={[buyukSayi, stil.kazaSayi]}>{sayiBicimle(kalanKaza)}</Text>
+          <GunYayi vakitler={yay} />
+
+          {ilkCevapsiz ? (
+            <View style={stil.bant}>
+              <Text style={stil.bantMetin}>{cevapsizMetni(ilkCevapsiz, bugun)}</Text>
+              <View style={stil.bantDugmeler}>
+                <BantDugmesi metin={t('bugun.kildim')} birincil onPress={() => cevapla(ilkCevapsiz, 'kilindi')} />
+                <BantDugmesi metin={t('bugun.kilamadim')} onPress={() => cevapla(ilkCevapsiz, 'kilinamadi')} />
+              </View>
+            </View>
+          ) : null}
+
+          <View style={stil.kaza}>
+            <View style={{ flex: 1 }}>
+              <Text style={stil.kazaUst}>{t('bugun.kalanKaza')}</Text>
+              <Text style={[buyukSayi, stil.kazaSayi]}>{sayiBicimle(kalanKaza)}</Text>
+            </View>
+            <Pressable
+              onPress={() => router.push('/kaza-kil')}
+              accessibilityRole="button"
+              style={({ pressed }) => [stil.kazaDugme, pressed && { opacity: 0.8 }]}
+            >
+              <Text style={stil.kazaDugmeMetin}>{t('bugun.kazaKil')}</Text>
+            </Pressable>
           </View>
-          <Pressable
-            onPress={() => router.push('/kaza-kil')}
-            accessibilityRole="button"
-            style={({ pressed }) => [stil.kazaDugme, pressed && { opacity: 0.8 }]}
-          >
-            <Text style={stil.kazaDugmeMetin}>{t('bugun.kazaKil')}</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-      {cubuk ? (
-        <View style={stil.cubukKap}>
-          <GeriAlCubugu
-            metin={cubuk.metin}
-            onGeriAl={
-              cubuk.islemId
-                ? () => {
-                    geriAl(cubuk.islemId!);
-                    kapat();
-                  }
-                : undefined
-            }
-          />
-        </View>
-      ) : null}
+        </ScrollView>
+        {cubuk ? (
+          <View style={stil.cubukKap}>
+            <GeriAlCubugu
+              metin={cubuk.metin}
+              onGeriAl={
+                cubuk.islemId
+                  ? () => {
+                      geriAl(cubuk.islemId!);
+                      kapat();
+                    }
+                  : undefined
+              }
+            />
+          </View>
+        ) : null}
+      </View>
+      <ReklamBandi />
     </SafeAreaView>
   );
 }
