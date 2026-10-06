@@ -51,4 +51,9 @@ export interface Islem {
   gun?: string;
   degisim: Partial<Record<KazaVakit, number>>; // kalan üzerindeki etki, ör. { sabah: -1 }
   geriAlinanId?: string;
+  // Yalnızca 'yeniden_hesap': önceki başlangıç borcu ve kaza ayarları; geri alınınca bunlar da
+  // eski haline döner. SPEC'teki modele eklendi.
+  onceki?: { ilkBorc: Record<KazaVakit, number> } & KazaAyarlari;
 }
+
+export type KazaAyarlari = Pick<Ayarlar, 'mezhep' | 'ozelGun' | 'baslangic'>;

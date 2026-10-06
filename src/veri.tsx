@@ -4,6 +4,7 @@ import { AppState } from 'react-native';
 import { bildirimleriPlanla } from './bildirimler';
 import { depolama } from './depolama';
 import { bildirimCevabi } from './logic/bildirimPlani';
+import type { HesapGirdisi } from './logic/kazaHesap';
 import * as islem from './logic/islemler';
 import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, Vakit } from './types';
 
@@ -26,8 +27,16 @@ interface VeriIslemleri {
   geriAl: (beklenenId?: string) => boolean;
   /** Bildirim düğmesi cevabını kaydeder (zaten cevaplanmış vakit için bir şey yapmaz). */
   bildirimCevabiIsle: (bildirimVerisi: unknown, eylem: string) => void;
-  /** Bildirimleri iptal edip yeniden planlar; ayar değişikliklerinden sonra çağrılır. */
+  /** Bildirimleri iptal edip yeniden planlar. */
   bildirimleriYenile: () => void;
+  /** Ayarları değiştirir, kaydeder ve bildirimleri yeniden planlar. */
+  ayarlariGuncelle: (degistir: (a: Ayarlar) => Ayarlar) => void;
+  /** Başlangıç bilgileri değişti: borç yeniden hesaplanır (kılınanlar korunur). */
+  yenidenHesapla: (girdi: HesapGirdisi) => void;
+  /** Kalan sayıları elle düzeltir. Değişiklik yoksa false. */
+  kazaDuzelt: (yeniKalan: Record<KazaVakit, number>) => boolean;
+  /** Yedekteki veriyi mevcut verinin yerine yazar. */
+  yedektenYukle: (v: Veri) => Promise<void>;
 }
 
 const VeriBaglami = createContext<VeriIslemleri | null>(null);
@@ -82,13 +91,14 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     const v: Veri = { ...onceki, ...yeni };
     son.current = v;
     setVeri(v);
+    if (yeni.ayarlar !== onceki.ayarlar) depolama.ayarlariYaz(yeni.ayarlar);
     if (yeni.kaza !== onceki.kaza) depolama.kazaYaz(yeni.kaza);
-    if (yeni.gunluk !== onceki.gunluk) {
-      depolama.gunlukYaz(yeni.gunluk);
-      // Cevaplanan vaktin sorusu iptal olur; geri alınan cevabın sorusu yeniden planlanır.
+    if (yeni.gunluk !== onceki.gunluk) depolama.gunlukYaz(yeni.gunluk);
+    if (yeni.islemler !== onceki.islemler) depolama.islemleriYaz(yeni.islemler);
+    // Cevaplanan vaktin sorusu iptal olur; geri alınan cevabın sorusu yeniden planlanır.
+    if (yeni.gunluk !== onceki.gunluk || yeni.ayarlar !== onceki.ayarlar) {
       bildirimleriPlanla(v.ayarlar, v.gunluk);
     }
-    if (yeni.islemler !== onceki.islemler) depolama.islemleriYaz(yeni.islemler);
   }, []);
 
   const kurulumTamamla = useCallback(async (k: { ayarlar: Ayarlar; kaza: KazaDurumu }) => {
@@ -141,12 +151,69 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     [vakitCevapla],
   );
 
+  const ayarlariGuncelle = useCallback(
+    (degistir: (a: Ayarlar) => Ayarlar) => uygula({ ...son.current!, ayarlar: degistir(son.current!.ayarlar) }),
+    [uygula],
+  );
+
+  const yenidenHesapla = useCallback(
+    (girdi: HesapGirdisi) => {
+      const yeni = islem.yenidenHesapla(son.current!, girdi, new Date(), yeniId());
+      if (yeni) uygula(yeni);
+    },
+    [uygula],
+  );
+
+  const kazaDuzelt = useCallback(
+    (yeniKalan: Record<KazaVakit, number>) => {
+      const yeni = islem.kazaDuzelt(son.current!, yeniKalan, new Date(), yeniId());
+      if (!yeni) return false;
+      uygula(yeni);
+      return true;
+    },
+    [uygula],
+  );
+
+  const yedektenYukle = useCallback(async (v: Veri) => {
+    await depolama.kazaYaz(v.kaza);
+    await depolama.gunlukYaz(v.gunluk);
+    await depolama.islemleriYaz(v.islemler);
+    await depolama.ayarlariYaz(v.ayarlar);
+    son.current = v;
+    setVeri(v);
+    bildirimleriPlanla(v.ayarlar, v.gunluk);
+  }, []);
+
   const deger = useMemo(
     () =>
       veri
-        ? { veri, kurulumTamamla, kazaKil, vakitCevapla, geriAl, bildirimCevabiIsle, bildirimleriYenile }
+        ? {
+            veri,
+            kurulumTamamla,
+            kazaKil,
+            vakitCevapla,
+            geriAl,
+            bildirimCevabiIsle,
+            bildirimleriYenile,
+            ayarlariGuncelle,
+            yenidenHesapla,
+            kazaDuzelt,
+            yedektenYukle,
+          }
         : null,
-    [veri, kurulumTamamla, kazaKil, vakitCevapla, geriAl, bildirimCevabiIsle, bildirimleriYenile],
+    [
+      veri,
+      kurulumTamamla,
+      kazaKil,
+      vakitCevapla,
+      geriAl,
+      bildirimCevabiIsle,
+      bildirimleriYenile,
+      ayarlariGuncelle,
+      yenidenHesapla,
+      kazaDuzelt,
+      yedektenYukle,
+    ],
   );
 
   return <VeriBaglami.Provider value={deger}>{children(deger !== null)}</VeriBaglami.Provider>;

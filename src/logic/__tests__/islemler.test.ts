@@ -1,14 +1,16 @@
-import { varsayilanKaza } from '../depolama';
+import { varsayilanAyarlar, varsayilanKaza } from '../depolama';
 import {
   etkiMetni,
   geriAl,
   geriAlinabilir,
   gunlereGore,
   islemAciklamasi,
+  kazaDuzelt,
   kazaKil,
   kilinamadiEklenecekler,
   ozet,
   vakitCevapla,
+  yenidenHesapla,
   type VeriDurumu,
 } from '../islemler';
 
@@ -22,7 +24,7 @@ function durum(kalan = 10): VeriDurumu {
     kaza.ilkBorc[v] = 10;
     kaza.kalan[v] = kalan;
   }
-  return { kaza, gunluk: {}, islemler: [] };
+  return { ayarlar: varsayilanAyarlar(), kaza, gunluk: {}, islemler: [] };
 }
 
 describe('kazaKil', () => {
@@ -143,5 +145,81 @@ describe('gösterim', () => {
     const g = gunlereGore(d.islemler);
     expect(g.map((x) => x.gun)).toEqual(['2026-10-06', '2026-10-05']);
     expect(g[0].islemler.map((i) => i.id)).toEqual(['c', 'b']);
+  });
+});
+
+describe('yenidenHesapla', () => {
+  const girdi = {
+    yukumlulukAy: '2016-09',
+    duzenliAy: '2019-01',
+    mezhep: 'hanefi' as const,
+    ozelGun: { acik: false, aydaGun: 7 },
+  };
+
+  it('kılınan kaza korunur (SPEC 4.3)', () => {
+    const d = durum(); // ilk 10, kalan 10
+    d.kaza.kalan.sabah = 7; // 3 kılınmış
+    const y = yenidenHesapla(d, girdi, SIMDI, 'r')!;
+    expect(y.kaza.ilkBorc.sabah).toBe(852);
+    expect(y.kaza.kalan.sabah).toBe(849);
+    expect(y.kaza.kalan.ogle).toBe(852);
+    expect(y.ayarlar.baslangic).toEqual({ yukumlulukAy: '2016-09', duzenliAy: '2019-01' });
+    expect(y.islemler[0]).toMatchObject({ tur: 'yeniden_hesap', degisim: { sabah: 842, ogle: 842 } });
+  });
+
+  it('yeni borç kılınandan azsa kalan 0', () => {
+    const d = durum(0); // ilk 10, kalan 0 → 10 kılınmış
+    const y = yenidenHesapla(d, { ...girdi, yukumlulukAy: '2019-01' }, SIMDI, 'r')!;
+    expect(y.kaza.kalan.sabah).toBe(0);
+  });
+
+  it('Şafii: vitir borcu sıfırlanır', () => {
+    const y = yenidenHesapla(durum(), { ...girdi, mezhep: 'safii' }, SIMDI, 'r')!;
+    expect(y.kaza.ilkBorc.vitir).toBe(0);
+    expect(y.kaza.kalan.vitir).toBe(0);
+    expect(y.ayarlar.mezhep).toBe('safii');
+  });
+
+  it('geri alınınca ilk borç, kalan ve ayarlar eski haline döner', () => {
+    const d = durum();
+    d.kaza.kalan.sabah = 7;
+    const once = { ...d.ayarlar };
+    const y = geriAl(yenidenHesapla(d, { ...girdi, mezhep: 'safii' }, SIMDI, 'r')!, SIMDI, 'g')!;
+    expect(y.kaza.ilkBorc).toEqual(d.kaza.ilkBorc);
+    expect(y.kaza.kalan).toEqual(d.kaza.kalan);
+    expect(y.ayarlar.mezhep).toBe(once.mezhep);
+    expect(y.ayarlar.baslangic).toEqual(once.baslangic);
+    expect(islemAciklamasi(y.islemler[1], y.islemler)).toBe(
+      'İşlem geri alındı: Başlangıç bilgileri değişti, borç yeniden hesaplandı',
+    );
+  });
+});
+
+describe('yenidenHesapla: değişiklik yok', () => {
+  it('aynı bilgilerle kaydedilirse kayıt yazılmaz', () => {
+    const g = { yukumlulukAy: '2016-09', duzenliAy: '2019-01', mezhep: 'hanefi' as const, ozelGun: { acik: false, aydaGun: 7 } };
+    const y = yenidenHesapla(durum(), g, SIMDI, 'r')!;
+    expect(yenidenHesapla(y, g, SIMDI, 'r2')).toBeNull();
+  });
+});
+
+describe('kazaDuzelt', () => {
+  it('yalnızca değişen vakitleri kaydeder, geri alınabilir', () => {
+    const d = durum();
+    const yeni = { ...d.kaza.kalan, sabah: 4, vitir: 12 };
+    const y = kazaDuzelt(d, yeni, SIMDI, 'm')!;
+    expect(y.kaza.kalan).toEqual(yeni);
+    expect(y.kaza.ilkBorc).toEqual(d.kaza.ilkBorc);
+    expect(y.islemler[0]).toMatchObject({ tur: 'manuel_duzeltme', degisim: { sabah: -6, vitir: 2 } });
+    expect(islemAciklamasi(y.islemler[0], y.islemler)).toBe('Kaza sayıları elle düzeltildi');
+    expect(etkiMetni(y.islemler[0])).toBe('-4');
+    expect(geriAl(y, SIMDI, 'g')!.kaza.kalan).toEqual(d.kaza.kalan);
+  });
+
+  it('değişiklik yoksa ya da sayı geçersizse null', () => {
+    const d = durum();
+    expect(kazaDuzelt(d, { ...d.kaza.kalan }, SIMDI, 'm')).toBeNull();
+    expect(kazaDuzelt(d, { ...d.kaza.kalan, sabah: -1 }, SIMDI, 'm')).toBeNull();
+    expect(kazaDuzelt(d, { ...d.kaza.kalan, sabah: 1.5 }, SIMDI, 'm')).toBeNull();
   });
 });

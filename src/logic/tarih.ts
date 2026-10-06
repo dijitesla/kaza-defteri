@@ -31,6 +31,11 @@ export function gunAyMetni(gun: string): string {
   return `${d.getDate()} ${AY_ADLARI[d.getMonth()]}`;
 }
 
+/** "6 Ekim 2026" */
+export function tamTarihMetni(d: Date): string {
+  return `${d.getDate()} ${AY_ADLARI[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 /** "6 Ekim, Salı" */
 export function uzunTarihMetni(d: Date): string {
   return `${d.getDate()} ${AY_ADLARI[d.getMonth()]}, ${GUN_ADLARI[d.getDay()]}`;

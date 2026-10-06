@@ -1,11 +1,13 @@
 // Borcu değiştiren işlemler, geri alma ve işlem geçmişi. Kaynak: docs/SPEC.md, Bölüm 2.5, 2.6, 3.
 import { t, VAKIT_ADLARI } from '../metinler';
-import type { GunlukDurum, Islem, KazaDurumu, KazaVakit, Vakit } from '../types';
+import type { Ayarlar, GunlukDurum, Islem, KazaAyarlari, KazaDurumu, KazaVakit, Vakit } from '../types';
 import { KAZA_VAKITLERI } from '../types';
 import { islemleriKirp } from './depolama';
+import { kazaHesapla, vakitBorclari, type HesapGirdisi } from './kazaHesap';
 import { gunAnahtari } from './tarih';
 
 export interface VeriDurumu {
+  ayarlar: Ayarlar;
   kaza: KazaDurumu;
   gunluk: GunlukDurum;
   islemler: Islem[]; // eskiden yeniye
@@ -69,6 +71,7 @@ export function vakitCevapla(
   const degisim: Partial<Record<KazaVakit, number>> = {};
   for (const v of kilinamadiEklenecekler(vakit)) degisim[v] = (degisim[v] ?? 0) + 1;
   return {
+    ayarlar: d.ayarlar,
     kaza: { ...d.kaza, kalan: kalanaUygula(d.kaza.kalan, degisim).kalan },
     gunluk,
     islemler: islemEkle(d.islemler, {
@@ -110,8 +113,18 @@ export function geriAl(d: VeriDurumu, simdi: Date, id: string, beklenenId?: stri
     gunluk = { ...gunluk, [hedef.gun]: kalanVakitler };
   }
 
+  // Yeniden hesap geri alınınca başlangıç borcu ve kaza ayarları da eski haline döner.
+  let ayarlar = d.ayarlar;
+  let ilkBorc = d.kaza.ilkBorc;
+  if (hedef.tur === 'yeniden_hesap' && hedef.onceki) {
+    const { ilkBorc: oncekiIlk, ...oncekiAyar } = hedef.onceki;
+    ilkBorc = { ...oncekiIlk };
+    ayarlar = { ...ayarlar, ...oncekiAyar };
+  }
+
   return {
-    kaza: { ...d.kaza, kalan },
+    ayarlar,
+    kaza: { ilkBorc, kalan },
     gunluk,
     islemler: islemEkle(d.islemler, {
       id,
@@ -121,6 +134,78 @@ export function geriAl(d: VeriDurumu, simdi: Date, id: string, beklenenId?: stri
       degisim: uygulanan,
       geriAlinanId: hedef.id,
     }),
+  };
+}
+
+function farklar(
+  once: Record<KazaVakit, number>,
+  sonra: Record<KazaVakit, number>,
+): Partial<Record<KazaVakit, number>> {
+  const d: Partial<Record<KazaVakit, number>> = {};
+  for (const v of KAZA_VAKITLERI) if (sonra[v] !== once[v]) d[v] = sonra[v] - once[v];
+  return d;
+}
+
+/**
+ * Başlangıç bilgileri değişti (SPEC 4.3): yeni ilk borç hesaplanır, kılınan kaza sayısı korunur.
+ * yeniKalan = max(0, yeniIlkBorc - (eskiIlkBorc - eskiKalan)). Geri alınabilsin diye önceki
+ * değerler işleme yazılır.
+ */
+export function yenidenHesapla(
+  d: VeriDurumu,
+  girdi: HesapGirdisi,
+  simdi: Date,
+  id: string,
+): VeriDurumu | null {
+  const yeniIlk = vakitBorclari(kazaHesapla(girdi, simdi));
+  const yeniKalan = { ...d.kaza.kalan };
+  for (const v of KAZA_VAKITLERI) {
+    yeniKalan[v] = Math.max(0, yeniIlk[v] - (d.kaza.ilkBorc[v] - d.kaza.kalan[v]));
+  }
+  const onceki: Islem['onceki'] = {
+    ilkBorc: { ...d.kaza.ilkBorc },
+    mezhep: d.ayarlar.mezhep,
+    ozelGun: d.ayarlar.ozelGun,
+    baslangic: d.ayarlar.baslangic,
+  };
+  const yeniAyar: KazaAyarlari = {
+    mezhep: girdi.mezhep,
+    ozelGun: girdi.ozelGun,
+    baslangic: { yukumlulukAy: girdi.yukumlulukAy, duzenliAy: girdi.duzenliAy },
+  };
+  const ayniAyar =
+    JSON.stringify(yeniAyar) ===
+    JSON.stringify({ mezhep: d.ayarlar.mezhep, ozelGun: d.ayarlar.ozelGun, baslangic: d.ayarlar.baslangic });
+  const ayniBorc = KAZA_VAKITLERI.every((v) => yeniIlk[v] === d.kaza.ilkBorc[v]);
+  if (ayniAyar && ayniBorc) return null; // değişiklik yok, kayıt yazılmaz
+  return {
+    ...d,
+    ayarlar: { ...d.ayarlar, ...yeniAyar },
+    kaza: { ilkBorc: yeniIlk, kalan: yeniKalan },
+    islemler: islemEkle(d.islemler, {
+      id,
+      zaman: simdi.toISOString(),
+      tur: 'yeniden_hesap',
+      degisim: farklar(d.kaza.kalan, yeniKalan),
+      onceki,
+    }),
+  };
+}
+
+/** Kalan sayıların elle düzeltilmesi. Değişiklik yoksa ya da geçersiz sayı varsa null. */
+export function kazaDuzelt(
+  d: VeriDurumu,
+  yeniKalan: Record<KazaVakit, number>,
+  simdi: Date,
+  id: string,
+): VeriDurumu | null {
+  if (KAZA_VAKITLERI.some((v) => !Number.isInteger(yeniKalan[v]) || yeniKalan[v] < 0)) return null;
+  const degisim = farklar(d.kaza.kalan, yeniKalan);
+  if (Object.keys(degisim).length === 0) return null;
+  return {
+    ...d,
+    kaza: { ...d.kaza, kalan: { ...yeniKalan } },
+    islemler: islemEkle(d.islemler, { id, zaman: simdi.toISOString(), tur: 'manuel_duzeltme', degisim }),
   };
 }
 

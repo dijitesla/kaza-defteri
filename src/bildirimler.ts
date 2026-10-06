@@ -70,6 +70,12 @@ export async function bildirimIzniVar(): Promise<boolean> {
   return (await Notifications.getPermissionsAsync()).granted;
 }
 
+/** İzin durumu; canAskAgain false ise sistem penceresi artık açılmaz, ayarlara yönlendirilir. */
+export async function bildirimIzniDurumu(): Promise<{ izinVar: boolean; tekrarSorulabilir: boolean }> {
+  const s = await Notifications.getPermissionsAsync();
+  return { izinVar: s.granted, tekrarSorulabilir: s.canAskAgain };
+}
+
 let sira: Promise<void> = Promise.resolve();
 
 /**
