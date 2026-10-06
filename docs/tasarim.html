@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><title>Kaza Defteri tasarım</title><style>
+@page { size: A4 landscape; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Poppins', sans-serif; color: #1B1F2A; }
+.page { width: 297mm; height: 210mm; padding: 11mm 14mm 9mm; display: flex; flex-direction: column; }
+.head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 7mm; }
+.head h1 { font-family: 'Lora', serif; font-weight: 600; font-size: 25pt; line-height: 1.1; }
+.head p { font-size: 9pt; color: #5A6070; max-width: 120mm; line-height: 1.45; margin-top: 2mm; }
+.head .tag { font-size: 8pt; color: #5A6070; text-align: right; line-height: 1.5; }
+.row { display: flex; justify-content: space-between; flex: 1; }
+.col { width: 82mm; display: flex; flex-direction: column; align-items: center; }
+.cap { margin-top: 4mm; width: 74mm; }
+.cap b { display: block; font-size: 9.5pt; font-weight: 600; margin-bottom: 1mm; }
+.cap span { font-size: 8pt; color: #5A6070; line-height: 1.45; display: block; }
+/* telefon çerçevesi */
+.phone { width: 64mm; height: 132mm; border-radius: 9mm; background: #1d1d1f; padding: 2.2mm; box-shadow: 0 3mm 8mm rgba(20,30,50,.18); }
+.screen { width: 100%; height: 100%; border-radius: 7mm; overflow: hidden; position: relative; display: flex; flex-direction: column; font-size: 7.4pt; background: #EEF1F4; }
+.sb { display: flex; justify-content: space-between; padding: 2.4mm 5mm 1mm; font-size: 6.6pt; font-weight: 600; }
+.nav { margin-top: auto; display: flex; justify-content: space-around; padding: 2.4mm 0 3.2mm; font-size: 6.2pt; border-top: 1px solid rgba(0,0,0,.07); }
+.nav span { color: #8A90A0; } .nav span.on { font-weight: 600; color: #1C2541; }
+.a-top { padding: 1.5mm 5mm 0; }
+.a-app { font-size: 6.6pt; color: #6B7286; }
+.a-date { font-family: 'Lora', serif; font-size: 11pt; font-weight: 600; color: #1C2541; margin-top: .6mm; }
+.a-arc { margin: 0 4mm; background: #fff; border-radius: 4mm; padding: 1mm 1mm 2mm; }
+.a-arc svg { display: block; width: 100%; }
+.a-btn { margin: 3mm 4mm 0; background: #D4A853; color: #1C2541; text-align: center; border-radius: 3mm; padding: 2.6mm; font-weight: 600; font-size: 8pt; }
+/* kilit ekranı */
+.screen.lock { background: linear-gradient(180deg, #24335E 0%, #4A4A7A 55%, #B27E6E 100%); color: #fff; }
+.l-time { text-align: center; font-family: 'Lora', serif; font-size: 34pt; font-weight: 500; margin-top: 4mm; line-height: 1; }
+.l-day { text-align: center; font-size: 7pt; opacity: .85; margin-top: 1.4mm; }
+.notif { margin: 0 3.5mm; background: rgba(245,246,250,.94); color: #1B1F2A; border-radius: 3.6mm; padding: 2.8mm 3mm; }
+.n-h { display: flex; align-items: center; gap: 1.6mm; font-size: 6pt; color: #6B7286; }
+.n-ic { width: 4mm; height: 4mm; border-radius: 1.1mm; background: #1C2541; display: flex; align-items: center; justify-content: center; }
+.n-ic i { width: 1.6mm; height: 1.6mm; border-radius: 50%; background: #D4A853; display: block; }
+.n-t { font-weight: 600; font-size: 7.6pt; margin-top: 1.4mm; }
+.n-b { font-size: 6.8pt; color: #3B4152; margin-top: .4mm; }
+.n-act { display: flex; gap: 1.4mm; margin-top: 2.4mm; }
+.n-act span { flex: 1; text-align: center; background: #fff; border-radius: 2mm; padding: 1.6mm 0; font-size: 6.4pt; font-weight: 600; color: #1C2541; }
+.n-act span.pri { background: #1C2541; color: #fff; }
+.notif.small { margin-top: 2mm; opacity: .9; }
+/* kurulum */
+.f { margin: 0 4mm 1.5mm; background: #fff; border-radius: 3mm; padding: 1.8mm 3mm; }
+.f label { display: block; font-size: 6pt; color: #6B7286; line-height: 1.35; }
+.f div { font-size: 8pt; font-weight: 600; color: #1C2541; margin-top: .6mm; }
+.seg { display: flex; margin-top: 1.2mm; background: #EEF1F4; border-radius: 2mm; padding: .6mm; }
+.seg span { flex: 1; text-align: center; padding: 1mm 0; font-size: 6.6pt; border-radius: 1.6mm; color: #6B7286; }
+.seg span.on { background: #1C2541; color: #fff; font-weight: 600; }
+.tg { display: flex; justify-content: space-between; align-items: center; }
+.tg p { font-size: 7pt; font-weight: 600; color: #1C2541; }
+.tg p small { display: block; font-size: 5.8pt; font-weight: 400; color: #6B7286; }
+.sw { width: 7mm; height: 4mm; border-radius: 2mm; background: #C9CED8; position: relative; flex-shrink: 0; }
+.sw::after { content: ''; position: absolute; top: .5mm; left: .5mm; width: 3mm; height: 3mm; border-radius: 50%; background: #fff; }
+.sw.on { background: #2E7D5B; } .sw.on::after { left: 3.5mm; }
+.formula { margin: 0 4mm; border: 1.2px dashed #B9A06A; border-radius: 3mm; padding: 2.2mm 3mm; background: #FBF8F1; }
+.formula p { font-size: 6.4pt; color: #5A5040; }
+.formula strong { display: block; font-family: 'Lora', serif; font-size: 10pt; color: #1C2541; margin: .6mm 0; }
+.note { margin: 1.8mm 5mm 0; font-size: 5.8pt; color: #6B7286; line-height: 1.4; }
+.lbl { margin: 0 5mm 1.2mm; font-size: 6.6pt; font-weight: 600; color: #1C2541; }
+.search { margin: 0 4mm 1.6mm; background:#fff; border-radius:3mm; padding:2mm 3mm; font-size:7pt; color:#8A90A0; }
+.li { margin: 0 4mm; background:#fff; padding:1.9mm 3mm; font-size:7.2pt; color:#1C2541; border-bottom:1px solid #EEF1F4; display:flex; justify-content:space-between; }
+.li.first { border-radius:3mm 3mm 0 0; } .li.last { border-radius:0 0 3mm 3mm; border-bottom:none; }
+.li.sel { font-weight:600; background:#F6F8FA; } .li.sel span:last-child { color:#2E7D5B; }
+.privacy { margin: 2mm 5mm 0; font-size:5.9pt; color:#6B7286; line-height:1.4; }
+.f2 { margin: 0 4mm 1.4mm; background:#fff; border-radius:3mm; padding:1.8mm 3mm; display:flex; justify-content:space-between; align-items:center; }
+.f2 p { font-size:7pt; font-weight:600; color:#1C2541; }
+.f2 p small { display:block; font-size:5.8pt; font-weight:400; color:#6B7286; }
+.chipsA { display:flex; gap:1.2mm; margin:0 4mm 1.6mm; }
+.chipsA span { flex:1; text-align:center; background:#fff; border-radius:2mm; padding:1.6mm 0; font-size:6.8pt; color:#1C2541; }
+.chipsA span.on { background:#1C2541; color:#fff; font-weight:600; }
+/* ana ekran */
+.cd { margin: 2.4mm 4mm 0; background:#1C2541; color:#fff; border-radius:4mm; padding:3mm 4mm; display:flex; justify-content:space-between; align-items:flex-end; }
+.cd small { font-size:6.2pt; color:#C9CFE0; display:block; }
+.cd .t { font-family:'Lora',serif; font-size:21pt; font-weight:600; line-height:1.05; margin-top:.4mm; }
+.cd .r { text-align:right; font-size:6.2pt; color:#C9CFE0; line-height:1.5; }
+.cd .r b { color:#D4A853; font-size:8pt; }
+.banner { margin:2mm 4mm 0; background:#FBF1DC; border-radius:3mm; padding:2.2mm 3mm; }
+.banner p { font-size:6.8pt; color:#6E4A12; font-weight:600; }
+.banner .ac { display:flex; gap:1.4mm; margin-top:1.4mm; }
+.banner .ac span { flex:1; text-align:center; background:#fff; border-radius:2mm; padding:1.2mm 0; font-size:6.3pt; font-weight:600; color:#1C2541; }
+.banner .ac span.pri { background:#1C2541; color:#fff; }
+.kz { margin:2mm 4mm 0; background:#fff; border-radius:3.4mm; padding:2.4mm 3mm; display:flex; align-items:center; justify-content:space-between; }
+.kz small { font-size:6pt; color:#6B7286; display:block; }
+.kz b { font-family:'Lora',serif; font-size:15pt; color:#1C2541; }
+.kz span.go { background:#D4A853; color:#1C2541; font-weight:600; font-size:7pt; padding:1.8mm 3.4mm; border-radius:2.4mm; }
+/* kaza kıl */
+.tiles { display:grid; grid-template-columns:1fr 1fr; gap:2mm; margin:2.4mm 4mm 0; }
+.tile { background:#fff; border-radius:3mm; padding:2.4mm 2.8mm; position:relative; }
+.tile p { font-size:7pt; font-weight:600; color:#1C2541; }
+.tile b { display:block; font-family:'Lora',serif; font-size:13pt; color:#1C2541; margin-top:.4mm; }
+.tile small { font-size:5.6pt; color:#6B7286; }
+.tile i { position:absolute; right:2.4mm; bottom:2.4mm; width:7mm; height:7mm; border-radius:50%; background:#1C2541; color:#fff; font-style:normal; font-weight:600; font-size:7pt; display:flex; align-items:center; justify-content:center; }
+.tile.hit { box-shadow: inset 0 0 0 1.4px #2E7D5B; } .tile.hit i { background:#2E7D5B; }
+.toast { margin:2.4mm 4mm 0; background:#1C2541; color:#fff; border-radius:3mm; padding:2.2mm 3mm; display:flex; justify-content:space-between; font-size:6.6pt; }
+.toast u { text-decoration:none; color:#D4A853; font-weight:600; }
+.linkrow { margin:2mm 5mm 0; font-size:6.6pt; color:#1C2541; font-weight:600; display:flex; justify-content:space-between; }
+.linkrow span:last-child { color:#6B7286; font-weight:400; }
+</style></head><body>
+<section class="page">
+ <div class="head">
+  <div><h1>Kaza Defteri: kurulum</h1>
+  <p>Uygulama ilk açıldığında üç adımlık kurulum: konum, kaza borcu, bildirimler. Hepsi daha sonra Ayarlar'dan değiştirilebilir. Tüm veri telefonda kalır, üyelik yoktur.</p></div>
+  <div class="tag">Tasarım taslağı, sürüm 2<br>Saatler örnek amaçlıdır</div>
+ </div>
+ <div class="row">
+  <div class="col"><div class="phone"><div class="screen">
+   <div class="sb"><span>10:02</span><span>%84</span></div>
+   <div class="a-top" style="margin-bottom:2.6mm"><div class="a-app">Kurulum, 1 / 3</div><div class="a-date">Vakitler için konumun</div></div>
+   <div class="a-btn" style="margin:0 4mm 2mm">Konumumu bul</div>
+   <div class="lbl" style="text-align:center;font-weight:400;color:#6B7286">ya da listeden seç</div>
+   <div class="search">İl ara</div>
+   <div class="li first sel"><span>İstanbul</span><span>✓</span></div>
+   <div class="li"><span>İzmir</span><span></span></div>
+   <div class="li"><span>Kahramanmaraş</span><span></span></div>
+   <div class="li"><span>Karabük</span><span></span></div>
+   <div class="li last"><span>Karaman</span><span></span></div>
+   <div class="privacy">Konumun yalnızca namaz vakitlerini hesaplamak için telefonda kullanılır. Hiçbir yere gönderilmez.</div>
+   <div class="a-btn" style="margin-top:auto;margin-bottom:4mm">Devam et</div>
+  </div></div>
+  <div class="cap"><b>Konum seçimi</b><span>Konum izni isteğe bağlı. İzin vermek istemeyen kullanıcı ilini listeden seçer. Gizlilik notu ekranda açıkça yazar.</span></div></div>
+  <div class="col"><div class="phone"><div class="screen">
+   <div class="sb"><span>10:03</span><span>%84</span></div>
+   <div class="a-top" style="margin-bottom:2mm"><div class="a-app">Kurulum, 2 / 3</div><div class="a-date">Kaza borcunu hesapla</div></div>
+   <div class="f"><label>Namazla yükümlü olduğun tarih (ergenlik)</label><div>Eylül 2016</div></div>
+   <div class="f"><label>Düzenli kılmaya başladığın tarih</label><div>Ocak 2019</div></div>
+   <div class="f"><label>Mezhep</label><div class="seg"><span class="on">Hanefi</span><span>Şafii</span></div></div>
+   <div class="f tg"><p>Özel günleri düş<small>Kadın kullanıcılar için, ayda kaç gün</small></p><span class="sw"></span></div>
+   <div class="formula"><p>Hesap nasıl yapıldı</p><strong>852 gün × 6 vakit = 5.112</strong><p>Her vakit için 852 kaza: sabah, öğle, ikindi, akşam, yatsı ve vitir. Sayıları istediğin zaman Ayarlar'dan tek tek düzeltebilirsin.</p></div>
+   <div class="note">Hesap senin girdiğin bilgilere dayanır. Emin olmadığın durumlar için müftülüğe danışabilirsin.</div>
+   <div class="a-btn" style="margin-top:auto;margin-bottom:4mm">Devam et</div>
+  </div></div>
+  <div class="cap"><b>Kaza hesaplama</b><span>Borç vakit vakit tutulur. Şafii seçilirse vitir hesaptan çıkar ve formül 5 vakit olarak güncellenir.</span></div></div>
+  <div class="col"><div class="phone"><div class="screen">
+   <div class="sb"><span>10:05</span><span>%83</span></div>
+   <div class="a-top" style="margin-bottom:2mm"><div class="a-app">Kurulum, 3 / 3</div><div class="a-date">Hatırlatmalar</div></div>
+   <div class="lbl">Hangi vakitler için?</div>
+   <div class="f2"><p>Sabah</p><span class="sw on"></span></div>
+   <div class="f2"><p>Öğle</p><span class="sw on"></span></div>
+   <div class="f2"><p>İkindi</p><span class="sw on"></span></div>
+   <div class="f2"><p>Akşam</p><span class="sw on"></span></div>
+   <div class="f2"><p>Yatsı<small>"Kıldın mı?" sorusu 23:00'te</small></p><span class="sw on"></span></div>
+   <div class="lbl" style="margin-top:1.6mm">"Kıldın mı?" ne zaman sorulsun?</div>
+   <div class="chipsA"><span>15 dk</span><span class="on">30 dk</span><span>60 dk</span></div>
+   <div class="privacy" style="margin-top:0">Vakit çıkmadan önce. Namazı kıldığını daha önce işaretlersen soru gelmez.</div>
+   <div class="a-btn" style="margin-top:auto;margin-bottom:4mm">Bildirimlere izin ver</div>
+  </div></div>
+  <div class="cap"><b>Hatırlatma tercihleri</b><span>İzin istenmeden önce ne için kullanılacağı anlatılır. Yatsının vakti sabaha uzandığı için sorusu sabit saatte gelir, kullanıcı değiştirebilir.</span></div></div>
+ </div>
+</section>
+<section class="page">
+ <div class="head">
+  <div><h1>Kaza Defteri: günlük kullanım</h1>
+  <p>Kullanıcının her gün gördüğü üç yüzey: ana ekran, kaza kılma ekranı ve bildirimler. Kayıtların çoğu bildirimden yapılır; uygulama açıldığında önce bekleyen işler gösterilir.</p></div>
+  <div class="tag">Tasarım taslağı, sürüm 2<br>Saatler örnek amaçlıdır</div>
+ </div>
+ <div class="row">
+  <div class="col"><div class="phone"><div class="screen">
+   <div class="sb"><span>15:31</span><span>%62</span></div>
+   <div class="a-top"><div class="a-app">Üsküdar, İstanbul</div><div class="a-date">6 Ekim, Salı</div></div>
+   <div class="cd"><div><small>İkindiye kalan</small><div class="t">41 dk</div></div><div class="r">İkindi<br><b>16:12</b></div></div>
+   <div class="a-arc" style="margin-top:2mm"><svg viewBox="0 0 220 70">
+    <path d="M14 58 Q110 -12 206 58" fill="none" stroke="#D9DEE6" stroke-width="2" stroke-dasharray="3 3"/>
+    <circle cx="26" cy="48" r="6" fill="#2E7D5B"/><path d="M23 48 l2 2 l4 -4.5" stroke="#fff" stroke-width="1.5" fill="none"/>
+    <text x="26" y="64" font-size="7.5" text-anchor="middle" fill="#3B4152">Sabah 05:50</text>
+    <circle cx="78" cy="18" r="6" fill="#2E7D5B"/><path d="M75 18 l2 2 l4 -4.5" stroke="#fff" stroke-width="1.5" fill="none"/>
+    <text x="78" y="34" font-size="7.5" text-anchor="middle" fill="#3B4152">Öğle 13:00</text>
+    <circle cx="140" cy="18" r="9" fill="#D4A853" opacity=".25"/><circle cx="140" cy="18" r="6" fill="#fff" stroke="#D4A853" stroke-width="2"/>
+    <text x="140" y="34" font-size="7.5" text-anchor="middle" fill="#1C2541" font-weight="600">İkindi 16:12</text>
+    <circle cx="178" cy="38" r="5" fill="#fff" stroke="#B5BCC9" stroke-width="1.5"/>
+    <text x="166" y="50" font-size="7.5" text-anchor="middle" fill="#8A90A0">Akşam 18:43</text>
+    <circle cx="204" cy="56" r="5" fill="#fff" stroke="#B5BCC9" stroke-width="1.5"/>
+    <text x="194" y="68" font-size="7.5" text-anchor="middle" fill="#8A90A0">Yatsı 20:02</text>
+   </svg></div>
+   <div class="banner"><p>Dün yatsı cevapsız kaldı. Kıldın mı?</p><div class="ac"><span class="pri">Kıldım</span><span>Kılamadım</span></div></div>
+   <div class="kz"><div><small>Kalan kaza namazı</small><b>4.812</b></div><span class="go">Kaza kıl</span></div>
+   <div class="nav"><span class="on">Bugün</span><span>Geçmiş</span><span>Ayarlar</span></div>
+  </div></div>
+  <div class="cap"><b>Ana ekran</b><span>Sıradaki vakte geri sayım ve günün vakitleri. Cevapsız kalan vakitler otomatik kazaya eklenmez; kullanıcıya burada sorulur.</span></div></div>
+  <div class="col"><div class="phone"><div class="screen">
+   <div class="sb"><span>15:33</span><span>%62</span></div>
+   <div class="a-top"><div class="a-app">‹ Bugün</div><div class="a-date">Kaza kıl</div></div>
+   <div class="lbl" style="margin-top:1.6mm;font-weight:400;color:#6B7286">Hangi vaktin kazasını kıldın?</div>
+   <div class="tiles">
+    <div class="tile hit"><p>Sabah</p><b>791</b><small>kalan</small><i>✓</i></div>
+    <div class="tile"><p>Öğle</p><b>802</b><small>kalan</small><i>+1</i></div>
+    <div class="tile"><p>İkindi</p><b>802</b><small>kalan</small><i>+1</i></div>
+    <div class="tile"><p>Akşam</p><b>802</b><small>kalan</small><i>+1</i></div>
+    <div class="tile"><p>Yatsı</p><b>802</b><small>kalan</small><i>+1</i></div>
+    <div class="tile"><p>Vitir</p><b>812</b><small>kalan</small><i>+1</i></div>
+   </div>
+   <div class="toast"><span>Sabah kazası kaydedildi</span><u>Geri al</u></div>
+   <div class="linkrow"><span>Toplam kalan: 4.811</span><span>İşlem geçmişi</span></div>
+   <div class="nav"><span class="on">Bugün</span><span>Geçmiş</span><span>Ayarlar</span></div>
+  </div></div>
+  <div class="cap"><b>Kaza kılma</b><span>Her vaktin kalan borcu ayrı görünür. Dokunulan vakit 1 azalır ve geri alma çubuğu çıkar.</span></div></div>
+  <div class="col"><div class="phone"><div class="screen lock">
+   <div class="sb"><span></span><span>%55</span></div>
+   <div class="l-time">18:13</div>
+   <div class="l-day">Salı, 6 Ekim</div>
+   <div style="height:12mm"></div>
+   <div class="notif">
+    <div class="n-h"><span class="n-ic"><i></i></span>Kaza Defteri<span style="margin-left:auto">şimdi</span></div>
+    <div class="n-t">İkindi namazını kıldın mı?</div>
+    <div class="n-b">İkindi vakti 18:43'te çıkıyor.</div>
+    <div class="n-act"><span class="pri">Kıldım</span><span>Kılamadım</span><span>Sonra</span></div>
+   </div>
+   <div class="notif small">
+    <div class="n-h"><span class="n-ic"><i></i></span>Kaza Defteri<span style="margin-left:auto">16:12</span></div>
+    <div class="n-t" style="font-size:7pt">İkindi vakti girdi</div>
+    <div class="n-act" style="margin-top:1.6mm"><span class="pri">Kıldım</span></div>
+   </div>
+  </div></div>
+  <div class="cap"><b>İki aşamalı bildirim</b><span>Vakit girince kısa bir haber ve "Kıldım" düğmesi. Cevap verilmezse vakit çıkmadan 30 dk önce soru gelir. "Kılamadım" o vaktin kazasına 1 ekler.</span></div></div>
+ </div>
+</section>
+</body></html>
