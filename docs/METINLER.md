@@ -22,7 +22,9 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | konum.baslik | Vakitler için konumun |
 | konum.bul | Konumumu bul |
 | konum.yaDa | ya da listeden seç |
-| konum.ara | İl ara |
+| konum.ara | İl veya ilçe ara |
+| konum.ilceler | {il} ilçeleri |
+| konum.tumIller | Tüm iller |
 | konum.gizlilik | Konumun yalnızca namaz vakitlerini hesaplamak için telefonda kullanılır. Hiçbir yere gönderilmez. |
 | konum.gpsAdi | Bulunduğun konum |
 | konum.hata | Konum alınamadı. İlini listeden seçebilirsin. |

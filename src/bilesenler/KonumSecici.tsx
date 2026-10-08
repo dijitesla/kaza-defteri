@@ -1,8 +1,9 @@
 import * as Location from 'expo-location';
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ILCELER } from '../data/ilceler';
 import { ILLER } from '../data/iller';
-import { ilAra } from '../logic/ilAra';
+import { ilAra, ilceAra, ilceKonumAdi } from '../logic/ilAra';
 import { t } from '../metinler';
 import { olcu, renk, yaziTipi } from '../tema';
 import type { Ayarlar } from '../types';
@@ -37,8 +38,45 @@ export function KonumSecici({ secim, onSecim }: Props) {
   const [bulunuyor, setBulunuyor] = useState(false);
   const [hata, setHata] = useState(false);
 
-  const liste = useMemo(() => ilAra(ILLER, aranan), [aranan]);
+  const [acikIl, setAcikIl] = useState<string | null>(null);
+
+  const ilListesi = useMemo(() => ilAra(ILLER, aranan), [aranan]);
+  const ilceListesi = useMemo(() => ilceAra(ILCELER, aranan), [aranan]);
   const gpsSecili = secim?.ad === t('konum.gpsAdi');
+
+  const ilceSec = (il: string, ilce: { ad: string; enlem: number; boylam: number }) =>
+    onSecim({ ad: ilceKonumAdi(il, ilce.ad), enlem: ilce.enlem, boylam: ilce.boylam });
+
+  // Bir il açıksa ilçeleri (Merkez en üstte), değilse il listesi ve aramada eşleşen ilçeler.
+  const satirlar: { anahtar: string; ad: string; alt?: string; secili: boolean; ok?: boolean; onPress: () => void }[] =
+    acikIl
+      ? [...ILCELER[acikIl]]
+          .sort((a, b) => (a.ad === 'Merkez' ? -1 : b.ad === 'Merkez' ? 1 : 0))
+          .map((ilce) => ({
+            anahtar: ilce.ad,
+            ad: ilce.ad,
+            secili: secim?.ad === ilceKonumAdi(acikIl, ilce.ad),
+            onPress: () => ilceSec(acikIl, ilce),
+          }))
+      : [
+          ...ilListesi.map((il) => ({
+            anahtar: il.ad,
+            ad: il.ad,
+            secili: !gpsSecili && (secim?.ad === il.ad || !!secim?.ad.endsWith(`, ${il.ad}`) || secim?.ad === `${il.ad} Merkez`),
+            ok: true,
+            onPress: () => {
+              setAcikIl(il.ad);
+              setAranan('');
+            },
+          })),
+          ...ilceListesi.map(({ il, ilce }) => ({
+            anahtar: `${il}/${ilce.ad}`,
+            ad: ilce.ad,
+            alt: il,
+            secili: secim?.ad === ilceKonumAdi(il, ilce.ad),
+            onPress: () => ilceSec(il, ilce),
+          })),
+        ];
 
   const konumumuBul = async () => {
     setHata(false);
@@ -62,25 +100,34 @@ export function KonumSecici({ secim, onSecim }: Props) {
       {gpsSecili && secim ? <Satir ad={secim.ad} secili ilk son onPress={() => {}} /> : null}
 
       <Text style={stil.yaDa}>{t('konum.yaDa')}</Text>
-      <TextInput
-        value={aranan}
-        onChangeText={setAranan}
-        placeholder={t('konum.ara')}
-        placeholderTextColor={renk.sekmePasif}
-        style={stil.ara}
-        autoCorrect={false}
-        autoCapitalize="none"
-        accessibilityLabel={t('konum.ara')}
-      />
+      {acikIl ? (
+        <Pressable onPress={() => setAcikIl(null)} accessibilityRole="button" style={stil.geri} hitSlop={8}>
+          <Text style={stil.geriMetin}>‹ {t('konum.tumIller')}</Text>
+          <Text style={stil.ilBaslik}>{t('konum.ilceler', { il: acikIl })}</Text>
+        </Pressable>
+      ) : (
+        <TextInput
+          value={aranan}
+          onChangeText={setAranan}
+          placeholder={t('konum.ara')}
+          placeholderTextColor={renk.sekmePasif}
+          style={stil.ara}
+          autoCorrect={false}
+          autoCapitalize="none"
+          accessibilityLabel={t('konum.ara')}
+        />
+      )}
       <View>
-        {liste.map((il, i) => (
+        {satirlar.map((r, i) => (
           <Satir
-            key={il.ad}
-            ad={il.ad}
-            secili={!gpsSecili && secim?.ad === il.ad}
+            key={r.anahtar}
+            ad={r.ad}
+            alt={r.alt}
+            ok={r.ok}
+            secili={r.secili}
             ilk={i === 0}
-            son={i === liste.length - 1}
-            onPress={() => onSecim({ ad: il.ad, enlem: il.enlem, boylam: il.boylam })}
+            son={i === satirlar.length - 1}
+            onPress={r.onPress}
           />
         ))}
       </View>
@@ -89,7 +136,15 @@ export function KonumSecici({ secim, onSecim }: Props) {
   );
 }
 
-function Satir(p: { ad: string; secili: boolean; ilk: boolean; son: boolean; onPress: () => void }) {
+function Satir(p: {
+  ad: string;
+  alt?: string;
+  ok?: boolean;
+  secili: boolean;
+  ilk: boolean;
+  son: boolean;
+  onPress: () => void;
+}) {
   return (
     <Pressable
       onPress={p.onPress}
@@ -97,8 +152,11 @@ function Satir(p: { ad: string; secili: boolean; ilk: boolean; son: boolean; onP
       accessibilityState={{ selected: p.secili }}
       style={[stil.satir, p.ilk && stil.ilk, p.son && stil.son, p.secili && stil.seciliSatir]}
     >
-      <Text style={[stil.satirMetin, p.secili && { fontFamily: yaziTipi.kalin }]}>{p.ad}</Text>
-      {p.secili ? <Text style={stil.onay}>✓</Text> : null}
+      <View style={{ flex: 1 }}>
+        <Text style={[stil.satirMetin, p.secili && { fontFamily: yaziTipi.kalin }]}>{p.ad}</Text>
+        {p.alt ? <Text style={stil.satirAlt}>{p.alt}</Text> : null}
+      </View>
+      {p.secili ? <Text style={stil.onay}>✓</Text> : p.ok ? <Text style={stil.ok}>›</Text> : null}
     </Pressable>
   );
 }
@@ -138,6 +196,11 @@ const stil = StyleSheet.create({
   },
   seciliSatir: { backgroundColor: '#F6F8FA' },
   satirMetin: { fontFamily: yaziTipi.normal, fontSize: 15, color: renk.gece },
+  satirAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
+  ok: { fontFamily: yaziTipi.kalin, fontSize: 18, color: renk.sekmePasif },
+  geri: { gap: 2, paddingVertical: 4 },
+  geriMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.ikincilMetin },
+  ilBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece },
   onay: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.onay },
   not: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin, lineHeight: 18 },
   hata: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.kilinamadi },
