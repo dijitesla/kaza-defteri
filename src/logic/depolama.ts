@@ -1,5 +1,6 @@
 // Depolama katmanı. AsyncStorage dışarıdan verilir, böylece testte bellek içi depo kullanılabilir.
 import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit } from '../types';
+import { zikriTamamla, type ZikirDurumu } from './zikir';
 
 /** AsyncStorage'ın kullandığımız kısmı. */
 export interface Depo {
@@ -13,6 +14,7 @@ export const ANAHTAR = {
   kaza: 'kd:kaza',
   gunluk: 'kd:gunluk',
   islemler: 'kd:islemler',
+  zikir: 'kd:zikir',
 } as const;
 
 export const ISLEM_SINIRI = 2000;
@@ -135,6 +137,13 @@ export function depolamaOlustur(depo: Depo) {
     },
     islemleriYaz(islemler: Islem[]): Promise<void> {
       return yaz(ANAHTAR.islemler, islemleriKirp(islemler));
+    },
+
+    async zikirOku(): Promise<ZikirDurumu> {
+      return zikriTamamla(await oku(ANAHTAR.zikir));
+    },
+    zikirYaz(zikir: ZikirDurumu): Promise<void> {
+      return yaz(ANAHTAR.zikir, zikir);
     },
 
     async hepsiniSil(): Promise<void> {

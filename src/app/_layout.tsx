@@ -54,6 +54,7 @@ function Gezinme() {
           <Stack.Screen name="konum-sec" />
           <Stack.Screen name="kaza-bilgileri" />
           <Stack.Screen name="kaza-duzelt" />
+          <Stack.Screen name="zikirmatik" />
         </Stack.Protected>
         <Stack.Protected guard={!kurulumTamam}>
           <Stack.Screen name="kurulum" />

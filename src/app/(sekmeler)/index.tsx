@@ -1,15 +1,20 @@
-import { router } from 'expo-router';
-import { useMemo } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GeriAlCubugu, useGeriAlCubugu } from '../../bilesenler/GeriAlCubugu';
+import { GokyuzuKarti } from '../../bilesenler/GokyuzuKarti';
 import { GunYayi } from '../../bilesenler/GunYayi';
+import { Simge } from '../../bilesenler/Simge';
+import { depolama } from '../../depolama';
+import { ayEvresi, gokCismi, gunEvresi } from '../../logic/gokyuzu';
+import type { ZikirDurumu } from '../../logic/zikir';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
 import { cevapsizVakitler, yayDurumu, type CevapsizVakit } from '../../logic/gunluk';
 import { toplam } from '../../logic/islemler';
 import { sayiBicimle } from '../../logic/kazaHesap';
 import { gunAnahtari, gunAyMetni, gunEkle, kucukHarf, saatMetni, uzunTarihMetni } from '../../logic/tarih';
-import { girisZamani, gununVakitleri, kalanSureMetni, siradakiBaslik, siradakiVakit, vakitAraliklari } from '../../logic/vakitler';
+import { girisZamani, gununVakitleri, siradakiVakit, vakitAraliklari } from '../../logic/vakitler';
 import { t, VAKIT_ADLARI } from '../../metinler';
 import { buyukSayi, olcu, renk, yaziTipi } from '../../tema';
 import { VAKITLER } from '../../types';
@@ -43,6 +48,22 @@ export default function Bugun() {
     };
   }, [konum, dakikaDuzeltme]);
   const vakitler = useMemo(() => gununVakitleri(konum, bugun, dakikaDuzeltme), [konum, bugun, dakikaDuzeltme]);
+  const yarinVakitleri = useMemo(
+    () => gununVakitleri(konum, gunEkle(bugun, 1), dakikaDuzeltme),
+    [konum, bugun, dakikaDuzeltme],
+  );
+  const dunVakitleri = useMemo(
+    () => gununVakitleri(konum, gunEkle(bugun, -1), dakikaDuzeltme),
+    [konum, bugun, dakikaDuzeltme],
+  );
+  const cisim = gokCismi(simdi, vakitler, yarinVakitleri, dunVakitleri);
+
+  const [zikir, setZikir] = useState<ZikirDurumu | null>(null);
+  useFocusEffect(
+    useCallback(() => {
+      depolama.zikirOku().then(setZikir).catch(() => {});
+    }, []),
+  );
 
   const siradaki = siradakiVakit(konum, bugun, simdi, dakikaDuzeltme);
   const bugunAraliklar = araliklar(bugun);
@@ -79,20 +100,9 @@ export default function Bugun() {
             </Text>
           </View>
 
-          <View style={stil.geriSayim}>
-            <View style={{ flex: 1 }}>
-              <Text style={stil.geriSayimUst}>{siradakiBaslik(siradaki.vakit)}</Text>
-              <Text style={[buyukSayi, stil.geriSayimSure]}>
-                {kalanSureMetni(siradaki.zaman.getTime() - simdi.getTime())}
-              </Text>
-            </View>
-            <View style={stil.geriSayimSag}>
-              <Text style={stil.geriSayimUst}>{VAKIT_ADLARI[siradaki.vakit]}</Text>
-              <Text style={stil.geriSayimSaat}>{saatMetni(siradaki.zaman)}</Text>
-            </View>
-          </View>
+          <GokyuzuKarti bugun={vakitler} yarin={yarinVakitleri} />
 
-          <GunYayi vakitler={yay} />
+        <GunYayi vakitler={yay} cisim={cisim} ayEvre={ayEvresi(simdi)} gece={gunEvresi(simdi, vakitler) === 'gece'} />
 
           {ilkCevapsiz ? (
             <View style={stil.bant}>
@@ -117,6 +127,24 @@ export default function Bugun() {
               <Text style={stil.kazaDugmeMetin}>{t('bugun.kazaKil')}</Text>
             </Pressable>
           </View>
+
+          <Pressable
+            onPress={() => router.push('/zikirmatik')}
+            accessibilityRole="button"
+            style={({ pressed }) => [stil.zikir, pressed && { opacity: 0.85 }]}
+          >
+            <View style={stil.zikirSimge}>
+              <Simge ad="tespih" renk={renk.altin} boyut={26} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={stil.zikirBaslik}>{t('zikir.baslik')}</Text>
+              {zikir && zikir.tur > 0 ? <Text style={stil.zikirAlt}>{t('zikir.tur', { n: zikir.tur })}</Text> : null}
+            </View>
+            <Text style={[buyukSayi, stil.zikirSayi]}>
+              {zikir ? zikir.sayi : 0}
+              {zikir?.hedef ? <Text style={stil.zikirHedef}> / {zikir.hedef}</Text> : null}
+            </Text>
+          </Pressable>
         </ScrollView>
         {cubuk ? (
           <View style={stil.cubukKap}>
@@ -156,18 +184,6 @@ const stil = StyleSheet.create({
   icerik: { padding: olcu.ekranBosluk, gap: 12, paddingBottom: 90 },
   konum: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.ikincilMetin },
   tarih: { fontFamily: yaziTipi.baslik, fontSize: 24, color: renk.gece },
-  geriSayim: {
-    backgroundColor: renk.gece,
-    borderRadius: olcu.kartYaricap + 2,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
-  geriSayimUst: { fontFamily: yaziTipi.normal, fontSize: 13, color: '#C9CFE0' },
-  geriSayimSure: { color: renk.kart, fontSize: 36, lineHeight: 44 },
-  geriSayimSag: { alignItems: 'flex-end' },
-  geriSayimSaat: { fontFamily: yaziTipi.kalin, fontSize: 18, color: renk.altin, fontVariant: ['tabular-nums'] },
   bant: { backgroundColor: renk.uyariZemin, borderRadius: olcu.kartYaricap, padding: 12, gap: 10 },
   bantMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.uyariMetin },
   bantDugmeler: { flexDirection: 'row', gap: 8 },
@@ -200,5 +216,26 @@ const stil = StyleSheet.create({
     justifyContent: 'center',
   },
   kazaDugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  zikir: {
+    backgroundColor: renk.gece,
+    borderRadius: olcu.kartYaricap,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  zikirSimge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(212,168,83,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  zikirBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.kart },
+  zikirAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: '#C9CFE0' },
+  zikirSayi: { fontSize: 26, lineHeight: 32, color: renk.kart },
+  zikirHedef: { fontFamily: yaziTipi.normal, fontSize: 14, color: '#C9CFE0' },
   cubukKap: { position: 'absolute', left: olcu.ekranBosluk, right: olcu.ekranBosluk, bottom: 12 },
 });

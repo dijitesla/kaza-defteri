@@ -16,7 +16,7 @@ Ana ekran widget'ı, kıble pusulası, ezan sesi (standart bildirim sesi kullan�
 
 ## 2. Ekranlar
 
-Gezinme: alt sekmeler **Bugün**, **Geçmiş**, **Ayarlar**. Kurulum tamamlanmadıysa uygulama kurulum akışıyla açılır.
+Gezinme: alt sekmeler **Bugün**, **Vakitler**, **Geçmiş**, **Ayarlar** (simgeli, yüzen sekme çubuğu; seçili sekme koyu hap içinde adıyla görünür). Kurulum tamamlanmadıysa uygulama kurulum akışıyla açılır.
 
 ### 2.1 Kurulum 1/3: Konum
 - "Konumumu bul" düğmesi: `expo-location` ile ön planda tek seferlik konum. İzin reddedilirse sessizce il listesine dön.
@@ -200,3 +200,11 @@ Ekran düzeni için `docs/tasarim.html` dosyasına bak.
 - Reklamdan önce Google UMP ile onay toplanır (AB'de onay penceresi). Onay seçeneğini değiştirme satırı Ayarlar'da yalnızca gerekli olduğunda görünür.
 - Reklam yüklenemezse (internet yok, onay yok, dolum yok) banner hiç yer kaplamaz; uygulamanın hiçbir işlevi reklama bağlı değildir.
 - Gerçek reklam birimi kimlikleri girilene kadar Google test reklamları gösterilir.
+
+## 11. Sürüm 1.1 eklemeleri
+- **Konum:** 81 ilin 973 ilçesi (`src/data/ilceler.ts`, kaynaklar dosya başında). İl seçilince ilçeleri açılır; aramada ilçeler de çıkar. Kayıtlı ad "İlçe, İl" ya da "İl Merkez".
+- **Gökyüzü kartı (Bugün ve Vakitler):** sıradaki vakte saniyeli geri sayım (`MM:SS` / `S:MM:SS`). Arka plan günün evresine göre: gece (yatsı–imsak), şafak (imsak–güneş), gündüz (güneş–ikindi), ikindi (ikindi–akşam), akşam (akşam–yatsı). Güneş doğuştan akşama kadar, diğer zamanlarda ay; ay gerçek evresiyle çizilir (yaklaşık, ±1 gün). Gerçek hava durumu gösterilmez (internet gerektirir).
+- **Gün yayı:** beş vakit eşit aralıklı noktalarda; güneş/ay iki vakit arasında geçen süreyle orantılı yerde, animasyonla kayar. Gündüz geçilen kısım altın renkle dolar, gece çizilmez.
+- **Vakitler sekmesi:** İmsak, Güneş, Öğle, İkindi, Akşam, Yatsı; içinde bulunulan vakit vurgulu ("Şimdi"), sıradaki işaretli. (Namaz hadisi alanı, metinler gelince eklenecek.)
+- **Zikirmatik:** Bugün'de kart, dokununca tam ekran sayaç. Hedef 33 / 99 / serbest; hedefe ulaşınca tur tamamlanır, sayı sıfırdan başlar. Her dokunuşta hafif, tur sonunda başarı titreşimi. Telefonda saklanır (`kd:zikir`), yedeğe dahil değildir.
+- **Geçmiş:** ilerleme halkası (kılınan / başlangıç borcu), bu hafta (Pazartesiden) ve bu ay kılınan kaza sayısı, işlem türüne göre simge ve renk.

@@ -17,6 +17,7 @@ Türkçe, Android öncelikli bir mobil uygulama. Ana işlev kaza namazı borcunu
 - Reklam: `react-native-google-mobile-ads` (AdMob, AB için UMP onayı). Reklam birimi kimlikleri `src/reklam.ts`, uygulama kimlikleri `app.json` (eklenti ayarı ve kökteki `react-native-google-mobile-ads` anahtarı; ikisi aynı olmalı).
 - Bildirim: `expo-notifications`. Konum: `expo-location` (yalnızca ön planda, tek seferlik). Yedekleme: `expo-file-system`, `expo-sharing`, `expo-document-picker`.
 - Yazı tipleri: Lora (başlık ve büyük sayılar), Poppins (arayüz), `@expo-google-fonts` ile.
+- Grafik ve animasyon: `react-native-svg` (simgeler, güneş/ay, yay, halkalar), `react-native-reanimated` (animasyonlar), `expo-haptics` (zikirmatik titreşimi).
 - Kod hem Android hem iOS'ta çalışacak şekilde yazılır; yayın önce Android.
 
 ## Belgeler

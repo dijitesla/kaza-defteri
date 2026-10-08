@@ -1,9 +1,12 @@
 import { varsayilanAyarlar, varsayilanKaza } from '../depolama';
 import {
+  ayBasi,
+  donemdeKilinan,
   etkiMetni,
   geriAl,
   geriAlinabilir,
   gunlereGore,
+  haftaBasi,
   islemAciklamasi,
   kazaDuzelt,
   kazaKil,
@@ -221,5 +224,24 @@ describe('kazaDuzelt', () => {
     expect(kazaDuzelt(d, { ...d.kaza.kalan }, SIMDI, 'm')).toBeNull();
     expect(kazaDuzelt(d, { ...d.kaza.kalan, sabah: -1 }, SIMDI, 'm')).toBeNull();
     expect(kazaDuzelt(d, { ...d.kaza.kalan, sabah: 1.5 }, SIMDI, 'm')).toBeNull();
+  });
+});
+
+describe('dönem istatistikleri', () => {
+  it('haftaBasi Pazartesi, ayBasi ayın 1i', () => {
+    expect(haftaBasi(new Date(2026, 9, 8, 15))).toEqual(new Date(2026, 9, 5)); // Perşembe → Pazartesi
+    expect(haftaBasi(new Date(2026, 9, 11, 23))).toEqual(new Date(2026, 9, 5)); // Pazar
+    expect(haftaBasi(new Date(2026, 9, 5, 0, 1))).toEqual(new Date(2026, 9, 5));
+    expect(ayBasi(new Date(2026, 9, 8))).toEqual(new Date(2026, 9, 1));
+  });
+
+  it('donemdeKilinan: geri alınanları ve diğer işlemleri saymaz', () => {
+    let d = kazaKil(durum(), 'sabah', new Date(2026, 9, 4, 10), 'a')!; // geçen hafta
+    d = kazaKil(d, 'ogle', new Date(2026, 9, 6, 10), 'b')!;
+    d = kazaKil(d, 'ikindi', new Date(2026, 9, 7, 10), 'c')!;
+    d = geriAl(d, new Date(2026, 9, 7, 11), 'g')!; // c geri alındı
+    d = vakitCevapla(d, '2026-10-07', 'aksam', 'kilinamadi', new Date(2026, 9, 7, 21), 'k');
+    expect(donemdeKilinan(d.islemler, new Date(2026, 9, 5), new Date(2026, 9, 12))).toBe(1);
+    expect(donemdeKilinan(d.islemler, new Date(2026, 9, 1), new Date(2026, 10, 1))).toBe(2);
   });
 });

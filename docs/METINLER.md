@@ -12,6 +12,7 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | genel.geriAl | Geri al |
 | genel.tamam | Tamam |
 | sekme.bugun | Bugün |
+| sekme.vakitler | Vakitler |
 | sekme.gecmis | Geçmiş |
 | sekme.ayarlar | Ayarlar |
 
@@ -107,6 +108,28 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | gecmis.bos | Henüz bir işlem yok. Kıldığın her kaza burada görünecek. |
 | gecmis.bugun | Bugün |
 | gecmis.dun | Dün |
+| gecmis.buHafta | Bu hafta kılınan |
+| gecmis.buAy | Bu ay kılınan |
+| gecmis.tamamlandi | %{n} tamamlandı |
+
+## Vakitler
+| Anahtar | Metin |
+|---|---|
+| vakitler.baslik | Vakitler |
+| vakitler.imsak | İmsak |
+| vakitler.gunes | Güneş |
+| vakitler.simdi | Şimdi |
+
+## Zikirmatik
+| Anahtar | Metin |
+|---|---|
+| zikir.baslik | Zikirmatik |
+| zikir.dokun | Saymak için dokun |
+| zikir.hedef | Hedef |
+| zikir.serbest | Serbest |
+| zikir.sifirla | Sıfırla |
+| zikir.sifirlaSoru | Sayaç sıfırlansın mı? |
+| zikir.tur | {n}. tur tamamlandı |
 
 ## Bildirimler
 | Anahtar | Metin |

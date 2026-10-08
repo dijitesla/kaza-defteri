@@ -263,3 +263,26 @@ export function gunlereGore(islemler: Islem[]): IslemGunu[] {
   }
   return gruplar;
 }
+
+/** Haftanın başı (Pazartesi 00:00, yerel). */
+export function haftaBasi(d: Date): Date {
+  const b = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  b.setDate(b.getDate() - ((b.getDay() + 6) % 7));
+  return b;
+}
+
+export function ayBasi(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+
+/** [bas, son) aralığında kılınıp geri alınmamış kaza sayısı. */
+export function donemdeKilinan(islemler: Islem[], bas: Date, son: Date): number {
+  const geriAlinanlar = new Set(islemler.filter((i) => i.tur === 'geri_alindi').map((i) => i.geriAlinanId));
+  let n = 0;
+  for (const i of islemler) {
+    if (i.tur !== 'kaza_kilindi' || geriAlinanlar.has(i.id)) continue;
+    const z = Date.parse(i.zaman);
+    if (z >= bas.getTime() && z < son.getTime()) n++;
+  }
+  return n;
+}
