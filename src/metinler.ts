@@ -104,6 +104,8 @@ export const METINLER = {
   "bildirim.dugmeKildim": "Kıldım",
   "bildirim.dugmeKilamadim": "Kılamadım",
   "bildirim.dugmeSonra": "Sonra",
+  "bildirim.kanalGiris": "Vakit girdi uyarısı",
+  "bildirim.kanalSoru": "Kıldın mı? soruları",
   "ayar.baslik": "Ayarlar",
   "ayar.konum": "Konum",
   "ayar.konumDegistir": "Değiştir",

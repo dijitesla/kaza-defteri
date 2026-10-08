@@ -60,7 +60,14 @@
           "isAndroidForegroundServiceEnabled": false
         }
       ],
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./assets/ses/vakit_girdi.wav"
+          ]
+        }
+      ],
       "expo-sharing",
       [
         "react-native-google-mobile-ads",

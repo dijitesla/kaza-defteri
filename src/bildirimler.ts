@@ -7,7 +7,12 @@ import { vakitAraliklari } from './logic/vakitler';
 import { t } from './metinler';
 import type { Ayarlar, GunlukDurum } from './types';
 
-const KANAL = 'vakit';
+// Android'de bildirim sesi kanala bağlıdır ve kanal kurulduktan sonra değiştirilemez;
+// bu yüzden vakit girişi (seslendirmeli) ve "Kıldın mı?" (normal ses) ayrı kanallardadır.
+const KANAL_SORU = 'vakit';
+const KANAL_GIRIS = 'vakit_girdi';
+/** Vakit girişinde çalan seslendirme (app.json > expo-notifications > sounds). */
+const GIRIS_SESI = 'vakit_girdi.wav';
 
 /**
  * Düğmeler: "Kıldım" ve "Kılamadım" uygulamayı açar, cevap açılışta kaydedilir.
@@ -54,9 +59,14 @@ export function bildirimleriHazirla(): Promise<void> {
 /** Android 13+ izin penceresi en az bir kanal varken gösterilir; izin istemeden önce de çağrılır. */
 export async function androidKanali(): Promise<void> {
   if (Platform.OS !== 'android') return;
-  await Notifications.setNotificationChannelAsync(KANAL, {
-    name: t('uygulama.ad'),
+  await Notifications.setNotificationChannelAsync(KANAL_SORU, {
+    name: t('bildirim.kanalSoru'),
     importance: Notifications.AndroidImportance.HIGH,
+  });
+  await Notifications.setNotificationChannelAsync(KANAL_GIRIS, {
+    name: t('bildirim.kanalGiris'),
+    importance: Notifications.AndroidImportance.HIGH,
+    sound: GIRIS_SESI,
   });
 }
 
@@ -105,8 +115,14 @@ export function bildirimleriPlanla(ayarlar: Ayarlar, gunluk: GunlukDurum): Promi
             body: b.govde,
             categoryIdentifier: b.kategori,
             data: { ...b.veri },
+            // iOS'ta ses bildirimle gelir; Android'de kanalın sesi çalar.
+            sound: b.kategori === 'GIRIS' ? GIRIS_SESI : 'default',
           },
-          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: b.zaman, channelId: KANAL },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date: b.zaman,
+            channelId: b.kategori === 'GIRIS' ? KANAL_GIRIS : KANAL_SORU,
+          },
         });
       }
     })

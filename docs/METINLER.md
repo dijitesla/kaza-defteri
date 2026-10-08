@@ -143,6 +143,8 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | bildirim.dugmeKildim | Kıldım |
 | bildirim.dugmeKilamadim | Kılamadım |
 | bildirim.dugmeSonra | Sonra |
+| bildirim.kanalGiris | Vakit girdi uyarısı |
+| bildirim.kanalSoru | Kıldın mı? soruları |
 
 ## Ayarlar
 | Anahtar | Metin |
