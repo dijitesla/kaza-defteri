@@ -5,11 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GeriAlCubugu, useGeriAlCubugu } from '../../bilesenler/GeriAlCubugu';
 import { GokyuzuKarti } from '../../bilesenler/GokyuzuKarti';
 import { GunYayi } from '../../bilesenler/GunYayi';
+import { HadisKarti } from '../../bilesenler/HadisKarti';
 import { Simge } from '../../bilesenler/Simge';
 import { depolama } from '../../depolama';
 import { ayEvresi, gokCismi, gunEvresi } from '../../logic/gokyuzu';
 import type { ZikirDurumu } from '../../logic/zikir';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
+import { saatlikHadis } from '../../logic/hadis';
 import { cevapsizVakitler, yayDurumu, type CevapsizVakit } from '../../logic/gunluk';
 import { toplam } from '../../logic/islemler';
 import { sayiBicimle } from '../../logic/kazaHesap';
@@ -128,6 +130,8 @@ export default function Bugun() {
             </Pressable>
           </View>
 
+          <HadisKarti etiket={t('hadis.saatlik')} hadis={saatlikHadis(simdi)} />
+
           <Pressable
             onPress={() => router.push('/zikirmatik')}
             accessibilityRole="button"
@@ -144,6 +148,21 @@ export default function Bugun() {
               {zikir ? zikir.sayi : 0}
               {zikir?.hedef ? <Text style={stil.zikirHedef}> / {zikir.hedef}</Text> : null}
             </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => router.push('/kible')}
+            accessibilityRole="button"
+            style={({ pressed }) => [stil.kible, pressed && { opacity: 0.85 }]}
+          >
+            <View style={stil.kibleSimge}>
+              <Simge ad="pusula" renk={renk.gece} boyut={24} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={stil.kibleBaslik}>{t('kible.baslik')}</Text>
+              <Text style={stil.kibleAlt}>{t('kible.kartAlt')}</Text>
+            </View>
+            <Simge ad="ok" renk={renk.ikincilMetin} boyut={20} />
           </Pressable>
         </ScrollView>
         {cubuk ? (
@@ -237,5 +256,24 @@ const stil = StyleSheet.create({
   zikirAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: '#C9CFE0' },
   zikirSayi: { fontSize: 26, lineHeight: 32, color: renk.kart },
   zikirHedef: { fontFamily: yaziTipi.normal, fontSize: 14, color: '#C9CFE0' },
+  kible: {
+    backgroundColor: renk.kart,
+    borderRadius: olcu.kartYaricap,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  kibleSimge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(212,168,83,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  kibleBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece },
+  kibleAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
   cubukKap: { position: 'absolute', left: olcu.ekranBosluk, right: olcu.ekranBosluk, bottom: 12 },
 });

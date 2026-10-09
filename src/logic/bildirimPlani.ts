@@ -2,6 +2,7 @@
 import { t, VAKIT_ADLARI } from '../metinler';
 import type { Ayarlar, GunlukDurum, Vakit } from '../types';
 import { VAKITLER } from '../types';
+import { vakitHadisi } from './hadis';
 import { gunEkle, gunOglesi, kucukHarf, saatMetni } from './tarih';
 import type { VakitAraligi } from './vakitler';
 
@@ -60,6 +61,13 @@ export function soruZamani(
   return z.getTime() < cikis ? z : oncesi();
 }
 
+/** Vakit girdi bildirimi: vakit bilgisi, altında o vaktin hadisi (Vakitler ekranındakiyle aynı). */
+function girisGovdesi(ust: string, vakit: Vakit, giris: Date): string {
+  if (!Number.isFinite(giris.getTime())) return ust;
+  const h = vakitHadisi(vakit, giris);
+  return `${ust}\n\n${h.metin} (${h.kaynak})`;
+}
+
 interface PlanGirdisi {
   ayarlar: Pick<Ayarlar, 'konum' | 'bildirim'>;
   gunluk: GunlukDurum;
@@ -88,7 +96,7 @@ export function bildirimPlani(g: PlanGirdisi): PlanliBildirim[] {
           zaman: aralik.giris,
           kategori: 'GIRIS',
           baslik: t('bildirim.girisBaslik', { Vakit }),
-          govde: t('bildirim.girisGovde', { Konum: konum.ad, vakit: kucukHarf(Vakit), saat: saatMetni(aralik.giris) }),
+          govde: girisGovdesi(t('bildirim.girisGovde', { Konum: konum.ad, vakit: kucukHarf(Vakit), saat: saatMetni(aralik.giris) }), vakit, aralik.giris),
           veri: { gun, vakit, tur: 'giris' },
         });
       }

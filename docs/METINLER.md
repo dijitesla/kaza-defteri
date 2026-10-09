@@ -131,6 +131,42 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | zikir.sifirlaSoru | Sayaç sıfırlansın mı? |
 | zikir.tur | {n}. tur tamamlandı |
 
+## Hadis
+| Anahtar | Metin |
+|---|---|
+| hadis.saatlik | Bu saatin hadisi |
+| hadis.vakit | {Vakit} vaktinin hadisi |
+| hadis.devami | Devamını oku |
+| hadis.kisalt | Kısalt |
+| hadis.kaynakNotu | Hadis metinleri: Sahîh-i Buhârî Türkçe çevirisi, hadith-api (açık kaynak). |
+
+## Kıble
+| Anahtar | Metin |
+|---|---|
+| kible.baslik | Kıble |
+| kible.kartAlt | Pusula ile kıble yönünü bul |
+| kible.aci | Kıble, kuzeyden saat yönünde {aci}° |
+| kible.yonelt | Telefonu yere paralel tut, Kâbe simgesi tepeye gelene kadar dön. |
+| kible.dogru | Kıble yönündesin |
+| kible.pusulaYok | Pusula bilgisi alınamadı. Kıbleyi açıya göre bulabilirsin. |
+| kible.izinGerek | Pusula için konum izni gerekiyor. Konumun bu telefondan çıkmaz. |
+| kible.izinVer | İzin ver |
+| kible.kalibre | Pusula yanlış gösteriyorsa telefonu havada 8 çizerek birkaç kez çevir. Mıknatıs ve metal eşyalardan uzak dur. |
+
+## Seri ve rozetler
+| Anahtar | Metin |
+|---|---|
+| rozet.seri | Vakit serisi |
+| rozet.seriGun | {n} gün |
+| rozet.seriAlt | Beş vaktin hepsini kıldığın art arda günler |
+| rozet.enUzun | En uzun: {n} gün |
+| rozet.baslik | Rozetler |
+| rozet.kazanilan | {n} / {toplam} rozet |
+| rozet.ilkKaza | İlk kaza |
+| rozet.kazaSayisi | {n} kaza |
+| rozet.seriRozet | {n} gün seri |
+| rozet.borcBitti | Borç bitti |
+
 ## Bildirimler
 | Anahtar | Metin |
 |---|---|

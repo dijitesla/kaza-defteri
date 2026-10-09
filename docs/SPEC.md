@@ -209,3 +209,12 @@ Ekran düzeni için `docs/tasarim.html` dosyasına bak.
 - **Zikirmatik:** Bugün'de kart, dokununca tam ekran sayaç. Hedef 33 / 99 / serbest; hedefe ulaşınca tur tamamlanır, sayı sıfırdan başlar. Her dokunuşta hafif, tur sonunda başarı titreşimi. Telefonda saklanır (`kd:zikir`), yedeğe dahil değildir.
 - **Geçmiş:** ilerleme halkası (kılınan / başlangıç borcu), bu hafta (Pazartesiden) ve bu ay kılınan kaza sayısı, işlem türüne göre simge ve renk.
 - **Vakit girişi sesi:** "Vakit girdi" bildiriminde `assets/ses/vakit_girdi.wav` çalar (kullanıcının verdiği seslendirme; speechma.com "Brian Turkish" sesiyle üretildi, 1,5 sn'ye kırpıldı ve seviyesi dengelendi). Beş vakitte aynı ses. "Kıldın mı?" soruları normal bildirim sesiyle gelir. Android'de iki ayrı kanal: `vakit_girdi` ("Vakit girdi uyarısı", özel ses) ve `vakit` ("Kıldın mı? soruları"). Kullanıcı kanalların sesini sistem ayarlarından kapatabilir; telefon sessizdeyken ses çalmaz. "Vakit girdi bildirimi" kapalıysa ses de çalmaz.
+
+## 12. Sürüm 1.2 eklemeleri
+- **Hadisler** (`src/data/hadisler.ts`, `src/logic/hadis.ts`): Sahîh-i Buhârî'nin Türkçe çevirisinden 41 namaz hadisi; kaynak fawazahmed0/hadith-api (Unlicense). Metinler olduğu gibi alınır, yalnızca editör notları çıkarılır; her hadisin kaynağı gösterilir.
+  - Ana ekran: saat başı sıradaki hadis (liste bitmeden tekrar etmez).
+  - Vakitler ekranı: içinde bulunulan vaktin hadisi; yalnızca vakit girince değişir (güneş doğduktan öğleye kadar sabahınki sürer).
+  - Vakit girdi bildirimi: aynı vakit hadisi, bildirimin gövdesinde. Ayrı hadis bildirimi yoktur.
+  - **Yayından önce:** Türkçe çevirinin telif durumu netleştirilmeli (Diyanet'ten izin ya da izinli kaynakla değiştirme).
+- **Kıble** (`src/logic/kible.ts`, `src/app/kible.tsx`): kayıtlı konumdan Kâbe'ye büyük daire açısı. Pusula `expo-location` yön bilgisiyle (yalnızca ekran açıkken); konum izni yoksa izin istenir, pusula yoksa açı yazıyla gösterilir.
+- **Seri ve rozetler** (`src/logic/rozetler.ts`): seri, beş vaktin hepsinin "kılındı" olduğu art arda günlerdir (bugün henüz tamamlanmadıysa seri bozulmaz). Rozetler saklanmaz, veriden hesaplanır: ilk kaza; 10, 50, 100, 500, 1000, 5000 kaza (net kılınan); 3, 7, 30, 40 gün en uzun seri; borç bitti.

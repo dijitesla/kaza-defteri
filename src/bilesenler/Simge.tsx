@@ -10,7 +10,10 @@ export type SimgeAdi =
   | 'kalem'
   | 'yenile'
   | 'geri'
-  | 'tespih';
+  | 'tespih'
+  | 'pusula'
+  | 'alev'
+  | 'ok';
 
 // 24 × 24 birimlik, çizgi tarzı simgeler.
 const CIZIMLER: Record<SimgeAdi, (r: string) => React.ReactNode> = {
@@ -90,6 +93,24 @@ const CIZIMLER: Record<SimgeAdi, (r: string) => React.ReactNode> = {
       <Circle cx={16} cy={15} r={2} stroke={r} strokeWidth={1.8} fill="none" />
       <Path d="M12 17v4.5" stroke={r} strokeWidth={1.8} strokeLinecap="round" />
     </>
+  ),
+  pusula: (r) => (
+    <>
+      <Circle cx={12} cy={12} r={8.5} stroke={r} strokeWidth={2} fill="none" />
+      <Path d="M14.8 9.2l-1.6 4-4 1.6 1.6-4 4-1.6Z" stroke={r} strokeWidth={1.8} strokeLinejoin="round" fill="none" />
+    </>
+  ),
+  alev: (r) => (
+    <Path
+      d="M12 21c-3.6 0-6-2.4-6-5.6 0-3.4 2.6-5 3.4-8.4 2.2 1.4 2.6 3.4 2.4 5 1-.6 1.8-1.8 2-3.2 1.8 1.6 2.2 3.6 2.2 5.6 0 3.6-2.4 6.6-4 6.6Z"
+      stroke={r}
+      strokeWidth={2}
+      strokeLinejoin="round"
+      fill="none"
+    />
+  ),
+  ok: (r) => (
+    <Path d="M9 5.5l6.5 6.5L9 18.5" stroke={r} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
   ),
 };
 

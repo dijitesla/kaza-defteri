@@ -3,6 +3,7 @@ import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
+import { RozetIzgarasi, SeriKarti } from '../../bilesenler/Rozetler';
 import { Simge, type SimgeAdi } from '../../bilesenler/Simge';
 import {
   ayBasi,
@@ -15,6 +16,7 @@ import {
   ozet,
 } from '../../logic/islemler';
 import { sayiBicimle } from '../../logic/kazaHesap';
+import { enUzunSeri, rozetler, vakitSerisi } from '../../logic/rozetler';
 import { gunAnahtari, gunAyMetni, gunEkle, saatMetni } from '../../logic/tarih';
 import { t } from '../../metinler';
 import { buyukSayi, olcu, renk, yaziTipi } from '../../tema';
@@ -48,6 +50,10 @@ export default function Gecmis() {
   const buHafta = donemdeKilinan(islemler, haftaBasi(simdi), yarin);
   const buAy = donemdeKilinan(islemler, ayBasi(simdi), yarin);
 
+  const seri = vakitSerisi(veri.gunluk, bugun);
+  const enUzun = useMemo(() => enUzunSeri(veri.gunluk), [veri.gunluk]);
+  const rozetListesi = useMemo(() => rozetler(veri.kaza, veri.gunluk), [veri.kaza, veri.gunluk]);
+
   const bolumler = useMemo(
     () => gunlereGore(islemler).map((g) => ({ gun: g.gun, data: g.islemler })),
     [islemler],
@@ -79,6 +85,9 @@ export default function Gecmis() {
               <Donem etiket={t('gecmis.buHafta')} sayi={buHafta} />
               <Donem etiket={t('gecmis.buAy')} sayi={buAy} />
             </View>
+
+            <SeriKarti seri={seri} enUzun={enUzun} />
+            <RozetIzgarasi liste={rozetListesi} />
 
             {islemler.length === 0 ? <Text style={stil.bos}>{t('gecmis.bos')}</Text> : null}
           </View>

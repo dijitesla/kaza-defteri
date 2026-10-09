@@ -212,6 +212,7 @@ export default function AyarlarEkrani() {
         <Text style={stil.metin}>{t('hakkinda.metin')}</Text>
         <Text style={stil.metin}>{t('hakkinda.vakit')}</Text>
         <Text style={stil.metin}>{t('hakkinda.gizlilik')}</Text>
+        <Text style={stil.metin}>{t('hadis.kaynakNotu')}</Text>
         <Text style={stil.not}>{t('hakkinda.surum', { surum: Constants.expoConfig?.version ?? '' })}</Text>
       </Bolum>
     </Ekran>

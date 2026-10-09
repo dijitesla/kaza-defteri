@@ -1,3 +1,4 @@
+import { vakitHadisi } from '../hadis';
 import { varsayilanAyarlar } from '../depolama';
 import { bildirimCevabi, bildirimPlani, bildirimVerisiOku, PLAN_GUN_SAYISI, soruZamani } from '../bildirimPlani';
 import { gunOglesi, saatMetni } from '../tarih';
@@ -81,8 +82,10 @@ describe('bildirimPlani', () => {
     expect(giris).toMatchObject({
       kategori: 'GIRIS',
       baslik: 'İkindi vakti girdi',
-      govde: 'Ankara için ikindi vakti 16:00.',
     });
+    // Altında, Vakitler ekranındakiyle aynı vakit hadisi.
+    const h = vakitHadisi('ikindi', giris.zaman);
+    expect(giris.govde).toBe(`Ankara için ikindi vakti 16:00.\n\n${h.metin} (${h.kaynak})`);
     const soru = p.find((b) => b.id === '2026-10-06_ikindi_soru')!;
     expect(soru).toMatchObject({
       kategori: 'SORU',

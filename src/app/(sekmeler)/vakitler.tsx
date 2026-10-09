@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GokyuzuKarti } from '../../bilesenler/GokyuzuKarti';
+import { HadisKarti } from '../../bilesenler/HadisKarti';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
+import { simdikiVakit, vakitHadisi } from '../../logic/hadis';
 import { gunAnahtari, gunEkle, saatMetni, uzunTarihMetni } from '../../logic/tarih';
 import { gununVakitleri } from '../../logic/vakitler';
 import { t, VAKIT_ADLARI } from '../../metinler';
@@ -20,6 +22,14 @@ export default function Vakitler() {
     () => gununVakitleri(konum, gunEkle(bugun, 1), dakikaDuzeltme),
     [konum, bugun, dakikaDuzeltme],
   );
+
+  const dun = useMemo(
+    () => gununVakitleri(konum, gunEkle(bugun, -1), dakikaDuzeltme),
+    [konum, bugun, dakikaDuzeltme],
+  );
+  // Hadis yalnızca vakit değişince yenilenir (bildirimdeki hadisle aynı).
+  const vakitSimdi = simdikiVakit(simdi, v, dun);
+  const hadis = vakitHadisi(vakitSimdi.vakit, vakitSimdi.giris);
 
   const satirlar = [
     { ad: t('vakitler.imsak'), zaman: v.imsak },
@@ -70,6 +80,8 @@ export default function Vakitler() {
             );
           })}
         </View>
+
+        <HadisKarti etiket={t('hadis.vakit', { Vakit: VAKIT_ADLARI[vakitSimdi.vakit] })} hadis={hadis} />
       </ScrollView>
       <ReklamBandi />
     </SafeAreaView>
