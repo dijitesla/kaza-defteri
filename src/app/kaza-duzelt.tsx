@@ -67,7 +67,7 @@ const stil = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  ad: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  ad: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   giris: {
     minWidth: 110,
     minHeight: olcu.dokunmaMin,

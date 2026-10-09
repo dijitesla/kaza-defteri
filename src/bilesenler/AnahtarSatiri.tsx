@@ -25,8 +25,8 @@ export function AnahtarSatiri({ baslik, alt, deger, onChange }: Props) {
       <Switch
         value={deger}
         onValueChange={onChange}
-        trackColor={{ true: renk.onay, false: '#C9CED8' }}
-        thumbColor={renk.kart}
+        trackColor={{ true: renk.onay, false: renk.pasifCizgi }}
+        thumbColor={renk.beyaz}
         accessibilityElementsHidden
         importantForAccessibility="no"
       />
@@ -46,6 +46,6 @@ const stil = StyleSheet.create({
     gap: 12,
   },
   metinler: { flex: 1 },
-  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   alt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin, marginTop: 2 },
 });

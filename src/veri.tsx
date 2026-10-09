@@ -5,7 +5,7 @@ import { bildirimleriPlanla } from './bildirimler';
 import { depolama } from './depolama';
 import { bildirimCevabi } from './logic/bildirimPlani';
 import type { HesapGirdisi } from './logic/kazaHesap';
-import { ozelHalGunu } from './logic/gunluk';
+import { cevabiKaldir, ozelHalGunu } from './logic/gunluk';
 import * as islem from './logic/islemler';
 import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, Vakit } from './types';
 
@@ -24,6 +24,8 @@ interface VeriIslemleri {
   kazaKil: (vakit: KazaVakit) => string | null;
   /** Günün vaktine cevap. "Kılamadım" ise oluşan işlemin kimliğini döner. */
   vakitCevapla: (gun: string, vakit: Vakit, cevap: 'kilindi' | 'kilinamadi' | 'muaf') => string | null;
+  /** "Kıldım" işaretini kaldırır (borcu değiştirmez). */
+  cevapKaldir: (gun: string, vakit: Vakit) => void;
   /** Günü özel hal günü olarak işaretler ya da işareti kaldırır (borcu değiştirmez). */
   ozelHal: (gun: string, acik: boolean) => void;
   /** Bir gün kaza orucu tutuldu. İşlem kimliğini döner; kalan 0 ise null. */
@@ -167,6 +169,14 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     [uygula],
   );
 
+  const cevapKaldir = useCallback(
+    (gun: string, vakit: Vakit) => {
+      const gunluk = cevabiKaldir(son.current!.gunluk, gun, vakit);
+      if (gunluk !== son.current!.gunluk) uygula({ ...son.current!, gunluk });
+    },
+    [uygula],
+  );
+
   const orucTut = useCallback(() => {
     const id = yeniId();
     const yeni = islem.orucTut(son.current!, new Date(), id);
@@ -247,6 +257,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
             kazaKil,
             vakitCevapla,
             ozelHal,
+            cevapKaldir,
             orucTut,
             orucDuzelt,
             geriAl,
@@ -264,6 +275,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
       kazaKil,
       vakitCevapla,
       ozelHal,
+      cevapKaldir,
       orucTut,
       orucDuzelt,
       geriAl,

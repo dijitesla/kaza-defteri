@@ -224,3 +224,14 @@ Ekran düzeni için `docs/tasarim.html` dosyasına bak.
 - **Kaza orucu** (`KazaDurumu.oruc`, `src/app/kaza-orucu.tsx`): borcu kullanıcı girer, uygulama hesaplamaz. "Bir gün tuttum" (`oruc_tutuldu`, kalan −1) ve "Borcu düzelt" (`oruc_duzeltme`, kalan ve başlangıç borcu aynı miktarda değişir, tutulan korunur). İkisi de kayıt defterine yazılır ve geri alınabilir (`Islem.oruc`, `Islem.orucIlk`). Namaz kazası rozetlerine ve sayaçlarına karışmaz.
 - **Takvim** (`src/logic/takvim.ts`): Geçmiş ekranında ay takvimi; gün rengi: beş vakit kılındı (yeşil), eksik (sarı), en az biri kılınamadı (kırmızı), özel hal (mor).
 - **Özel hal** (`VakitDurumu 'muaf'`): yalnızca kurulumda "Özel günleri düş" açık olan kullanıcılara görünür. Bugün ekranında "Özel hal günüm" anahtarı günün cevaplanmamış vakitlerini muaf yapar (kapatınca geri alır); cevapsız bandında "Özel hal" düğmesi tek vakti muaf yapar. Muaf vakit borca eklenmez, "Kıldın mı?" sorusu gelmez, cevapsız sayılmaz; seriyi bozmaz ama seriye de sayılmaz. Borcu değiştirmediği için kayıt defterine yazılmaz.
+
+## 14. Sürüm 1.4: görünüm ve küçük özellikler
+- **İkon ve açılış ekranı:** lacivert zemin üstünde altın hilal, yıldız ve açık defter (`scripts/ikon-uret.mjs` SVG'den PNG üretir).
+- **Karanlık tema** (`src/tema.ts`): açık ve koyu palet aynı anahtarlara sahip; uygulama açılırken telefonun temasına göre seçilir (değişiklik bir sonraki açılışta uygulanır). Sabit renk yerine palet anahtarları kullanılır; altın düğme üstündeki metin iki temada da koyudur (`altinUstu`).
+- **Geometrik desen** (`DesenZemin`): sekme ekranlarında ve `Ekran` bileşeninde çok silik sekiz köşeli yıldız deseni.
+- **Cami silueti** (`CamiSilueti`): gökyüzü kartının altında; renkleri günün evresine göre değişir. Cuma kartında da kullanılır.
+- **Bugünün namazları** (`NamazlarKarti`): girmiş vakte dokununca "Kıldım", kılınmış vakte dokununca işaret kalkar (`cevabiKaldir`; borcu değiştirmez). "Kılınamadı" buradan değişmez, kayıt defterinden geri alınır. Beşi de kılınınca kısa kutlama animasyonu. "Kıldım"dan sonra 8 sn "Tesbihat yap" kısayolu.
+- **Tesbihat** (zikirmatik, `tesbihatArttir`): 33 Sübhanallah, 33 Elhamdülillah, 33 Allahu Ekber; her adım sonunda titreşim. Saklanmaz.
+- **Haftalık grafik** (`haftalikOzet`): Geçmiş'te son 4 hafta, kılınan kaza ve "kıldım" işaretlenen vakit.
+- **Cuma kartı:** cuma günleri ana ekranda, öğle vaktiyle.
+- **Esmaü'l-Hüsna:** lisansı belli güvenilir bir açık kaynak bulunamadığı için eklenmedi; kaynak gelince yapılacak.

@@ -8,11 +8,11 @@ import type { GunlukDurum } from '../types';
 import { Simge } from './Simge';
 
 const RENKLER: Record<GunRengi, { zemin: string; metin: string }> = {
-  tam: { zemin: renk.onay, metin: renk.kart },
-  kismi: { zemin: '#F3E3B5', metin: '#6E4A12' },
-  kilinamadi: { zemin: '#F6D9D1', metin: renk.kilinamadi },
-  muaf: { zemin: '#E9E1F3', metin: '#6E4FA0' },
-  bos: { zemin: 'transparent', metin: renk.gece },
+  tam: { zemin: renk.onay, metin: renk.beyaz },
+  kismi: { zemin: renk.kismiZemin, metin: renk.uyariMetin },
+  kilinamadi: { zemin: renk.kilinamadiZemin, metin: renk.kilinamadi },
+  muaf: { zemin: renk.muafZemin, metin: renk.muaf },
+  bos: { zemin: 'transparent', metin: renk.metin },
 };
 
 const ACIKLAMA: { renk: GunRengi; anahtar: 'takvim.tam' | 'takvim.kismi' | 'takvim.kilinamadi' | 'takvim.muaf' }[] = [
@@ -45,7 +45,7 @@ export function TakvimKarti({ gunluk, bugun, ozelHal }: { gunluk: GunlukDurum; b
             style={stil.ok}
           >
             <View style={{ transform: [{ rotate: '180deg' }] }}>
-              <Simge ad="ok" renk={renk.gece} boyut={18} />
+              <Simge ad="ok" renk={renk.metin} boyut={18} />
             </View>
           </Pressable>
           <Pressable
@@ -57,7 +57,7 @@ export function TakvimKarti({ gunluk, bugun, ozelHal }: { gunluk: GunlukDurum; b
             hitSlop={8}
             style={[stil.ok, buAy && { opacity: 0.3 }]}
           >
-            <Simge ad="ok" renk={renk.gece} boyut={18} />
+            <Simge ad="ok" renk={renk.metin} boyut={18} />
           </Pressable>
         </View>
       </View>
@@ -108,7 +108,7 @@ export function TakvimKarti({ gunluk, bugun, ozelHal }: { gunluk: GunlukDurum; b
 const stil = StyleSheet.create({
   kart: { backgroundColor: renk.kart, borderRadius: olcu.kartYaricap, padding: 14, gap: 6 },
   ust: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
-  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   oklar: { flexDirection: 'row', gap: 6 },
   ok: { width: 34, height: 34, borderRadius: 17, backgroundColor: renk.zemin, alignItems: 'center', justifyContent: 'center' },
   hafta: { flexDirection: 'row' },

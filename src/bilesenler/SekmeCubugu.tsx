@@ -103,5 +103,5 @@ const stil = StyleSheet.create({
     height: 44,
   },
   etiketKap: { overflow: 'hidden' },
-  etiket: { fontFamily: yaziTipi.kalin, fontSize: 13, color: renk.kart },
+  etiket: { fontFamily: yaziTipi.kalin, fontSize: 13, color: renk.beyaz },
 });

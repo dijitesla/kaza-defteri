@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.dijitesla.kazadefteri",
@@ -43,9 +43,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#EEF1F4",
+          "backgroundColor": "#1C2541",
           "image": "./assets/splash-icon.png",
-          "imageWidth": 200
+          "imageWidth": 220
         }
       ],
       [

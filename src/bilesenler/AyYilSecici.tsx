@@ -105,12 +105,12 @@ export function AyYilSecici({ etiket, deger, onChange }: Props) {
 const stil = StyleSheet.create({
   perde: {
     flex: 1,
-    backgroundColor: 'rgba(28,37,65,0.45)',
+    backgroundColor: renk.perde,
     justifyContent: 'center',
     padding: olcu.ekranBosluk,
   },
   pencere: { backgroundColor: renk.kart, borderRadius: olcu.kartYaricap + 2, padding: 16, gap: 12 },
-  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   govde: { flexDirection: 'row', gap: 10, height: 300 },
   yillar: { width: 84, flexGrow: 0 },
   yil: {
@@ -129,7 +129,7 @@ const stil = StyleSheet.create({
     justifyContent: 'center',
   },
   secili: { backgroundColor: renk.gece },
-  metin: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.gece },
-  seciliMetin: { fontFamily: yaziTipi.kalin, color: renk.kart },
+  metin: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.metin },
+  seciliMetin: { fontFamily: yaziTipi.kalin, color: renk.beyaz },
   dugmeler: { flexDirection: 'row', gap: 10 },
 });

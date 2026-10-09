@@ -1,12 +1,15 @@
 import { router, useFocusEffect } from 'expo-router';
+import { DesenZemin } from '../../bilesenler/DesenZemin';
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnahtarSatiri } from '../../bilesenler/AnahtarSatiri';
 import { GeriAlCubugu, useGeriAlCubugu } from '../../bilesenler/GeriAlCubugu';
+import { CumaKarti } from '../../bilesenler/CumaKarti';
 import { GokyuzuKarti } from '../../bilesenler/GokyuzuKarti';
 import { GunYayi } from '../../bilesenler/GunYayi';
 import { HadisKarti } from '../../bilesenler/HadisKarti';
+import { NamazlarKarti } from '../../bilesenler/NamazlarKarti';
 import { Simge } from '../../bilesenler/Simge';
 import { depolama } from '../../depolama';
 import { ayEvresi, gokCismi, gunEvresi } from '../../logic/gokyuzu';
@@ -33,7 +36,7 @@ function cevapsizMetni(c: CevapsizVakit, bugun: string): string {
 }
 
 export default function Bugun() {
-  const { veri, vakitCevapla, geriAl, ozelHal } = useVeri();
+  const { veri, vakitCevapla, geriAl, ozelHal, cevapKaldir } = useVeri();
   const simdi = useSimdi();
   const { cubuk, goster, kapat } = useGeriAlCubugu();
   const { konum, dakikaDuzeltme, kurulumZamani } = veri.ayarlar;
@@ -72,6 +75,7 @@ export default function Bugun() {
   const siradaki = siradakiVakit(konum, bugun, simdi, dakikaDuzeltme);
   const bugunAraliklar = araliklar(bugun);
   const yay = VAKITLER.map((v) => ({
+    vakit: v,
     ad: VAKIT_ADLARI[v],
     saat: saatMetni(girisZamani(vakitler, v)),
     durum: yayDurumu(veri.gunluk, bugun, v, bugunAraliklar[v], simdi, siradaki.gun === bugun && siradaki.vakit === v),
@@ -102,6 +106,7 @@ export default function Bugun() {
 
   return (
     <SafeAreaView style={stil.kap} edges={['top', 'left', 'right']}>
+      <DesenZemin />
       <View style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={stil.icerik}>
           <View>
@@ -113,7 +118,15 @@ export default function Bugun() {
 
           <GokyuzuKarti bugun={vakitler} yarin={yarinVakitleri} />
 
+          {simdi.getDay() === 5 ? <CumaKarti ogle={vakitler.ogle} simdi={simdi} /> : null}
+
         <GunYayi vakitler={yay} cisim={cisim} ayEvre={ayEvresi(simdi)} gece={gunEvresi(simdi, vakitler) === 'gece'} />
+
+          <NamazlarKarti
+            satirlar={yay}
+            onKildim={(v) => vakitCevapla(bugun, v, 'kilindi')}
+            onKaldir={(v) => cevapKaldir(bugun, v)}
+          />
 
           {ilkCevapsiz ? (
             <View style={stil.bant}>
@@ -212,7 +225,7 @@ export default function Bugun() {
             style={({ pressed }) => [stil.kible, pressed && { opacity: 0.85 }]}
           >
             <View style={stil.kibleSimge}>
-              <Simge ad="pusula" renk={renk.gece} boyut={24} />
+              <Simge ad="pusula" renk={renk.metin} boyut={24} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={stil.kibleBaslik}>{t('kible.baslik')}</Text>
@@ -249,7 +262,7 @@ function BantDugmesi(p: { metin: string; birincil?: boolean; onPress: () => void
       accessibilityRole="button"
       style={({ pressed }) => [stil.bantDugme, p.birincil && stil.bantBirincil, pressed && { opacity: 0.8 }]}
     >
-      <Text style={[stil.bantDugmeMetin, p.birincil && { color: renk.kart }]}>{p.metin}</Text>
+      <Text style={[stil.bantDugmeMetin, p.birincil && { color: renk.beyaz }]}>{p.metin}</Text>
     </Pressable>
   );
 }
@@ -258,7 +271,7 @@ const stil = StyleSheet.create({
   kap: { flex: 1, backgroundColor: renk.zemin },
   icerik: { padding: olcu.ekranBosluk, gap: 12, paddingBottom: 90 },
   konum: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.ikincilMetin },
-  tarih: { fontFamily: yaziTipi.baslik, fontSize: 24, color: renk.gece },
+  tarih: { fontFamily: yaziTipi.baslik, fontSize: 24, color: renk.metin },
   bant: { backgroundColor: renk.uyariZemin, borderRadius: olcu.kartYaricap, padding: 12, gap: 10 },
   bantMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.uyariMetin },
   bantDugmeler: { flexDirection: 'row', gap: 8 },
@@ -271,7 +284,7 @@ const stil = StyleSheet.create({
     justifyContent: 'center',
   },
   bantBirincil: { backgroundColor: renk.gece },
-  bantDugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.gece },
+  bantDugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.metin },
   kaza: {
     backgroundColor: renk.kart,
     borderRadius: olcu.kartYaricap,
@@ -286,9 +299,9 @@ const stil = StyleSheet.create({
   hedef: { marginTop: 6, gap: 4 },
   hedefCubuk: { height: 6, borderRadius: 3, backgroundColor: renk.zemin, overflow: 'hidden' },
   hedefDolu: { height: 6, borderRadius: 3, backgroundColor: renk.altin },
-  hedefMetin: { fontFamily: yaziTipi.kalin, fontSize: 12, color: renk.gece },
+  hedefMetin: { fontFamily: yaziTipi.kalin, fontSize: 12, color: renk.metin },
   bitis: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
-  bantMuaf: { fontFamily: yaziTipi.kalin, fontSize: 13, color: '#6E4FA0', textAlign: 'center', textDecorationLine: 'underline' },
+  bantMuaf: { fontFamily: yaziTipi.kalin, fontSize: 13, color: renk.muaf, textAlign: 'center', textDecorationLine: 'underline' },
   oruc: {
     backgroundColor: renk.kart,
     borderRadius: olcu.kartYaricap,
@@ -299,7 +312,7 @@ const stil = StyleSheet.create({
     gap: 12,
   },
   orucSayi: { fontSize: 22, lineHeight: 30 },
-  orucEkle: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece, marginTop: 2 },
+  orucEkle: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin, marginTop: 2 },
   kazaDugme: {
     backgroundColor: renk.altin,
     borderRadius: olcu.dugmeYaricap,
@@ -307,7 +320,7 @@ const stil = StyleSheet.create({
     paddingHorizontal: 18,
     justifyContent: 'center',
   },
-  kazaDugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  kazaDugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.altinUstu },
   zikir: {
     backgroundColor: renk.gece,
     borderRadius: olcu.kartYaricap,
@@ -321,14 +334,14 @@ const stil = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(212,168,83,0.15)',
+    backgroundColor: renk.altinZemin,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  zikirBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.kart },
-  zikirAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: '#C9CFE0' },
-  zikirSayi: { fontSize: 26, lineHeight: 32, color: renk.kart },
-  zikirHedef: { fontFamily: yaziTipi.normal, fontSize: 14, color: '#C9CFE0' },
+  zikirBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.beyaz },
+  zikirAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.koyuUstuSoluk },
+  zikirSayi: { fontSize: 26, lineHeight: 32, color: renk.beyaz },
+  zikirHedef: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.koyuUstuSoluk },
   kible: {
     backgroundColor: renk.kart,
     borderRadius: olcu.kartYaricap,
@@ -342,11 +355,11 @@ const stil = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(212,168,83,0.18)',
+    backgroundColor: renk.altinZemin,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  kibleBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece },
+  kibleBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.metin },
   kibleAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
   cubukKap: { position: 'absolute', left: olcu.ekranBosluk, right: olcu.ekranBosluk, bottom: 12 },
 });

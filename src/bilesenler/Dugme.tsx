@@ -25,9 +25,9 @@ export function Dugme({ metin, onPress, pasif, yukleniyor, tur = 'birincil' }: P
       ]}
     >
       {yukleniyor ? (
-        <ActivityIndicator color={renk.gece} />
+        <ActivityIndicator color={tur === 'birincil' ? renk.altinUstu : renk.metin} />
       ) : (
-        <Text style={[stil.metin, tur === 'metin' && stil.metinTuru]}>{metin}</Text>
+        <Text style={[stil.metin, tur === 'birincil' && { color: renk.altinUstu }, tur === 'metin' && stil.metinTuru]}>{metin}</Text>
       )}
     </Pressable>
   );
@@ -45,6 +45,6 @@ const stil = StyleSheet.create({
   birincil: { backgroundColor: renk.altin },
   pasif: { opacity: 0.45 },
   basili: { opacity: 0.8 },
-  metin: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece },
+  metin: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.metin },
   metinTuru: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.ikincilMetin },
 });

@@ -86,6 +86,15 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | bugun.hedefIlerleme | Bugün {n} / {hedef} |
 | bugun.hedefTamam | Bugünkü hedef tamam |
 | bugun.bitisTahmini | Bu hızla {tarih} tamamlanır |
+| namaz.baslik | Bugünün namazları |
+| namaz.ipucu | Kıldığın vakte dokun |
+| namaz.tamam | Bugünkü beş vakit tamam. Allah kabul etsin. |
+| namaz.kildimEtiket | {Vakit}: kıldım olarak işaretle |
+| namaz.kaldirEtiket | {Vakit}: işareti kaldır |
+| namaz.tesbihat | Tesbihat yap |
+| cuma.baslik | Hayırlı cumalar |
+| cuma.vakit | Cuma namazı öğle vaktinde, {saat} |
+| cuma.gecti | Cuma namazı vakti {saat}'te girdi |
 
 ## Kaza kıl
 | Anahtar | Metin |
@@ -118,6 +127,10 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | gecmis.buAy | Bu ay kılınan |
 | gecmis.orucTutuldu | Kaza orucu tutuldu |
 | gecmis.orucDuzeltme | Kaza orucu borcu düzeltildi |
+| gecmis.haftalik | Son 4 hafta |
+| gecmis.haftalikKaza | Kılınan kaza |
+| gecmis.haftalikVakit | Kılınan vakit |
+| gecmis.haftaEtiket | {tarih} haftası |
 | gecmis.tamamlandi | %{n} tamamlandı |
 
 ## Vakitler
@@ -138,6 +151,14 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | zikir.sifirla | Sıfırla |
 | zikir.sifirlaSoru | Sayaç sıfırlansın mı? |
 | zikir.tur | {n}. tur tamamlandı |
+| zikir.modSayac | Sayaç |
+| zikir.modTesbihat | Tesbihat |
+| tesbihat.subhanallah | Sübhanallah |
+| tesbihat.elhamdulillah | Elhamdülillah |
+| tesbihat.allahuEkber | Allahu Ekber |
+| tesbihat.adim | {n} / 3 |
+| tesbihat.bitti | Tesbihat tamamlandı. Allah kabul etsin. |
+| tesbihat.yeniden | Yeniden başla |
 
 ## Kaza orucu
 | Anahtar | Metin |

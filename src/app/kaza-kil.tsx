@@ -114,7 +114,7 @@ const stil = StyleSheet.create({
     borderColor: 'transparent',
   },
   kutuHit: { borderColor: renk.onay },
-  kutuAd: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  kutuAd: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   kutuSayi: { fontSize: 26, lineHeight: 34 },
   kutuAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
   arti: {
@@ -128,9 +128,9 @@ const stil = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  artiMetin: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.kart },
+  artiMetin: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.beyaz },
   altSatir: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
-  toplam: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.gece, flexShrink: 1 },
+  toplam: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.metin, flexShrink: 1 },
   baglanti: { minHeight: olcu.dokunmaMin, justifyContent: 'center' },
   baglantiMetin: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.ikincilMetin, textDecorationLine: 'underline' },
 });

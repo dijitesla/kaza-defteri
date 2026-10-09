@@ -5,7 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { renk, yaziTipi } from '../tema';
+import { koyuTema, renk, yaziTipi } from '../tema';
 import { useBildirimCevaplari } from '../useBildirimCevaplari';
 import { useVeri, VeriSaglayici } from '../veri';
 
@@ -37,13 +37,13 @@ function Gezinme() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style={koyuTema ? "light" : "dark"} />
       <Stack
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: renk.zemin },
           headerStyle: { backgroundColor: renk.zemin },
-          headerTintColor: renk.gece,
+          headerTintColor: renk.metin,
           headerTitleStyle: { fontFamily: yaziTipi.kalin },
           headerShadowVisible: false,
         }}

@@ -7,14 +7,16 @@ import { girisZamani, siradakiBaslik, type GununVakitleri } from '../logic/vakit
 import { VAKIT_ADLARI } from '../metinler';
 import { olcu, renk, yaziTipi } from '../tema';
 import { VAKITLER, type Vakit } from '../types';
+import { CamiSilueti } from './CamiSilueti';
 import { Ay, Gunes } from './GokCismi';
 
-const GOK: Record<GunEvresi, { renkler: string[]; yildiz: number }> = {
-  gece: { renkler: ['#0A1029', '#18224A', '#22305E'], yildiz: 0.9 },
-  safak: { renkler: ['#1C2541', '#56508A', '#E39B7B'], yildiz: 0.35 },
-  gunduz: { renkler: ['#2F6DB5', '#5C9AD6', '#9CCBEF'], yildiz: 0 },
-  ikindi: { renkler: ['#3E6EA8', '#8EA7C4', '#E7C27A'], yildiz: 0 },
-  aksam: { renkler: ['#27295C', '#9A4E6B', '#F09A5B'], yildiz: 0.25 },
+// Gökyüzü renkleri ve siluet renkleri (yakın cami, uzak binalar) günün evresine göre.
+const GOK: Record<GunEvresi, { renkler: string[]; yildiz: number; cami: string; uzak: string }> = {
+  gece: { renkler: ['#0A1029', '#18224A', '#22305E'], yildiz: 0.9, cami: '#070B1C', uzak: '#121A3A' },
+  safak: { renkler: ['#2A2D5C', '#8A6A9E', '#F2A88A'], yildiz: 0.3, cami: '#1E1B3A', uzak: '#4B3F69' },
+  gunduz: { renkler: ['#2F6DB5', '#5C9AD6', '#A8D4F2'], yildiz: 0, cami: '#1C3A66', uzak: '#5B87B8' },
+  ikindi: { renkler: ['#3E6EA8', '#8EA7C4', '#EBC67E'], yildiz: 0, cami: '#2B3654', uzak: '#7D8AA6' },
+  aksam: { renkler: ['#27295C', '#9A4E6B', '#F59A55'], yildiz: 0.25, cami: '#1A1430', uzak: '#5A2F4F' },
 };
 
 // Sabit yıldız konumları (yüzde) ve boyutları.
@@ -64,6 +66,9 @@ export function GokyuzuKarti({ bugun, yarin }: { bugun: GununVakitleri; yarin: G
             ))
           : null}
       </Svg>
+      <View style={stil.siluet} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <CamiSilueti renk={gok.cami} uzakRenk={gok.uzak} />
+      </View>
 
       <View style={stil.icerik}>
         <View style={{ flex: 1 }}>
@@ -95,7 +100,8 @@ const stil = StyleSheet.create({
     backgroundColor: renk.gece,
     minHeight: 150,
   },
-  icerik: { flexDirection: 'row', alignItems: 'center', padding: 18, paddingRight: 8 },
+  icerik: { flexDirection: 'row', alignItems: 'center', padding: 18, paddingRight: 8, paddingBottom: 48 },
+  siluet: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 64 },
   ust: { fontFamily: yaziTipi.normal, fontSize: 13, color: 'rgba(255,255,255,0.85)' },
   sayac: {
     fontFamily: yaziTipi.baslik,

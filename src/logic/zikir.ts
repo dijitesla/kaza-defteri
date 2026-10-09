@@ -39,3 +39,24 @@ export function zikriTamamla(x: unknown): ZikirDurumu {
   const hedef = ZIKIR_HEDEFLERI.includes(v.hedef as ZikirHedefi) ? (v.hedef as ZikirHedefi) : 33;
   return { sayi: tamsayi(v.sayi), tur: tamsayi(v.tur), hedef };
 }
+
+// --- Namaz sonrası tesbihat: 33 Sübhanallah, 33 Elhamdülillah, 33 Allahu Ekber ---
+
+export const TESBIHAT_SAYISI = 33;
+export const TESBIHAT_ADIMLARI = 3;
+
+export interface TesbihatDurumu {
+  adim: number; // 0, 1, 2; 3 = tamamlandı
+  sayi: number; // bu adımdaki sayı
+}
+
+export const bosTesbihat = (): TesbihatDurumu => ({ adim: 0, sayi: 0 });
+
+/** Bir sayım. 33'e ulaşınca sıradaki adıma geçer; üçüncü adım bitince tesbihat tamamlanır. */
+export function tesbihatArttir(d: TesbihatDurumu): { durum: TesbihatDurumu; adimBitti: boolean; bitti: boolean } {
+  if (d.adim >= TESBIHAT_ADIMLARI) return { durum: d, adimBitti: false, bitti: true };
+  const sayi = d.sayi + 1;
+  if (sayi < TESBIHAT_SAYISI) return { durum: { ...d, sayi }, adimBitti: false, bitti: false };
+  const adim = d.adim + 1;
+  return { durum: { adim, sayi: 0 }, adimBitti: true, bitti: adim >= TESBIHAT_ADIMLARI };
+}

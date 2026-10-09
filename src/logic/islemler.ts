@@ -344,3 +344,27 @@ export function donemdeKilinan(islemler: Islem[], bas: Date, son: Date): number 
   }
   return n;
 }
+
+export interface HaftaOzeti {
+  bas: Date; // Pazartesi 00:00
+  kaza: number; // kılınan kaza namazı
+  vakit: number; // "kıldım" işaretlenen günlük vakit
+}
+
+/** Son `haftaSayisi` haftanın (bu hafta dahil) kaza ve vakit sayıları, eskiden yeniye. */
+export function haftalikOzet(islemler: Islem[], gunluk: GunlukDurum, simdi: Date, haftaSayisi = 4): HaftaOzeti[] {
+  const buHafta = haftaBasi(simdi);
+  const sonuc: HaftaOzeti[] = [];
+  for (let i = haftaSayisi - 1; i >= 0; i--) {
+    const bas = new Date(buHafta.getFullYear(), buHafta.getMonth(), buHafta.getDate() - 7 * i);
+    const son = new Date(bas.getFullYear(), bas.getMonth(), bas.getDate() + 7);
+    let vakit = 0;
+    for (let g = 0; g < 7; g++) {
+      const gun = gunAnahtari(new Date(bas.getFullYear(), bas.getMonth(), bas.getDate() + g, 12));
+      const d = gunluk[gun];
+      if (d) vakit += Object.values(d).filter((x) => x === 'kilindi').length;
+    }
+    sonuc.push({ bas, kaza: donemdeKilinan(islemler, bas, son), vakit });
+  }
+  return sonuc;
+}

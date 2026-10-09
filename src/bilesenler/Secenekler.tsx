@@ -54,6 +54,6 @@ const stil = StyleSheet.create({
   cip: { backgroundColor: renk.kart, minHeight: olcu.dokunmaMin },
   secili: { backgroundColor: renk.gece },
   metin: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.ikincilMetin },
-  cipMetin: { color: renk.gece },
-  seciliMetin: { fontFamily: yaziTipi.kalin, color: renk.kart },
+  cipMetin: { color: renk.metin },
+  seciliMetin: { fontFamily: yaziTipi.kalin, color: renk.beyaz },
 });

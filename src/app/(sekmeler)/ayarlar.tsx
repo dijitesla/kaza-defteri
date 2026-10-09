@@ -270,10 +270,10 @@ function Uyari(p: { metin: string; dugme: string; onPress: () => void }) {
 
 const stil = StyleSheet.create({
   bolum: { gap: 8, marginTop: 10 },
-  bolumBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece },
-  etiket: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.gece, marginTop: 4 },
+  bolumBaslik: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.metin },
+  etiket: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.metin, marginTop: 4 },
   not: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin, lineHeight: 18 },
-  metin: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.gece, lineHeight: 20 },
+  metin: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.metin, lineHeight: 20 },
   kart: {
     backgroundColor: renk.kart,
     borderRadius: olcu.kartYaricap,
@@ -284,7 +284,7 @@ const stil = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  kartBaslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  kartBaslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   kartAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin, marginTop: 2, lineHeight: 17 },
   sag: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.ikincilMetin },
   uyari: { backgroundColor: renk.uyariZemin, borderRadius: olcu.kartYaricap, padding: 12, gap: 8 },
@@ -297,5 +297,5 @@ const stil = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: 'center',
   },
-  uyariDugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.kart },
+  uyariDugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.beyaz },
 });

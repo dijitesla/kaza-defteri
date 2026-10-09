@@ -149,7 +149,7 @@ function Gul({ kible, vurgu }: { kible: number; vurgu: string }) {
         );
       })}
       {/* Kuzey ucu */}
-      <Path d={`M${M} ${M - r + 24} l-7 14 h14 Z`} fill="#E0604A" />
+      <Path d={`M${M} ${M - r + 24} l-7 14 h14 Z`} fill={renk.alev} />
       {/* Kıble çizgisi ve Kâbe */}
       <G transform={`rotate(${kible} ${M} ${M})`}>
         <Line x1={M} y1={M} x2={M} y2={M - r + 58} stroke={vurgu} strokeWidth={3} strokeLinecap="round" />
@@ -167,10 +167,10 @@ const stil = StyleSheet.create({
   kap: { flex: 1, backgroundColor: renk.zemin, padding: olcu.ekranBosluk, gap: 20 },
   ust: { alignItems: 'center', gap: 2, marginTop: 8 },
   konum: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.ikincilMetin },
-  aci: { fontFamily: yaziTipi.baslik, fontSize: 20, color: renk.gece, textAlign: 'center' },
+  aci: { fontFamily: yaziTipi.baslik, fontSize: 20, color: renk.metin, textAlign: 'center' },
   pusulaKap: { alignItems: 'center', gap: 6 },
   ok: { marginBottom: -2 },
   alt: { gap: 12, alignItems: 'stretch' },
-  durum: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece, textAlign: 'center', lineHeight: 24 },
+  durum: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.metin, textAlign: 'center', lineHeight: 24 },
   not: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.ikincilMetin, textAlign: 'center', lineHeight: 20 },
 });

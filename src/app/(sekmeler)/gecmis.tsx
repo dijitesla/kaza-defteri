@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
+import { DesenZemin } from '../../bilesenler/DesenZemin';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
+import { HaftalikGrafik } from '../../bilesenler/HaftalikGrafik';
 import { RozetIzgarasi, SeriKarti } from '../../bilesenler/Rozetler';
 import { TakvimKarti } from '../../bilesenler/TakvimKarti';
 import { Simge, type SimgeAdi } from '../../bilesenler/Simge';
@@ -13,6 +15,7 @@ import {
   geriAlinabilir,
   gunlereGore,
   haftaBasi,
+  haftalikOzet,
   islemAciklamasi,
   ozet,
 } from '../../logic/islemler';
@@ -27,13 +30,13 @@ import { useSimdi } from '../../useSimdi';
 import { useVeri } from '../../veri';
 
 const TUR_GORUNUMU: Record<IslemTuru, { simge: SimgeAdi; renk: string; zemin: string }> = {
-  kaza_kilindi: { simge: 'onay', renk: renk.onay, zemin: '#E3F1EA' },
-  kilinamadi: { simge: 'arti', renk: renk.kilinamadi, zemin: '#F6E5E0' },
-  manuel_duzeltme: { simge: 'kalem', renk: '#4B5A9A', zemin: '#E6E9F5' },
-  yeniden_hesap: { simge: 'yenile', renk: '#A57C22', zemin: '#F7EEDA' },
-  geri_alindi: { simge: 'geri', renk: renk.ikincilMetin, zemin: '#ECEEF2' },
-  oruc_tutuldu: { simge: 'onay', renk: '#2C7A8C', zemin: '#E0F0F3' },
-  oruc_duzeltme: { simge: 'kalem', renk: '#2C7A8C', zemin: '#E0F0F3' },
+  kaza_kilindi: { simge: 'onay', renk: renk.onay, zemin: renk.onayZemin },
+  kilinamadi: { simge: 'arti', renk: renk.kilinamadi, zemin: renk.kilinamadiZemin },
+  manuel_duzeltme: { simge: 'kalem', renk: renk.vurguMavi, zemin: renk.vurguMaviZemin },
+  yeniden_hesap: { simge: 'yenile', renk: renk.vurguSari, zemin: renk.vurguSariZemin },
+  geri_alindi: { simge: 'geri', renk: renk.ikincilMetin, zemin: renk.pasifZemin },
+  oruc_tutuldu: { simge: 'onay', renk: renk.oruc, zemin: renk.orucZemin },
+  oruc_duzeltme: { simge: 'kalem', renk: renk.oruc, zemin: renk.orucZemin },
 };
 
 function gunBasligi(gun: string, bugun: string): string {
@@ -57,6 +60,7 @@ export default function Gecmis() {
   const bitis = bitisTarihi(o.kalan, veri.ayarlar.gunlukHedef, simdi);
   const seri = vakitSerisi(veri.gunluk, bugun);
   const enUzun = useMemo(() => enUzunSeri(veri.gunluk), [veri.gunluk]);
+  const haftalar = haftalikOzet(islemler, veri.gunluk, simdi);
   const rozetListesi = useMemo(() => rozetler(veri.kaza, veri.gunluk), [veri.kaza, veri.gunluk]);
 
   const bolumler = useMemo(
@@ -66,6 +70,7 @@ export default function Gecmis() {
 
   return (
     <SafeAreaView style={stil.kap} edges={['top', 'left', 'right']}>
+      <DesenZemin />
       <SectionList
         sections={bolumler}
         keyExtractor={(i) => i.id}
@@ -92,6 +97,7 @@ export default function Gecmis() {
               <Donem etiket={t('gecmis.buAy')} sayi={buAy} />
             </View>
 
+            <HaftalikGrafik haftalar={haftalar} />
             <TakvimKarti gunluk={veri.gunluk} bugun={bugun} ozelHal={veri.ayarlar.ozelGun.acik} />
             <SeriKarti seri={seri} enUzun={enUzun} />
             <RozetIzgarasi liste={rozetListesi} />
@@ -180,7 +186,7 @@ function Satir(p: { islem: Islem; aciklama: string; ilk: boolean; son: boolean; 
           ) : null}
         </View>
       </View>
-      <View style={[stil.etki, azalis && { backgroundColor: '#E3F1EA' }, artis && { backgroundColor: '#F6E5E0' }]}>
+      <View style={[stil.etki, azalis && { backgroundColor: renk.onayZemin }, artis && { backgroundColor: renk.kilinamadiZemin }]}>
         <Text style={[stil.etkiMetin, azalis && { color: renk.onay }, artis && { color: renk.kilinamadi }]}>{etki}</Text>
       </View>
     </View>
@@ -190,7 +196,7 @@ function Satir(p: { islem: Islem; aciklama: string; ilk: boolean; son: boolean; 
 const stil = StyleSheet.create({
   kap: { flex: 1, backgroundColor: renk.zemin },
   icerik: { padding: olcu.ekranBosluk, paddingBottom: 32 },
-  baslik: { fontFamily: yaziTipi.baslik, fontSize: 26, color: renk.gece },
+  baslik: { fontFamily: yaziTipi.baslik, fontSize: 26, color: renk.metin },
   ozet: {
     backgroundColor: renk.gece,
     borderRadius: olcu.kartYaricap + 4,
@@ -199,12 +205,12 @@ const stil = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
   },
-  yuzde: { fontFamily: yaziTipi.baslik, fontSize: 22, color: renk.kart },
+  yuzde: { fontFamily: yaziTipi.baslik, fontSize: 22, color: renk.beyaz },
   ozetSag: { flex: 1, gap: 6 },
   ozetSatir: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  ozetEtiket: { fontFamily: yaziTipi.normal, fontSize: 13, color: '#C9CFE0' },
+  ozetEtiket: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.koyuUstuSoluk },
   bitis: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.altin, marginTop: 2 },
-  ozetSayi: { fontSize: 18, lineHeight: 24, color: renk.kart },
+  ozetSayi: { fontSize: 18, lineHeight: 24, color: renk.beyaz },
   donemler: { flexDirection: 'row', gap: 10 },
   donem: { flex: 1, backgroundColor: renk.kart, borderRadius: olcu.kartYaricap, padding: 14 },
   donemEtiket: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
@@ -224,10 +230,10 @@ const stil = StyleSheet.create({
   ilk: { borderTopLeftRadius: olcu.kartYaricap, borderTopRightRadius: olcu.kartYaricap },
   son: { borderBottomLeftRadius: olcu.kartYaricap, borderBottomRightRadius: olcu.kartYaricap, borderBottomWidth: 0 },
   simge: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  aciklama: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.gece, lineHeight: 20 },
+  aciklama: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.metin, lineHeight: 20 },
   altSatir: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 2 },
   saat: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin, fontVariant: ['tabular-nums'] },
-  geriAl: { fontFamily: yaziTipi.kalin, fontSize: 13, color: renk.gece, textDecorationLine: 'underline' },
-  etki: { minWidth: 40, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10, backgroundColor: '#ECEEF2', alignItems: 'center' },
+  geriAl: { fontFamily: yaziTipi.kalin, fontSize: 13, color: renk.metin, textDecorationLine: 'underline' },
+  etki: { minWidth: 40, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10, backgroundColor: renk.pasifZemin, alignItems: 'center' },
   etkiMetin: { fontFamily: yaziTipi.kalin, fontSize: 13, color: renk.ikincilMetin, fontVariant: ['tabular-nums'] },
 });

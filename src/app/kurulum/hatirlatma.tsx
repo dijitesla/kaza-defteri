@@ -71,6 +71,6 @@ export default function KurulumHatirlatma() {
 }
 
 const stil = StyleSheet.create({
-  etiket: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.gece },
+  etiket: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.metin },
   not: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin, lineHeight: 18 },
 });

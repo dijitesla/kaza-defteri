@@ -7,6 +7,7 @@ import {
   geriAlinabilir,
   gunlereGore,
   haftaBasi,
+  haftalikOzet,
   islemAciklamasi,
   kazaDuzelt,
   kazaKil,
@@ -313,5 +314,26 @@ describe('özel hal cevabı', () => {
     expect(d.gunluk['2026-10-06'].ogle).toBe('muaf');
     expect(d.kaza).toEqual(durum().kaza);
     expect(d.islemler).toEqual([]);
+  });
+});
+
+describe('haftalikOzet', () => {
+  it('son 4 haftayı eskiden yeniye sayar', () => {
+    // SIMDI: 6 Ekim 2026 Salı → bu hafta 5 Ekim Pazartesi
+    const islemler = [
+      { id: 'a', zaman: new Date(2026, 9, 5, 10).toISOString(), tur: 'kaza_kilindi' as const, vakit: 'sabah' as const, degisim: { sabah: -1 } },
+      { id: 'b', zaman: new Date(2026, 9, 6, 10).toISOString(), tur: 'kaza_kilindi' as const, vakit: 'ogle' as const, degisim: { ogle: -1 } },
+      { id: 'c', zaman: new Date(2026, 8, 29, 10).toISOString(), tur: 'kaza_kilindi' as const, vakit: 'ogle' as const, degisim: { ogle: -1 } },
+      { id: 'd', zaman: new Date(2026, 9, 6, 11).toISOString(), tur: 'geri_alindi' as const, degisim: { ogle: 1 }, geriAlinanId: 'b' },
+    ];
+    const gunluk = {
+      '2026-10-05': { sabah: 'kilindi' as const, ogle: 'kilindi' as const, ikindi: 'kilinamadi' as const },
+      '2026-09-14': { sabah: 'kilindi' as const },
+      '2026-09-13': { sabah: 'kilindi' as const }, // 4 haftadan önce
+    };
+    const h = haftalikOzet(islemler, gunluk, SIMDI);
+    expect(h.map((x) => x.bas.getDate())).toEqual([14, 21, 28, 5]);
+    expect(h.map((x) => x.kaza)).toEqual([0, 0, 1, 1]);
+    expect(h.map((x) => x.vakit)).toEqual([1, 0, 0, 2]);
   });
 });

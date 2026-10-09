@@ -1,5 +1,5 @@
 import type { Vakit } from '../../types';
-import { cevapsizVakitler, ozelHalGunu, ozelHalVar, vakitDurumu, yayDurumu } from '../gunluk';
+import { cevabiKaldir, cevapsizVakitler, ozelHalGunu, ozelHalVar, vakitDurumu, yayDurumu } from '../gunluk';
 import { gunOglesi } from '../tarih';
 import type { VakitAraligi } from '../vakitler';
 
@@ -92,5 +92,20 @@ describe('ozelHalGunu', () => {
     const g = ozelHalGunu({}, gun, true);
     const c = cevapsizVakitler(g, gun, new Date(2026, 9, 6, 23), araliklar, null);
     expect(c.filter((x) => x.gun === gun)).toEqual([]);
+  });
+});
+
+describe('cevabiKaldir', () => {
+  const gun = '2026-10-06';
+  it('kıldım işaretini kaldırır', () => {
+    expect(cevabiKaldir({ [gun]: { sabah: 'kilindi', ogle: 'kilindi' } }, gun, 'sabah')[gun]).toEqual({ ogle: 'kilindi' });
+  });
+  it('kılınamadı değişmez (kayıt defterinden geri alınır)', () => {
+    const g = { [gun]: { sabah: 'kilinamadi' as const } };
+    expect(cevabiKaldir(g, gun, 'sabah')).toBe(g);
+  });
+  it('kayıt yoksa aynı nesne', () => {
+    const g = {};
+    expect(cevabiKaldir(g, gun, 'sabah')).toBe(g);
   });
 });

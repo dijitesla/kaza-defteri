@@ -13,7 +13,7 @@ export function HadisKarti({ etiket, hadis, koyu }: { etiket: string; hadis: Had
   // Hadis değişince yeniden kısaltılmış gösterilir.
   useEffect(() => setAcik(false), [hadis]);
   const uzun = hadis.metin.length > UZUN_METIN;
-  const metinRengi = koyu ? renk.kart : renk.gece;
+  const metinRengi = koyu ? renk.beyaz : renk.metin;
 
   return (
     <Pressable
@@ -30,7 +30,7 @@ export function HadisKarti({ etiket, hadis, koyu }: { etiket: string; hadis: Had
         {hadis.metin}
       </Text>
       <View style={stil.alt}>
-        <Text style={[stil.kaynak, koyu && { color: '#C9CFE0' }]}>{hadis.kaynak}</Text>
+        <Text style={[stil.kaynak, koyu && { color: renk.koyuUstuSoluk }]}>{hadis.kaynak}</Text>
         {uzun ? (
           <Text style={[stil.devami, koyu && { color: renk.altin }]}>{acik ? t('hadis.kisalt') : t('hadis.devami')}</Text>
         ) : null}
@@ -55,5 +55,5 @@ const stil = StyleSheet.create({
   metin: { fontFamily: yaziTipi.normal, fontSize: 14, lineHeight: 22 },
   alt: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   kaynak: { fontFamily: yaziTipi.kalin, fontSize: 12, color: renk.ikincilMetin },
-  devami: { fontFamily: yaziTipi.kalin, fontSize: 12, color: renk.gece, textDecorationLine: 'underline' },
+  devami: { fontFamily: yaziTipi.kalin, fontSize: 12, color: renk.metin, textDecorationLine: 'underline' },
 });

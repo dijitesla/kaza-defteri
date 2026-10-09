@@ -1,4 +1,4 @@
-import { bosZikir, zikirArttir, zikirHedefi, zikirSifirla, zikriTamamla } from '../zikir';
+import { bosTesbihat, bosZikir, tesbihatArttir, zikirArttir, zikirHedefi, zikirSifirla, zikriTamamla } from '../zikir';
 
 describe('zikir', () => {
   it('sayar, hedefte tur tamamlar ve sıfırdan başlar', () => {
@@ -27,5 +27,23 @@ describe('zikir', () => {
     expect(zikriTamamla(null)).toEqual(bosZikir());
     expect(zikriTamamla({ sayi: -1, hedef: 7, tur: 'x' })).toEqual(bosZikir());
     expect(zikriTamamla({ sayi: 5, hedef: 99, tur: 1 })).toEqual({ sayi: 5, hedef: 99, tur: 1 });
+  });
+});
+
+describe('tesbihat', () => {
+  it('33 sayımda bir adım ilerler, 99 sayımda biter', () => {
+    let d = bosTesbihat();
+    const olaylar: string[] = [];
+    for (let i = 0; i < 99; i++) {
+      const r = tesbihatArttir(d);
+      d = r.durum;
+      if (r.adimBitti) olaylar.push(`${i + 1}:${r.bitti ? 'bitti' : 'adim'}`);
+    }
+    expect(olaylar).toEqual(['33:adim', '66:adim', '99:bitti']);
+    expect(d).toEqual({ adim: 3, sayi: 0 });
+  });
+  it('bittikten sonra sayım değişmez', () => {
+    const r = tesbihatArttir({ adim: 3, sayi: 0 });
+    expect(r).toEqual({ durum: { adim: 3, sayi: 0 }, adimBitti: false, bitti: true });
   });
 });

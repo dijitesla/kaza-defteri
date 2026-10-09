@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { DesenZemin } from '../../bilesenler/DesenZemin';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GokyuzuKarti } from '../../bilesenler/GokyuzuKarti';
@@ -49,6 +50,7 @@ export default function Vakitler() {
 
   return (
     <SafeAreaView style={stil.kap} edges={['top', 'left', 'right']}>
+      <DesenZemin />
       <ScrollView contentContainerStyle={stil.icerik}>
         <View>
           <Text style={stil.konum}>{konum.ad}</Text>
@@ -73,7 +75,7 @@ export default function Vakitler() {
                     <Text style={stil.cipMetin}>{t('vakitler.simdi')}</Text>
                   </View>
                 ) : null}
-                <Text style={[stil.saat, aktif && stil.aktifMetin, sonraki && { color: renk.gece }]}>
+                <Text style={[stil.saat, aktif && stil.aktifMetin, sonraki && { color: renk.metin }]}>
                   {saatMetni(s.zaman)}
                 </Text>
               </View>
@@ -92,7 +94,7 @@ const stil = StyleSheet.create({
   kap: { flex: 1, backgroundColor: renk.zemin },
   icerik: { padding: olcu.ekranBosluk, gap: 14, paddingBottom: 24 },
   konum: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.ikincilMetin },
-  baslik: { fontFamily: yaziTipi.baslik, fontSize: 26, color: renk.gece },
+  baslik: { fontFamily: yaziTipi.baslik, fontSize: 26, color: renk.metin },
   tarih: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.ikincilMetin },
   liste: { backgroundColor: renk.kart, borderRadius: olcu.kartYaricap + 2, padding: 6 },
   satir: {
@@ -106,11 +108,11 @@ const stil = StyleSheet.create({
     borderRadius: olcu.kartYaricap,
   },
   aktif: { backgroundColor: renk.gece, borderBottomColor: 'transparent' },
-  isaret: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#D3D8E1' },
+  isaret: { width: 8, height: 8, borderRadius: 4, backgroundColor: renk.pasifCizgi },
   isaretSonraki: { backgroundColor: renk.kart, borderWidth: 2, borderColor: renk.altin, width: 10, height: 10, borderRadius: 5 },
-  ad: { flex: 1, fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece },
+  ad: { flex: 1, fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.metin },
   saat: { fontFamily: yaziTipi.baslik, fontSize: 20, color: renk.ikincilMetin, fontVariant: ['tabular-nums'] },
-  aktifMetin: { color: renk.kart },
-  cip: { backgroundColor: 'rgba(212,168,83,0.2)', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2 },
+  aktifMetin: { color: renk.beyaz },
+  cip: { backgroundColor: renk.altinZemin, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2 },
   cipMetin: { fontFamily: yaziTipi.kalin, fontSize: 11, color: renk.altin },
 });

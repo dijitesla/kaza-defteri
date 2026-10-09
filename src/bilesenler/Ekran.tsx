@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { DesenZemin } from './DesenZemin';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { olcu, renk, yaziTipi } from '../tema';
@@ -15,6 +16,7 @@ interface Props {
 export function Ekran({ baslik, ust, alt, reklam, children }: Props) {
   return (
     <SafeAreaView style={stil.kap} edges={alt ? ['top', 'left', 'right', 'bottom'] : ['top', 'left', 'right']}>
+      <DesenZemin />
       <ScrollView contentContainerStyle={stil.icerik} keyboardShouldPersistTaps="handled">
         {ust ? <Text style={stil.ust}>{ust}</Text> : null}
         <Text style={stil.baslik} accessibilityRole="header">
@@ -32,6 +34,6 @@ const stil = StyleSheet.create({
   kap: { flex: 1, backgroundColor: renk.zemin },
   icerik: { padding: olcu.ekranBosluk, gap: 10 },
   ust: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.ikincilMetin },
-  baslik: { fontFamily: yaziTipi.baslik, fontSize: 26, color: renk.gece, marginBottom: 6 },
+  baslik: { fontFamily: yaziTipi.baslik, fontSize: 26, color: renk.metin, marginBottom: 6 },
   alt: { paddingHorizontal: olcu.ekranBosluk, paddingTop: 8, paddingBottom: 12, gap: 4 },
 });

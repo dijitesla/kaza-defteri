@@ -30,8 +30,8 @@ function rozetAdi(r: Rozet): string {
 export function SeriKarti({ seri, enUzun }: { seri: number; enUzun: number }) {
   return (
     <View style={stil.seri}>
-      <View style={[stil.seriSimge, seri > 0 && { backgroundColor: 'rgba(224,96,74,0.14)' }]}>
-        <Simge ad="alev" renk={seri > 0 ? '#E0604A' : renk.sekmePasif} boyut={26} />
+      <View style={[stil.seriSimge, seri > 0 && { backgroundColor: renk.alevZemin }]}>
+        <Simge ad="alev" renk={seri > 0 ? renk.alev : renk.sekmePasif} boyut={26} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={stil.seriEtiket}>{t('rozet.seri')}</Text>
@@ -83,18 +83,18 @@ function Madalya({ kazanildi, simge }: { kazanildi: boolean; simge: SimgeAdi }) 
   return (
     <View style={{ width: B, height: B, alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={B} height={B} style={StyleSheet.absoluteFill}>
-        <Path d={altigen} fill={kazanildi ? renk.gece : '#E4E7EC'} />
+        <Path d={altigen} fill={kazanildi ? renk.gece : renk.pasifZemin} />
         <Path
           d={altigen}
           fill="none"
-          stroke={kazanildi ? renk.altin : '#D3D8E1'}
+          stroke={kazanildi ? renk.altin : renk.pasifCizgi}
           strokeWidth={2.5}
           strokeLinejoin="round"
         />
-        {kazanildi ? <Circle cx={28} cy={28} r={15} fill="rgba(212,168,83,0.18)" /> : null}
+        {kazanildi ? <Circle cx={28} cy={28} r={15} fill={renk.altinZemin} /> : null}
       </Svg>
       <View style={{ zIndex: 1 }}>
-        <Simge ad={simge} renk={kazanildi ? renk.altin : '#AEB4C0'} boyut={22} />
+        <Simge ad={simge} renk={kazanildi ? renk.altin : renk.pasifSimge} boyut={22} />
       </View>
     </View>
   );
@@ -113,7 +113,7 @@ const stil = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#ECEEF2',
+    backgroundColor: renk.pasifZemin,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -124,9 +124,9 @@ const stil = StyleSheet.create({
   enUzunMetin: { fontFamily: yaziTipi.kalin, fontSize: 11, color: renk.uyariMetin },
   kart: { backgroundColor: renk.kart, borderRadius: olcu.kartYaricap, padding: 14, gap: 12 },
   ust: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
+  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   sayac: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
   izgara: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 14 },
   hucre: { width: '25%', alignItems: 'center', gap: 4, paddingHorizontal: 2 },
-  ad: { fontFamily: yaziTipi.kalin, fontSize: 11, color: renk.gece, textAlign: 'center', lineHeight: 14 },
+  ad: { fontFamily: yaziTipi.kalin, fontSize: 11, color: renk.metin, textAlign: 'center', lineHeight: 14 },
 });

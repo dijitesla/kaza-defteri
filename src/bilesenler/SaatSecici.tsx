@@ -79,10 +79,10 @@ function Izgara(p: { degerler: number[]; secili: number; onSec: (n: number) => v
 }
 
 const stil = StyleSheet.create({
-  perde: { flex: 1, backgroundColor: 'rgba(28,37,65,0.45)', justifyContent: 'center', padding: olcu.ekranBosluk },
+  perde: { flex: 1, backgroundColor: renk.perde, justifyContent: 'center', padding: olcu.ekranBosluk },
   pencere: { backgroundColor: renk.kart, borderRadius: olcu.kartYaricap + 2, padding: 16, gap: 12 },
-  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.gece },
-  onizleme: { fontFamily: yaziTipi.baslik, fontSize: 28, color: renk.gece, textAlign: 'center', fontVariant: ['tabular-nums'] },
+  baslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
+  onizleme: { fontFamily: yaziTipi.baslik, fontSize: 28, color: renk.metin, textAlign: 'center', fontVariant: ['tabular-nums'] },
   izgara: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   hucre: {
     width: '15%',
@@ -94,7 +94,7 @@ const stil = StyleSheet.create({
     justifyContent: 'center',
   },
   secili: { backgroundColor: renk.gece },
-  metin: { fontFamily: yaziTipi.normal, fontSize: 15, color: renk.gece, fontVariant: ['tabular-nums'] },
-  seciliMetin: { fontFamily: yaziTipi.kalin, color: renk.kart },
+  metin: { fontFamily: yaziTipi.normal, fontSize: 15, color: renk.metin, fontVariant: ['tabular-nums'] },
+  seciliMetin: { fontFamily: yaziTipi.kalin, color: renk.beyaz },
   dugmeler: { flexDirection: 'row', gap: 10 },
 });

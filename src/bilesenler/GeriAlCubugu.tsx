@@ -57,7 +57,7 @@ const stil = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
-  metin: { flex: 1, fontFamily: yaziTipi.normal, fontSize: 14, color: renk.kart },
+  metin: { flex: 1, fontFamily: yaziTipi.normal, fontSize: 14, color: renk.beyaz },
   dugme: { minHeight: olcu.dokunmaMin, justifyContent: 'center' },
   geriAl: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.altin },
 });

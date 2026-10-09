@@ -87,3 +87,14 @@ export function ozelHalVar(gunluk: GunlukDurum, gun: string): boolean {
   const g = gunluk[gun];
   return !!g && VAKITLER.some((v) => g[v] === 'muaf');
 }
+
+/**
+ * "Kıldım" (ya da özel hal) işaretini kaldırır. Borcu değiştirmeyen cevaplar için geçerlidir;
+ * "kılınamadı" kayıt defterinden geri alınır, burada değişmez.
+ */
+export function cevabiKaldir(gunluk: GunlukDurum, gun: string, vakit: Vakit): GunlukDurum {
+  const d = gunluk[gun]?.[vakit];
+  if (d !== 'kilindi' && d !== 'muaf') return gunluk;
+  const { [vakit]: _silinen, ...kalan } = gunluk[gun];
+  return { ...gunluk, [gun]: kalan };
+}

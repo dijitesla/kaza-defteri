@@ -93,11 +93,11 @@ export function GunYayi({ vakitler, cisim, ayEvre, gece }: Props) {
             {/* ufuk çizgisi */}
             <Path
               d={`M0 ${E.y0 * olcek + UST_BOSLUK + 2} H${genislik}`}
-              stroke="#E6EAF0"
+              stroke={renk.yayCizgi}
               strokeWidth={1}
             />
             {/* tüm yay (kesikli) ve geçilen kısım */}
-            <Path d={yayYolu(0, 1, olcek)} stroke="#D9DEE6" strokeWidth={2} strokeDasharray="4 5" fill="none" />
+            <Path d={yayYolu(0, 1, olcek)} stroke={renk.pasifCizgi} strokeWidth={2} strokeDasharray="4 5" fill="none" />
             {gece ? null : (
               <Path
                 d={yayYolu(0, Math.max(0.001, cisim.konum), olcek)}
@@ -155,7 +155,7 @@ function VakitNoktasi({ x, y, durum }: { x: number; y: number; durum: YayDurumu 
         </>
       );
     case 'muaf':
-      return <Circle cx={x} cy={y} r={7} fill="#E9E1F3" stroke="#8E6BB8" strokeWidth={1.8} />;
+      return <Circle cx={x} cy={y} r={7} fill={renk.muafZemin} stroke={renk.muaf} strokeWidth={1.8} />;
     case 'siradaki':
       return (
         <>
@@ -164,15 +164,15 @@ function VakitNoktasi({ x, y, durum }: { x: number; y: number; durum: YayDurumu 
         </>
       );
     default:
-      return <Circle cx={x} cy={y} r={6.5} fill={renk.kart} stroke="#B5BCC9" strokeWidth={1.5} />;
+      return <Circle cx={x} cy={y} r={6.5} fill={renk.kart} stroke={renk.pasifSimge} strokeWidth={1.5} />;
   }
 }
 
 const etiketStili = StyleSheet.create({
   kilindi: {},
   kilinamadi: {},
-  muaf: { color: '#8E6BB8' },
-  siradaki: { fontFamily: yaziTipi.kalin, color: renk.gece },
+  muaf: { color: renk.muaf },
+  siradaki: { fontFamily: yaziTipi.kalin, color: renk.metin },
   gelecek: { color: renk.sekmePasif },
   devam: {},
   cevapsiz: {},
@@ -182,6 +182,6 @@ const stil = StyleSheet.create({
   kart: { backgroundColor: renk.kart, borderRadius: olcu.kartYaricap + 2, paddingHorizontal: 12, paddingTop: 4, paddingBottom: 2 },
   cisim: { position: 'absolute', left: 0, top: 0, width: CISIM, height: CISIM },
   etiket: { position: 'absolute', width: ETIKET_GENISLIK, alignItems: 'center' },
-  etiketAd: { fontFamily: yaziTipi.normal, fontSize: 12, color: '#3B4152' },
-  etiketSaat: { fontFamily: yaziTipi.kalin, fontSize: 12, color: '#3B4152', fontVariant: ['tabular-nums'] },
+  etiketAd: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.yayEtiket },
+  etiketSaat: { fontFamily: yaziTipi.kalin, fontSize: 12, color: renk.yayEtiket, fontVariant: ['tabular-nums'] },
 });

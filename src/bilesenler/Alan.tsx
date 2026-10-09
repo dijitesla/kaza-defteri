@@ -40,5 +40,5 @@ const stil = StyleSheet.create({
     justifyContent: 'center',
   },
   etiket: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
-  deger: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.gece, marginTop: 2 },
+  deger: { fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.metin, marginTop: 2 },
 });
