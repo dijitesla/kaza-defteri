@@ -8,10 +8,11 @@ function veri(): YedekVerisi {
   const kaza = varsayilanKaza();
   kaza.ilkBorc.sabah = 852;
   kaza.kalan.sabah = 800;
+  kaza.oruc = { ilkBorc: 30, kalan: 12 };
   return {
     ayarlar,
     kaza,
-    gunluk: { '2026-10-05': { yatsi: 'kilinamadi' } },
+    gunluk: { '2026-10-05': { yatsi: 'kilinamadi', ikindi: 'muaf' } },
     islemler: [{ id: 'a', zaman: SIMDI.toISOString(), tur: 'kaza_kilindi', vakit: 'sabah', degisim: { sabah: -1 } }],
   };
 }
@@ -34,6 +35,12 @@ describe('yedek', () => {
     const y = yedekOlustur(veri(), SIMDI) as unknown as Record<string, any>;
     delete y.ayarlar.dakikaDuzeltme;
     expect(yedekDogrula(JSON.stringify(y))!.veri.ayarlar.dakikaDuzeltme.sabah).toBe(0);
+  });
+
+  it('oruç kaydı olmayan eski yedek: oruç sıfır', () => {
+    const y = yedekOlustur(veri(), SIMDI) as unknown as Record<string, any>;
+    delete y.kaza.oruc;
+    expect(yedekDogrula(JSON.stringify(y))!.veri.kaza.oruc).toEqual({ ilkBorc: 0, kalan: 0 });
   });
 
   const boz = (f: (y: Record<string, any>) => void) => {

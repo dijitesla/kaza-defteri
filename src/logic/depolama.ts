@@ -42,11 +42,12 @@ export function varsayilanAyarlar(): Ayarlar {
       yatsiSoruSaati: '23:00',
     },
     dakikaDuzeltme: { sabah: 0, ogle: 0, ikindi: 0, aksam: 0, yatsi: 0 },
+    gunlukHedef: 0,
   };
 }
 
 export function varsayilanKaza(): KazaDurumu {
-  return { ilkBorc: sifirKaza(), kalan: sifirKaza() };
+  return { ilkBorc: sifirKaza(), kalan: sifirKaza(), oruc: { ilkBorc: 0, kalan: 0 } };
 }
 
 const nesneMi = (x: unknown): x is Record<string, unknown> =>
@@ -61,6 +62,7 @@ export function ayarlariTamamla(kayitli: unknown): Ayarlar {
   return {
     ...v,
     ...k,
+    gunlukHedef: gunSayisi(k.gunlukHedef),
     konum: { ...v.konum, ...(nesneMi(k.konum) ? k.konum : {}) },
     ozelGun: { ...v.ozelGun, ...(nesneMi(k.ozelGun) ? k.ozelGun : {}) },
     baslangic: { ...v.baslangic, ...(nesneMi(k.baslangic) ? k.baslangic : {}) },
@@ -79,6 +81,14 @@ export function ayarlariTamamla(kayitli: unknown): Ayarlar {
   };
 }
 
+const gunSayisi = (x: unknown) => (typeof x === 'number' && Number.isInteger(x) && x >= 0 ? x : 0);
+
+/** Oruç borcu kaydı; eksik ya da bozuksa sıfır. */
+export function orucuTamamla(x: unknown): KazaDurumu['oruc'] {
+  if (!nesneMi(x)) return { ilkBorc: 0, kalan: 0 };
+  return { ilkBorc: gunSayisi(x.ilkBorc), kalan: gunSayisi(x.kalan) };
+}
+
 export function kazayiTamamla(kayitli: unknown): KazaDurumu {
   const v = varsayilanKaza();
   if (!nesneMi(kayitli)) return v;
@@ -86,6 +96,7 @@ export function kazayiTamamla(kayitli: unknown): KazaDurumu {
   return {
     ilkBorc: { ...v.ilkBorc, ...(nesneMi(k.ilkBorc) ? k.ilkBorc : {}) },
     kalan: { ...v.kalan, ...(nesneMi(k.kalan) ? k.kalan : {}) },
+    oruc: orucuTamamla(k.oruc),
   };
 }
 

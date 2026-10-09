@@ -1,7 +1,7 @@
 // Yedek dosyası: oluşturma ve doğrulama. Kaynak: docs/SPEC.md, Bölüm 7.
 import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, VakitDurumu } from '../types';
 import { KAZA_VAKITLERI, VAKITLER } from '../types';
-import { ayarlariTamamla, ISLEM_SINIRI } from './depolama';
+import { ayarlariTamamla, ISLEM_SINIRI, orucuTamamla } from './depolama';
 import { gunAnahtari } from './tarih';
 
 export const YEDEK_SURUMU = 1;
@@ -39,13 +39,15 @@ function kazaKaydi(x: unknown): x is Record<string, number> {
   return nesneMi(x) && KAZA_VAKITLERI.every((v) => sayiMi(x[v]));
 }
 
-const DURUMLAR: readonly VakitDurumu[] = ['kilindi', 'kilinamadi', 'cevapsiz'];
+const DURUMLAR: readonly VakitDurumu[] = ['kilindi', 'kilinamadi', 'cevapsiz', 'muaf'];
 const ISLEM_TURLERI: readonly Islem['tur'][] = [
   'kaza_kilindi',
   'kilinamadi',
   'manuel_duzeltme',
   'yeniden_hesap',
   'geri_alindi',
+  'oruc_tutuldu',
+  'oruc_duzeltme',
 ];
 
 function gunlukGecerli(x: unknown): x is GunlukDurum {
@@ -96,7 +98,8 @@ export function yedekDogrula(metin: string): { veri: YedekVerisi; tarih: string 
     tarih: x.tarih,
     veri: {
       ayarlar: ayarlariTamamla(x.ayarlar),
-      kaza: { ilkBorc: { ...kaza.ilkBorc }, kalan: { ...kaza.kalan } },
+      // Sürüm 1.3'ten eski yedeklerde oruç kaydı yoktur; sıfır sayılır.
+      kaza: { ilkBorc: { ...kaza.ilkBorc }, kalan: { ...kaza.kalan }, oruc: orucuTamamla(kaza.oruc) },
       gunluk: x.gunluk,
       islemler: (x.islemler as Islem[]).slice(-ISLEM_SINIRI),
     },

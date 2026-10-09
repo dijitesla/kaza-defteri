@@ -11,6 +11,9 @@ import {
   kazaDuzelt,
   kazaKil,
   kilinamadiEklenecekler,
+  orucDuzelt,
+  orucOzeti,
+  orucTut,
   ozet,
   vakitCevapla,
   yenidenHesapla,
@@ -243,5 +246,72 @@ describe('dönem istatistikleri', () => {
     d = vakitCevapla(d, '2026-10-07', 'aksam', 'kilinamadi', new Date(2026, 9, 7, 21), 'k');
     expect(donemdeKilinan(d.islemler, new Date(2026, 9, 5), new Date(2026, 9, 12))).toBe(1);
     expect(donemdeKilinan(d.islemler, new Date(2026, 9, 1), new Date(2026, 10, 1))).toBe(2);
+  });
+});
+
+describe('kaza orucu', () => {
+  const orucDurumu = (ilkBorc: number, kalan: number): VeriDurumu => {
+    const d = durum();
+    return { ...d, kaza: { ...d.kaza, oruc: { ilkBorc, kalan } } };
+  };
+
+  it('ilk girişte borç ve başlangıç birlikte ayarlanır, kayıt yazılır', () => {
+    const d = orucDuzelt(orucDurumu(0, 0), 30, SIMDI, 'o1')!;
+    expect(d.kaza.oruc).toEqual({ ilkBorc: 30, kalan: 30 });
+    expect(d.islemler[0]).toMatchObject({ tur: 'oruc_duzeltme', oruc: 30, orucIlk: 30, degisim: {} });
+    expect(islemAciklamasi(d.islemler[0], d.islemler)).toBe('Kaza orucu borcu düzeltildi');
+  });
+
+  it('düzeltme tutulan sayıyı korur', () => {
+    const d = orucDuzelt(orucDurumu(30, 20), 25, SIMDI, 'o1')!;
+    expect(d.kaza.oruc).toEqual({ ilkBorc: 35, kalan: 25 });
+    expect(orucOzeti(d.kaza).tutulan).toBe(10);
+  });
+
+  it('geçersiz ya da aynı sayı', () => {
+    expect(orucDuzelt(orucDurumu(30, 20), 20, SIMDI, 'x')).toBeNull();
+    expect(orucDuzelt(orucDurumu(30, 20), -1, SIMDI, 'x')).toBeNull();
+    expect(orucDuzelt(orucDurumu(30, 20), 2.5, SIMDI, 'x')).toBeNull();
+  });
+
+  it('oruç tutuldu: kalan 1 azalır, namaz kazası değişmez', () => {
+    const d = orucTut(orucDurumu(30, 20), SIMDI, 'o2')!;
+    expect(d.kaza.oruc).toEqual({ ilkBorc: 30, kalan: 19 });
+    expect(d.kaza.kalan).toEqual(orucDurumu(30, 20).kaza.kalan);
+    expect(etkiMetni(d.islemler[0])).toBe('-1');
+    expect(islemAciklamasi(d.islemler[0], d.islemler)).toBe('Kaza orucu tutuldu');
+    expect(orucTut(orucDurumu(30, 0), SIMDI, 'x')).toBeNull();
+  });
+
+  it('oruç işlemleri geri alınır', () => {
+    let d = orucDuzelt(orucDurumu(0, 0), 30, SIMDI, 'o1')!;
+    d = orucTut(d, SIMDI, 'o2')!;
+    d = geriAl(d, SIMDI, 'g1')!;
+    expect(d.kaza.oruc).toEqual({ ilkBorc: 30, kalan: 30 });
+    expect(etkiMetni(d.islemler[d.islemler.length - 1])).toBe('+1');
+    d = geriAl(d, SIMDI, 'g2')!;
+    expect(d.kaza.oruc).toEqual({ ilkBorc: 0, kalan: 0 });
+  });
+
+  it('namaz işlemleri oruca dokunmaz; yeniden hesap orucu korur', () => {
+    let d = kazaKil(orucDurumu(30, 20), 'sabah', SIMDI, 'k')!;
+    d = geriAl(d, SIMDI, 'g')!;
+    expect(d.kaza.oruc).toEqual({ ilkBorc: 30, kalan: 20 });
+    const h = yenidenHesapla(
+      d,
+      { yukumlulukAy: '2015-01', duzenliAy: '2016-01', mezhep: 'hanefi', ozelGun: { acik: false, aydaGun: 7 } },
+      SIMDI,
+      'y',
+    );
+    expect(h!.kaza.oruc).toEqual({ ilkBorc: 30, kalan: 20 });
+  });
+});
+
+describe('özel hal cevabı', () => {
+  it('borcu değiştirmez, kayıt yazmaz', () => {
+    const d = vakitCevapla(durum(), '2026-10-06', 'ogle', 'muaf', SIMDI, 'm');
+    expect(d.gunluk['2026-10-06'].ogle).toBe('muaf');
+    expect(d.kaza).toEqual(durum().kaza);
+    expect(d.islemler).toEqual([]);
   });
 });

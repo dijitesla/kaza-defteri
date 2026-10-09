@@ -1,5 +1,5 @@
 import type { Vakit } from '../../types';
-import { cevapsizVakitler, vakitDurumu, yayDurumu } from '../gunluk';
+import { cevapsizVakitler, ozelHalGunu, ozelHalVar, vakitDurumu, yayDurumu } from '../gunluk';
 import { gunOglesi } from '../tarih';
 import type { VakitAraligi } from '../vakitler';
 
@@ -72,5 +72,25 @@ describe('cevapsizVakitler', () => {
   it('kurulumdan önce çıkmış vakitler sayılmaz, kurulum sırasında devam eden sayılır', () => {
     const l = cevapsizVakitler({}, '2026-10-06', t(6, 17), araliklar, t(6, 15));
     expect(l).toEqual([{ gun: '2026-10-06', vakit: 'ogle' }]);
+  });
+});
+
+describe('ozelHalGunu', () => {
+  const gun = '2026-10-06';
+  it('cevapsız ve gelecek vakitleri muaf yapar, cevaplara dokunmaz', () => {
+    const g = ozelHalGunu({ [gun]: { sabah: 'kilindi', ogle: 'kilinamadi' } }, gun, true);
+    expect(g[gun]).toEqual({ sabah: 'kilindi', ogle: 'kilinamadi', ikindi: 'muaf', aksam: 'muaf', yatsi: 'muaf' });
+    expect(ozelHalVar(g, gun)).toBe(true);
+  });
+  it('kapatınca muaf kayıtları silinir', () => {
+    const acik = ozelHalGunu({ [gun]: { sabah: 'kilindi' } }, gun, true);
+    const kapali = ozelHalGunu(acik, gun, false);
+    expect(kapali[gun]).toEqual({ sabah: 'kilindi' });
+    expect(ozelHalVar(kapali, gun)).toBe(false);
+  });
+  it('muaf vakit cevapsız sayılmaz', () => {
+    const g = ozelHalGunu({}, gun, true);
+    const c = cevapsizVakitler(g, gun, new Date(2026, 9, 6, 23), araliklar, null);
+    expect(c.filter((x) => x.gun === gun)).toEqual([]);
   });
 });

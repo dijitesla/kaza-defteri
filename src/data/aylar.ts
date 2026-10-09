@@ -24,3 +24,6 @@ export const GUN_ADLARI = [
   'Cuma',
   'Cumartesi',
 ] as const;
+
+// Takvim başlığı, Pazartesi'den başlayarak.
+export const GUN_KISA = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'] as const;

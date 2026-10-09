@@ -154,6 +154,8 @@ function VakitNoktasi({ x, y, durum }: { x: number; y: number; durum: YayDurumu 
           <Path d={`M${x - 3} ${y - 3}l6 6M${x + 3} ${y - 3}l-6 6`} stroke="#FFF" strokeWidth={1.8} strokeLinecap="round" />
         </>
       );
+    case 'muaf':
+      return <Circle cx={x} cy={y} r={7} fill="#E9E1F3" stroke="#8E6BB8" strokeWidth={1.8} />;
     case 'siradaki':
       return (
         <>
@@ -169,6 +171,7 @@ function VakitNoktasi({ x, y, durum }: { x: number; y: number; durum: YayDurumu 
 const etiketStili = StyleSheet.create({
   kilindi: {},
   kilinamadi: {},
+  muaf: { color: '#8E6BB8' },
   siradaki: { fontFamily: yaziTipi.kalin, color: renk.gece },
   gelecek: { color: renk.sekmePasif },
   devam: {},

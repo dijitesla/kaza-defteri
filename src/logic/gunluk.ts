@@ -7,7 +7,7 @@ import type { VakitAraligi } from './vakitler';
 export const CEVAPSIZ_GUN_SAYISI = 3;
 
 /** Gün yayında gösterilen durum. */
-export type YayDurumu = 'kilindi' | 'kilinamadi' | 'siradaki' | 'gelecek' | 'devam' | 'cevapsiz';
+export type YayDurumu = 'kilindi' | 'kilinamadi' | 'muaf' | 'siradaki' | 'gelecek' | 'devam' | 'cevapsiz';
 
 /** Kayıtlı durum; vakit çıkmış ve kayıt yoksa 'cevapsiz' (kaydedilmez, okurken türetilir). */
 export function vakitDurumu(
@@ -31,7 +31,7 @@ export function yayDurumu(
   siradaki: boolean,
 ): YayDurumu {
   const d = vakitDurumu(gunluk, gun, vakit, aralik.cikis, simdi);
-  if (d === 'kilindi' || d === 'kilinamadi' || d === 'cevapsiz') return d;
+  if (d === 'kilindi' || d === 'kilinamadi' || d === 'muaf' || d === 'cevapsiz') return d;
   if (siradaki) return 'siradaki';
   return simdi.getTime() >= aralik.giris.getTime() ? 'devam' : 'gelecek';
 }
@@ -63,4 +63,27 @@ export function cevapsizVakitler(
     }
   }
   return sonuc;
+}
+
+/**
+ * Özel hal günü: açılınca günün cevaplanmamış (ve henüz gelmemiş) vakitleri "muaf" olur;
+ * kapanınca o günün "muaf" kayıtları silinir. Kılındı/kılınamadı cevaplarına dokunulmaz.
+ * Borcu değiştirmez.
+ */
+export function ozelHalGunu(gunluk: GunlukDurum, gun: string, acik: boolean): GunlukDurum {
+  const once = gunluk[gun] ?? {};
+  const sonra: Partial<Record<Vakit, VakitDurumu>> = {};
+  for (const v of VAKITLER) {
+    const d = once[v];
+    if (d === 'kilindi' || d === 'kilinamadi') sonra[v] = d;
+    else if (acik) sonra[v] = 'muaf';
+    else if (d && d !== 'muaf') sonra[v] = d;
+  }
+  return { ...gunluk, [gun]: sonra };
+}
+
+/** Günde en az bir "muaf" vakit var mı (özel hal günü düğmesinin durumu). */
+export function ozelHalVar(gunluk: GunlukDurum, gun: string): boolean {
+  const g = gunluk[gun];
+  return !!g && VAKITLER.some((v) => g[v] === 'muaf');
 }

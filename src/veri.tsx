@@ -5,6 +5,7 @@ import { bildirimleriPlanla } from './bildirimler';
 import { depolama } from './depolama';
 import { bildirimCevabi } from './logic/bildirimPlani';
 import type { HesapGirdisi } from './logic/kazaHesap';
+import { ozelHalGunu } from './logic/gunluk';
 import * as islem from './logic/islemler';
 import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, Vakit } from './types';
 
@@ -22,7 +23,13 @@ interface VeriIslemleri {
   /** Kaza kılındı. Kaydedilen işlemin kimliğini döner (geri al için); kalan 0 ise null. */
   kazaKil: (vakit: KazaVakit) => string | null;
   /** Günün vaktine cevap. "Kılamadım" ise oluşan işlemin kimliğini döner. */
-  vakitCevapla: (gun: string, vakit: Vakit, cevap: 'kilindi' | 'kilinamadi') => string | null;
+  vakitCevapla: (gun: string, vakit: Vakit, cevap: 'kilindi' | 'kilinamadi' | 'muaf') => string | null;
+  /** Günü özel hal günü olarak işaretler ya da işareti kaldırır (borcu değiştirmez). */
+  ozelHal: (gun: string, acik: boolean) => void;
+  /** Bir gün kaza orucu tutuldu. İşlem kimliğini döner; kalan 0 ise null. */
+  orucTut: () => string | null;
+  /** Oruç borcunu girilen sayıya ayarlar. Değişiklik yoksa false. */
+  orucDuzelt: (yeniKalan: number) => boolean;
   /** Son işlemi geri alır; beklenenId verilirse yalnızca o işlem sıradaysa. */
   geriAl: (beklenenId?: string) => boolean;
   /** Bildirim düğmesi cevabını kaydeder (zaten cevaplanmış vakit için bir şey yapmaz). */
@@ -147,10 +154,33 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
   );
 
   const vakitCevapla = useCallback(
-    (gun: string, vakit: Vakit, cevap: 'kilindi' | 'kilinamadi') => {
+    (gun: string, vakit: Vakit, cevap: 'kilindi' | 'kilinamadi' | 'muaf') => {
       const id = yeniId();
       uygula(islem.vakitCevapla(son.current!, gun, vakit, cevap, new Date(), id));
       return cevap === 'kilinamadi' ? id : null;
+    },
+    [uygula],
+  );
+
+  const ozelHal = useCallback(
+    (gun: string, acik: boolean) => uygula({ ...son.current!, gunluk: ozelHalGunu(son.current!.gunluk, gun, acik) }),
+    [uygula],
+  );
+
+  const orucTut = useCallback(() => {
+    const id = yeniId();
+    const yeni = islem.orucTut(son.current!, new Date(), id);
+    if (!yeni) return null;
+    uygula(yeni);
+    return id;
+  }, [uygula]);
+
+  const orucDuzelt = useCallback(
+    (yeniKalan: number) => {
+      const yeni = islem.orucDuzelt(son.current!, yeniKalan, new Date(), yeniId());
+      if (!yeni) return false;
+      uygula(yeni);
+      return true;
     },
     [uygula],
   );
@@ -216,6 +246,9 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
             kurulumTamamla,
             kazaKil,
             vakitCevapla,
+            ozelHal,
+            orucTut,
+            orucDuzelt,
             geriAl,
             bildirimCevabiIsle,
             bildirimleriYenile,
@@ -230,6 +263,9 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
       kurulumTamamla,
       kazaKil,
       vakitCevapla,
+      ozelHal,
+      orucTut,
+      orucDuzelt,
       geriAl,
       bildirimCevabiIsle,
       bildirimleriYenile,

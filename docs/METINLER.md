@@ -80,6 +80,12 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | bugun.kalanKaza | Kalan kaza namazı |
 | bugun.kazaKil | Kaza kıl |
 | bugun.kilamadimKayit | {Vakit} kazana 1 eklendi. |
+| bugun.ozelHal | Özel hal günüm |
+| bugun.ozelHalAlt | Bugünün vakitleri kazaya eklenmez, seri bozulmaz. |
+| bugun.ozelHalDugme | Özel hal |
+| bugun.hedefIlerleme | Bugün {n} / {hedef} |
+| bugun.hedefTamam | Bugünkü hedef tamam |
+| bugun.bitisTahmini | Bu hızla {tarih} tamamlanır |
 
 ## Kaza kıl
 | Anahtar | Metin |
@@ -110,6 +116,8 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | gecmis.dun | Dün |
 | gecmis.buHafta | Bu hafta kılınan |
 | gecmis.buAy | Bu ay kılınan |
+| gecmis.orucTutuldu | Kaza orucu tutuldu |
+| gecmis.orucDuzeltme | Kaza orucu borcu düzeltildi |
 | gecmis.tamamlandi | %{n} tamamlandı |
 
 ## Vakitler
@@ -130,6 +138,32 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | zikir.sifirla | Sıfırla |
 | zikir.sifirlaSoru | Sayaç sıfırlansın mı? |
 | zikir.tur | {n}. tur tamamlandı |
+
+## Kaza orucu
+| Anahtar | Metin |
+|---|---|
+| oruc.baslik | Kaza orucu |
+| oruc.kalan | Kalan kaza orucu |
+| oruc.gun | {n} gün |
+| oruc.tutulan | Tutulan |
+| oruc.toplam | Toplam borç |
+| oruc.tuttum | Bir gün tuttum |
+| oruc.kaydedildi | Kaza orucu kaydedildi |
+| oruc.duzelt | Borcu düzelt |
+| oruc.duzeltAlt | Kaç gün kaza orucun kaldığını gir. Uygulama oruç borcunu hesaplamaz; kendi bildiğin sayıyı yaz. |
+| oruc.ekle | Kaza orucu borcunu ekle |
+| oruc.bitti | Kaza orucu borcun tamamlandı. Allah kabul etsin. |
+
+## Takvim
+| Anahtar | Metin |
+|---|---|
+| takvim.baslik | Takvim |
+| takvim.tam | Beş vakit |
+| takvim.kismi | Eksik |
+| takvim.kilinamadi | Kılınamadı |
+| takvim.muaf | Özel hal |
+| takvim.onceki | Önceki ay |
+| takvim.sonraki | Sonraki ay |
 
 ## Hadis
 | Anahtar | Metin |
@@ -192,6 +226,9 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | ayar.kazaBilgileriAlt | Değiştirirsen borç yeniden hesaplanır. Kıldığın kazalar korunur. |
 | ayar.kazaDuzelt | Kaza sayılarını düzelt |
 | ayar.kazaDuzeltAlt | Bir vaktin kalan sayısını elle değiştir. |
+| ayar.hedef | Günlük kaza hedefi |
+| ayar.hedefAlt | Her gün kaç kaza kılmayı hedefliyorsun? Bitiş tarihi buna göre tahmin edilir. |
+| ayar.hedefYok | Yok |
 | ayar.bildirimler | Bildirimler |
 | ayar.girisBildirimi | Vakit girdi bildirimi |
 | ayar.girisBildirimiAlt | Kapatırsan yalnızca "Kıldın mı?" sorusu gelir. |

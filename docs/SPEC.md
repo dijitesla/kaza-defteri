@@ -218,3 +218,9 @@ Ekran düzeni için `docs/tasarim.html` dosyasına bak.
   - **Yayından önce:** Türkçe çevirinin telif durumu netleştirilmeli (Diyanet'ten izin ya da izinli kaynakla değiştirme).
 - **Kıble** (`src/logic/kible.ts`, `src/app/kible.tsx`): kayıtlı konumdan Kâbe'ye büyük daire açısı. Pusula `expo-location` yön bilgisiyle (yalnızca ekran açıkken); konum izni yoksa izin istenir, pusula yoksa açı yazıyla gösterilir.
 - **Seri ve rozetler** (`src/logic/rozetler.ts`): seri, beş vaktin hepsinin "kılındı" olduğu art arda günlerdir (bugün henüz tamamlanmadıysa seri bozulmaz). Rozetler saklanmaz, veriden hesaplanır: ilk kaza; 10, 50, 100, 500, 1000, 5000 kaza (net kılınan); 3, 7, 30, 40 gün en uzun seri; borç bitti.
+
+## 13. Sürüm 1.3 eklemeleri
+- **Günlük kaza hedefi** (`Ayarlar.gunlukHedef`, `src/logic/hedef.ts`): Ayarlar'dan Yok/1/2/3/5/10. Bugün ekranında günün ilerlemesi ve "Bu hızla {ay yıl} tamamlanır"; Geçmiş özetinde de tahmin. Tahmin = bugün + ⌈kalan / hedef⌉ − 1 gün.
+- **Kaza orucu** (`KazaDurumu.oruc`, `src/app/kaza-orucu.tsx`): borcu kullanıcı girer, uygulama hesaplamaz. "Bir gün tuttum" (`oruc_tutuldu`, kalan −1) ve "Borcu düzelt" (`oruc_duzeltme`, kalan ve başlangıç borcu aynı miktarda değişir, tutulan korunur). İkisi de kayıt defterine yazılır ve geri alınabilir (`Islem.oruc`, `Islem.orucIlk`). Namaz kazası rozetlerine ve sayaçlarına karışmaz.
+- **Takvim** (`src/logic/takvim.ts`): Geçmiş ekranında ay takvimi; gün rengi: beş vakit kılındı (yeşil), eksik (sarı), en az biri kılınamadı (kırmızı), özel hal (mor).
+- **Özel hal** (`VakitDurumu 'muaf'`): yalnızca kurulumda "Özel günleri düş" açık olan kullanıcılara görünür. Bugün ekranında "Özel hal günüm" anahtarı günün cevaplanmamış vakitlerini muaf yapar (kapatınca geri alır); cevapsız bandında "Özel hal" düğmesi tek vakti muaf yapar. Muaf vakit borca eklenmez, "Kıldın mı?" sorusu gelmez, cevapsız sayılmaz; seriyi bozmaz ama seriye de sayılmaz. Borcu değiştirmediği için kayıt defterine yazılmaz.

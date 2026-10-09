@@ -6,7 +6,7 @@ const eksik = { ...tam, ikindi: 'kilinamadi' } as const;
 
 const kaza = (ilk: number, kalan: number): KazaDurumu => {
   const r = (n: number) => ({ sabah: n, ogle: 0, ikindi: 0, aksam: 0, yatsi: 0, vitir: 0 }) as Record<KazaVakit, number>;
-  return { ilkBorc: r(ilk), kalan: r(kalan) };
+  return { ilkBorc: r(ilk), kalan: r(kalan), oruc: { ilkBorc: 0, kalan: 0 } };
 };
 
 describe('tamGun', () => {
@@ -73,5 +73,21 @@ describe('rozetler', () => {
   });
   it('sabit sırada 12 rozet', () => {
     expect(rozetler(kaza(0, 0), {})).toHaveLength(12);
+  });
+});
+
+describe('özel hal günleri', () => {
+  const muaf = { sabah: 'kilindi', ogle: 'muaf', ikindi: 'muaf', aksam: 'muaf', yatsi: 'muaf' } as const;
+  it('seriyi bozmaz ama sayılmaz', () => {
+    const g: GunlukDurum = { '2026-10-02': tam, '2026-10-03': muaf, '2026-10-04': muaf, '2026-10-05': tam };
+    expect(vakitSerisi(g, '2026-10-06')).toBe(2);
+    expect(enUzunSeri(g)).toBe(2);
+  });
+  it('bugün özel hal ise dünden önceki seri sürer', () => {
+    const g: GunlukDurum = { '2026-10-05': tam, '2026-10-06': muaf };
+    expect(vakitSerisi(g, '2026-10-06')).toBe(1);
+  });
+  it('yalnızca özel hal günleri seri değildir', () => {
+    expect(enUzunSeri({ '2026-10-05': muaf, '2026-10-06': muaf })).toBe(0);
   });
 });

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
 import { RozetIzgarasi, SeriKarti } from '../../bilesenler/Rozetler';
+import { TakvimKarti } from '../../bilesenler/TakvimKarti';
 import { Simge, type SimgeAdi } from '../../bilesenler/Simge';
 import {
   ayBasi,
@@ -17,7 +18,8 @@ import {
 } from '../../logic/islemler';
 import { sayiBicimle } from '../../logic/kazaHesap';
 import { enUzunSeri, rozetler, vakitSerisi } from '../../logic/rozetler';
-import { gunAnahtari, gunAyMetni, gunEkle, saatMetni } from '../../logic/tarih';
+import { bitisTarihi } from '../../logic/hedef';
+import { ayYilMetni, gunAnahtari, gunAyMetni, gunEkle, saatMetni } from '../../logic/tarih';
 import { t } from '../../metinler';
 import { buyukSayi, olcu, renk, yaziTipi } from '../../tema';
 import type { Islem, IslemTuru } from '../../types';
@@ -30,6 +32,8 @@ const TUR_GORUNUMU: Record<IslemTuru, { simge: SimgeAdi; renk: string; zemin: st
   manuel_duzeltme: { simge: 'kalem', renk: '#4B5A9A', zemin: '#E6E9F5' },
   yeniden_hesap: { simge: 'yenile', renk: '#A57C22', zemin: '#F7EEDA' },
   geri_alindi: { simge: 'geri', renk: renk.ikincilMetin, zemin: '#ECEEF2' },
+  oruc_tutuldu: { simge: 'onay', renk: '#2C7A8C', zemin: '#E0F0F3' },
+  oruc_duzeltme: { simge: 'kalem', renk: '#2C7A8C', zemin: '#E0F0F3' },
 };
 
 function gunBasligi(gun: string, bugun: string): string {
@@ -50,6 +54,7 @@ export default function Gecmis() {
   const buHafta = donemdeKilinan(islemler, haftaBasi(simdi), yarin);
   const buAy = donemdeKilinan(islemler, ayBasi(simdi), yarin);
 
+  const bitis = bitisTarihi(o.kalan, veri.ayarlar.gunlukHedef, simdi);
   const seri = vakitSerisi(veri.gunluk, bugun);
   const enUzun = useMemo(() => enUzunSeri(veri.gunluk), [veri.gunluk]);
   const rozetListesi = useMemo(() => rozetler(veri.kaza, veri.gunluk), [veri.kaza, veri.gunluk]);
@@ -78,6 +83,7 @@ export default function Gecmis() {
                 <OzetSatiri etiket={t('gecmis.ilkBorc')} sayi={o.ilkBorc} />
                 <OzetSatiri etiket={t('gecmis.kilinan')} sayi={o.kilinan} vurgu />
                 <OzetSatiri etiket={t('gecmis.kalan')} sayi={o.kalan} />
+                {bitis ? <Text style={stil.bitis}>{t('bugun.bitisTahmini', { tarih: ayYilMetni(bitis) })}</Text> : null}
               </View>
             </View>
 
@@ -86,6 +92,7 @@ export default function Gecmis() {
               <Donem etiket={t('gecmis.buAy')} sayi={buAy} />
             </View>
 
+            <TakvimKarti gunluk={veri.gunluk} bugun={bugun} ozelHal={veri.ayarlar.ozelGun.acik} />
             <SeriKarti seri={seri} enUzun={enUzun} />
             <RozetIzgarasi liste={rozetListesi} />
 
@@ -196,6 +203,7 @@ const stil = StyleSheet.create({
   ozetSag: { flex: 1, gap: 6 },
   ozetSatir: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   ozetEtiket: { fontFamily: yaziTipi.normal, fontSize: 13, color: '#C9CFE0' },
+  bitis: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.altin, marginTop: 2 },
   ozetSayi: { fontSize: 18, lineHeight: 24, color: renk.kart },
   donemler: { flexDirection: 'row', gap: 10 },
   donem: { flex: 1, backgroundColor: renk.kart, borderRadius: olcu.kartYaricap, padding: 14 },

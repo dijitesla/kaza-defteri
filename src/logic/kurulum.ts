@@ -29,5 +29,5 @@ export function kurulumVerisiOlustur(
     baslangic: { yukumlulukAy: t.hesap.yukumlulukAy, duzenliAy: t.hesap.duzenliAy },
     bildirim: t.bildirim,
   };
-  return { ayarlar, kaza: { ilkBorc: { ...borc }, kalan: { ...borc } } };
+  return { ayarlar, kaza: { ilkBorc: { ...borc }, kalan: { ...borc }, oruc: { ilkBorc: 0, kalan: 0 } } };
 }

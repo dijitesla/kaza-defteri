@@ -54,19 +54,20 @@ export function kazaKil(d: VeriDurumu, vakit: KazaVakit, simdi: Date, id: string
 }
 
 /**
- * Günün vaktine cevap. "Kıldım" borcu değiştirmez, yalnızca günlük durumu yazar (kayıt defterine girmez).
+ * Günün vaktine cevap. "Kıldım" ve "Özel hal" borcu değiştirmez, yalnızca günlük durumu yazar
+ * (kayıt defterine girmez).
  * "Kılamadım" kalana ekler, günlük durumu yazar ve işlem kaydı oluşturur.
  */
 export function vakitCevapla(
   d: VeriDurumu,
   gun: string,
   vakit: Vakit,
-  cevap: 'kilindi' | 'kilinamadi',
+  cevap: 'kilindi' | 'kilinamadi' | 'muaf',
   simdi: Date,
   id: string,
 ): VeriDurumu {
   const gunluk: GunlukDurum = { ...d.gunluk, [gun]: { ...d.gunluk[gun], [vakit]: cevap } };
-  if (cevap === 'kilindi') return { ...d, gunluk };
+  if (cevap !== 'kilinamadi') return { ...d, gunluk };
 
   const degisim: Partial<Record<KazaVakit, number>> = {};
   for (const v of kilinamadiEklenecekler(vakit)) degisim[v] = (degisim[v] ?? 0) + 1;
@@ -113,6 +114,18 @@ export function geriAl(d: VeriDurumu, simdi: Date, id: string, beklenenId?: stri
     gunluk = { ...gunluk, [hedef.gun]: kalanVakitler };
   }
 
+  // Oruç işlemi: oruç kalanı ve (düzeltmede) başlangıç borcu geri döner.
+  let oruc = d.kaza.oruc;
+  let orucUygulanan: number | undefined;
+  let orucIlkUygulanan: number | undefined;
+  if (hedef.oruc || hedef.orucIlk) {
+    const kalanOruc = Math.max(0, oruc.kalan - (hedef.oruc ?? 0));
+    const ilkOruc = Math.max(0, oruc.ilkBorc - (hedef.orucIlk ?? 0));
+    orucUygulanan = kalanOruc - oruc.kalan;
+    orucIlkUygulanan = ilkOruc - oruc.ilkBorc;
+    oruc = { ilkBorc: ilkOruc, kalan: kalanOruc };
+  }
+
   // Yeniden hesap geri alınınca başlangıç borcu ve kaza ayarları da eski haline döner.
   let ayarlar = d.ayarlar;
   let ilkBorc = d.kaza.ilkBorc;
@@ -124,7 +137,7 @@ export function geriAl(d: VeriDurumu, simdi: Date, id: string, beklenenId?: stri
 
   return {
     ayarlar,
-    kaza: { ilkBorc, kalan },
+    kaza: { ilkBorc, kalan, oruc },
     gunluk,
     islemler: islemEkle(d.islemler, {
       id,
@@ -133,6 +146,7 @@ export function geriAl(d: VeriDurumu, simdi: Date, id: string, beklenenId?: stri
       vakit: hedef.vakit,
       degisim: uygulanan,
       geriAlinanId: hedef.id,
+      ...(orucUygulanan !== undefined ? { oruc: orucUygulanan, orucIlk: orucIlkUygulanan } : {}),
     }),
   };
 }
@@ -181,7 +195,7 @@ export function yenidenHesapla(
   return {
     ...d,
     ayarlar: { ...d.ayarlar, ...yeniAyar },
-    kaza: { ilkBorc: yeniIlk, kalan: yeniKalan },
+    kaza: { ...d.kaza, ilkBorc: yeniIlk, kalan: yeniKalan },
     islemler: islemEkle(d.islemler, {
       id,
       zaman: simdi.toISOString(),
@@ -207,6 +221,46 @@ export function kazaDuzelt(
     kaza: { ...d.kaza, kalan: { ...yeniKalan } },
     islemler: islemEkle(d.islemler, { id, zaman: simdi.toISOString(), tur: 'manuel_duzeltme', degisim }),
   };
+}
+
+/** Bir gün kaza orucu tutuldu: oruç kalanı 1 azalır. Kalan 0 ise null. */
+export function orucTut(d: VeriDurumu, simdi: Date, id: string): VeriDurumu | null {
+  if (d.kaza.oruc.kalan <= 0) return null;
+  return {
+    ...d,
+    kaza: { ...d.kaza, oruc: { ...d.kaza.oruc, kalan: d.kaza.oruc.kalan - 1 } },
+    islemler: islemEkle(d.islemler, { id, zaman: simdi.toISOString(), tur: 'oruc_tutuldu', degisim: {}, oruc: -1 }),
+  };
+}
+
+/**
+ * Oruç borcunu kullanıcının girdiği sayıya ayarlar. Bu bir borç düzeltmesidir: başlangıç borcu da
+ * aynı miktarda değişir, böylece tutulan oruç sayısı korunur. Geçersiz sayı ya da değişiklik yoksa null.
+ */
+export function orucDuzelt(d: VeriDurumu, yeniKalan: number, simdi: Date, id: string): VeriDurumu | null {
+  if (!Number.isInteger(yeniKalan) || yeniKalan < 0) return null;
+  const { ilkBorc, kalan } = d.kaza.oruc;
+  const fark = yeniKalan - kalan;
+  if (fark === 0) return null;
+  const yeniIlk = Math.max(0, ilkBorc + fark);
+  return {
+    ...d,
+    kaza: { ...d.kaza, oruc: { ilkBorc: yeniIlk, kalan: yeniKalan } },
+    islemler: islemEkle(d.islemler, {
+      id,
+      zaman: simdi.toISOString(),
+      tur: 'oruc_duzeltme',
+      degisim: {},
+      oruc: fark,
+      orucIlk: yeniIlk - ilkBorc,
+    }),
+  };
+}
+
+/** Oruç özeti: tutulan = başlangıç borcu - kalan. */
+export function orucOzeti(kaza: KazaDurumu): { ilkBorc: number; tutulan: number; kalan: number } {
+  const { ilkBorc, kalan } = kaza.oruc;
+  return { ilkBorc, tutulan: Math.max(0, ilkBorc - kalan), kalan };
 }
 
 // --- Gösterim ---
@@ -237,12 +291,16 @@ export function islemAciklamasi(islem: Islem, islemler: Islem[]): string {
       const asil = islemler.find((i) => i.id === islem.geriAlinanId);
       return t('gecmis.geriAlindi', { aciklama: asil ? islemAciklamasi(asil, islemler) : '' });
     }
+    case 'oruc_tutuldu':
+      return t('gecmis.orucTutuldu');
+    case 'oruc_duzeltme':
+      return t('gecmis.orucDuzeltme');
   }
 }
 
 /** Kalana toplam etki: "-1", "+1", "0". */
 export function etkiMetni(islem: Islem): string {
-  const n = KAZA_VAKITLERI.reduce((s, v) => s + (islem.degisim[v] ?? 0), 0);
+  const n = KAZA_VAKITLERI.reduce((s, v) => s + (islem.degisim[v] ?? 0), 0) + (islem.oruc ?? 0);
   return n > 0 ? `+${n}` : String(n);
 }
 

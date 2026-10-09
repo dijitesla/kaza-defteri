@@ -8,6 +8,7 @@ import { Ekran } from '../../bilesenler/Ekran';
 import { Sayac } from '../../bilesenler/HesapFormu';
 import { SaatSecici } from '../../bilesenler/SaatSecici';
 import { Secenekler } from '../../bilesenler/Secenekler';
+import { HEDEF_SECENEKLERI } from '../../logic/hedef';
 import { bildirimIzniDurumu, bildirimIzniIste } from '../../bildirimler';
 import { toplam } from '../../logic/islemler';
 import { formulMetni, kazaHesapla, ayarlardanGirdi, sayiBicimle } from '../../logic/kazaHesap';
@@ -145,6 +146,15 @@ export default function AyarlarEkrani() {
           alt={t('ayar.kazaDuzeltAlt')}
           sag="›"
           onPress={() => router.push('/kaza-duzelt')}
+        />
+      </Bolum>
+
+      <Bolum baslik={t('ayar.hedef')} alt={t('ayar.hedefAlt')}>
+        <Secenekler<number>
+          gorunum="cip"
+          secenekler={HEDEF_SECENEKLERI.map((h) => ({ deger: h, etiket: h ? String(h) : t('ayar.hedefYok') }))}
+          deger={a.gunlukHedef}
+          onChange={(h) => ayarlariGuncelle((x) => ({ ...x, gunlukHedef: h }))}
         />
       </Bolum>
 

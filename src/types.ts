@@ -23,15 +23,20 @@ export interface Ayarlar {
     yatsiSoruSaati: string; // 'HH:mm'
   };
   dakikaDuzeltme: Record<Vakit, number>; // -10..+10
+  // Günde kaç kaza kılınması hedefleniyor; 0 = hedef yok. Bitiş tarihi tahmini buna göre. (Sürüm 1.3)
+  gunlukHedef: number;
 }
 
 export interface KazaDurumu {
   ilkBorc: Record<KazaVakit, number>; // kurulumda hesaplanan
   kalan: Record<KazaVakit, number>;
+  // Kaza orucu (gün). Kullanıcı kendisi girer, uygulama hesaplamaz. (Sürüm 1.3)
+  oruc: { ilkBorc: number; kalan: number };
 }
 
 // Günlük vakit durumu, anahtar 'YYYY-MM-DD'
-export type VakitDurumu = 'kilindi' | 'kilinamadi' | 'cevapsiz';
+// 'muaf': özel hal (kadınlar); borca eklenmez, seriyi bozmaz. (Sürüm 1.3)
+export type VakitDurumu = 'kilindi' | 'kilinamadi' | 'cevapsiz' | 'muaf';
 export type GunlukDurum = Record<string, Partial<Record<Vakit, VakitDurumu>>>;
 
 export type IslemTuru =
@@ -39,7 +44,9 @@ export type IslemTuru =
   | 'kilinamadi'
   | 'manuel_duzeltme'
   | 'yeniden_hesap'
-  | 'geri_alindi';
+  | 'geri_alindi'
+  | 'oruc_tutuldu'
+  | 'oruc_duzeltme';
 
 export interface Islem {
   id: string;
@@ -51,6 +58,9 @@ export interface Islem {
   gun?: string;
   degisim: Partial<Record<KazaVakit, number>>; // kalan üzerindeki etki, ör. { sabah: -1 }
   geriAlinanId?: string;
+  // Yalnızca oruç işlemleri: oruç kalanına ve (düzeltmede) oruç başlangıç borcuna etkisi.
+  oruc?: number;
+  orucIlk?: number;
   // Yalnızca 'yeniden_hesap': önceki başlangıç borcu ve kaza ayarları; geri alınınca bunlar da
   // eski haline döner. SPEC'teki modele eklendi.
   onceki?: { ilkBorc: Record<KazaVakit, number> } & KazaAyarlari;

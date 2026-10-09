@@ -6,34 +6,49 @@ import { gunEkle } from './tarih';
 
 /** Beş vaktin hepsi "kılındı" olarak işaretlenmiş gün. */
 export function tamGun(gunluk: GunlukDurum, gun: string): boolean {
-  const g = gunluk[gun];
-  return !!g && VAKITLER.every((v) => g[v] === 'kilindi');
+  return gunTuru(gunluk, gun) === 'tam';
 }
 
 /**
- * Süren seri: dünden geriye art arda tam günler; bugün tamamlandıysa o da sayılır.
- * Bugün henüz bitmediği için tamamlanmamış olması seriyi bozmaz.
+ * Seri açısından gün: tam (beşi de kılındı), muaf (kılındı ya da özel hal; en az biri özel hal)
+ * ya da bozuk. Muaf gün seriyi bozmaz ama seriye sayılmaz.
+ */
+export function gunTuru(gunluk: GunlukDurum, gun: string): 'tam' | 'muaf' | 'bozuk' {
+  const g = gunluk[gun];
+  if (!g) return 'bozuk';
+  let muaf = false;
+  for (const v of VAKITLER) {
+    if (g[v] === 'muaf') muaf = true;
+    else if (g[v] !== 'kilindi') return 'bozuk';
+  }
+  return muaf ? 'muaf' : 'tam';
+}
+
+/**
+ * Süren seri: dünden geriye art arda tam günler (özel hal günleri atlanır); bugün tamamlandıysa
+ * o da sayılır. Bugün henüz bitmediği için tamamlanmamış olması seriyi bozmaz.
  */
 export function vakitSerisi(gunluk: GunlukDurum, bugun: string): number {
   let n = 0;
-  let g = tamGun(gunluk, bugun) ? bugun : gunEkle(bugun, -1);
-  while (tamGun(gunluk, g)) {
-    n++;
+  let g = gunTuru(gunluk, bugun) === 'bozuk' ? gunEkle(bugun, -1) : bugun;
+  for (let tur = gunTuru(gunluk, g); tur !== 'bozuk'; tur = gunTuru(gunluk, g)) {
+    if (tur === 'tam') n++;
     g = gunEkle(g, -1);
   }
   return n;
 }
 
-/** Kayıtlardaki en uzun seri. */
+/** Kayıtlardaki en uzun seri (özel hal günleri seriyi bozmaz). */
 export function enUzunSeri(gunluk: GunlukDurum): number {
-  const tamlar = Object.keys(gunluk)
-    .filter((g) => tamGun(gunluk, g))
+  const gunler = Object.keys(gunluk)
+    .filter((g) => gunTuru(gunluk, g) !== 'bozuk')
     .sort();
   let enUzun = 0;
   let suren = 0;
   let onceki: string | null = null;
-  for (const g of tamlar) {
-    suren = onceki && gunEkle(onceki, 1) === g ? suren + 1 : 1;
+  for (const g of gunler) {
+    if (!(onceki && gunEkle(onceki, 1) === g)) suren = 0;
+    if (gunTuru(gunluk, g) === 'tam') suren++;
     enUzun = Math.max(enUzun, suren);
     onceki = g;
   }
