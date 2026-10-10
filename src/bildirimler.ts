@@ -106,6 +106,8 @@ export function bildirimleriPlanla(ayarlar: Ayarlar, gunluk: GunlukDurum): Promi
         bugun: gunAnahtari(simdi),
         simdi,
         araliklar: (gun) => vakitAraliklari(ayarlar.konum, gun, ayarlar.dakikaDuzeltme),
+        // iOS en fazla 64 bekleyen bildirime izin verir.
+        sinir: Platform.OS === 'ios' ? 64 : undefined,
       });
       for (const b of plan) {
         await Notifications.scheduleNotificationAsync({
@@ -113,7 +115,7 @@ export function bildirimleriPlanla(ayarlar: Ayarlar, gunluk: GunlukDurum): Promi
           content: {
             title: b.baslik,
             body: b.govde,
-            categoryIdentifier: b.kategori,
+            ...(b.kategori !== 'BILGI' ? { categoryIdentifier: b.kategori } : {}),
             data: { ...b.veri },
             // iOS'ta ses bildirimle gelir; Android'de kanalın sesi çalar.
             sound: b.kategori === 'GIRIS' ? GIRIS_SESI : 'default',

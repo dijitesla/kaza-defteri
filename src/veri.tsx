@@ -7,13 +7,14 @@ import { bildirimCevabi } from './logic/bildirimPlani';
 import type { HesapGirdisi } from './logic/kazaHesap';
 import { cevabiKaldir, ozelHalGunu } from './logic/gunluk';
 import * as islem from './logic/islemler';
-import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, Vakit } from './types';
+import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, RamazanDurumu, Vakit } from './types';
 
 export interface Veri {
   ayarlar: Ayarlar;
   kaza: KazaDurumu;
   gunluk: GunlukDurum;
   islemler: Islem[];
+  ramazan: RamazanDurumu;
 }
 
 interface VeriIslemleri {
@@ -30,6 +31,8 @@ interface VeriIslemleri {
   ozelHal: (gun: string, acik: boolean) => void;
   /** Bir gün kaza orucu tutuldu. İşlem kimliğini döner; kalan 0 ise null. */
   orucTut: () => string | null;
+  /** Ramazan orucu cevabı. "Tutamadım" ise oluşan işlemin kimliğini döner. */
+  ramazanCevapla: (gun: string, cevap: 'tuttu' | 'tutamadi') => string | null;
   /** Oruç borcunu girilen sayıya ayarlar. Değişiklik yoksa false. */
   orucDuzelt: (yeniKalan: number) => boolean;
   /** Son işlemi geri alır; beklenenId verilirse yalnızca o işlem sıradaysa. */
@@ -59,18 +62,19 @@ export function useVeri(): VeriIslemleri {
 const yeniId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
 async function veriYukle(): Promise<Veri> {
-  const [ayarlar, kaza, gunluk, islemler] = await Promise.all([
+  const [ayarlar, kaza, gunluk, islemler, ramazan] = await Promise.all([
     depolama.ayarlariOku(),
     depolama.kazaOku(),
     depolama.gunlukOku(),
     depolama.islemleriOku(),
+    depolama.ramazanOku(),
   ]);
   // Aşama 2'de kurulan cihazlarda kurulum zamanı yok: bu andan itibaren sayılır.
   if (ayarlar.kurulumTamam && !ayarlar.kurulumZamani) {
     ayarlar.kurulumZamani = new Date().toISOString();
     await depolama.ayarlariYaz(ayarlar);
   }
-  return { ayarlar, kaza, gunluk, islemler };
+  return { ayarlar, kaza, gunluk, islemler, ramazan };
 }
 
 /**
@@ -128,6 +132,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     if (yeni.kaza !== onceki.kaza) yaz(() => depolama.kazaYaz(yeni.kaza));
     if (yeni.gunluk !== onceki.gunluk) yaz(() => depolama.gunlukYaz(yeni.gunluk));
     if (yeni.islemler !== onceki.islemler) yaz(() => depolama.islemleriYaz(yeni.islemler));
+    if (yeni.ramazan && yeni.ramazan !== onceki.ramazan) yaz(() => depolama.ramazanYaz(yeni.ramazan!));
     // Cevaplanan vaktin sorusu iptal olur; geri alınan cevabın sorusu yeniden planlanır.
     if (yeni.gunluk !== onceki.gunluk || yeni.ayarlar !== onceki.ayarlar) {
       bildirimleriPlanla(v.ayarlar, v.gunluk);
@@ -173,6 +178,17 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     (gun: string, vakit: Vakit) => {
       const gunluk = cevabiKaldir(son.current!.gunluk, gun, vakit);
       if (gunluk !== son.current!.gunluk) uygula({ ...son.current!, gunluk });
+    },
+    [uygula],
+  );
+
+  const ramazanCevapla = useCallback(
+    (gun: string, cevap: 'tuttu' | 'tutamadi') => {
+      const id = yeniId();
+      const yeni = islem.ramazanCevapla(son.current!, gun, cevap, new Date(), id);
+      if (!yeni) return null;
+      uygula(yeni);
+      return cevap === 'tutamadi' ? id : null;
     },
     [uygula],
   );
@@ -242,6 +258,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     await depolama.kazaYaz(v.kaza);
     await depolama.gunlukYaz(v.gunluk);
     await depolama.islemleriYaz(v.islemler);
+    await depolama.ramazanYaz(v.ramazan);
     await depolama.ayarlariYaz(v.ayarlar);
     son.current = v;
     setVeri(v);
@@ -258,6 +275,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
             vakitCevapla,
             ozelHal,
             cevapKaldir,
+            ramazanCevapla,
             orucTut,
             orucDuzelt,
             geriAl,
@@ -276,6 +294,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
       vakitCevapla,
       ozelHal,
       cevapKaldir,
+      ramazanCevapla,
       orucTut,
       orucDuzelt,
       geriAl,

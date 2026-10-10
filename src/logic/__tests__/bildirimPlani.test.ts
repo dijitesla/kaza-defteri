@@ -24,6 +24,7 @@ function araliklar(gun: string): Record<Vakit, VakitAraligi> {
 const ayarlar = () => {
   const a = varsayilanAyarlar();
   a.konum = { ad: 'Ankara', enlem: 39.92, boylam: 32.85 };
+  a.bildirim.yaklasmaDakika = 0; // yeni bildirim türleri ayrı testlerde
   return a;
 };
 const BUGUN = '2026-10-06';
@@ -70,10 +71,21 @@ describe('bildirimPlani', () => {
     expect(new Set(p.map((b) => b.id)).size).toBe(p.length);
   });
 
-  it(`${PLAN_GUN_SAYISI} gün ileriye planlar ve 64 sınırını aşmaz`, () => {
+  it(`${PLAN_GUN_SAYISI} gün ileriye planlar`, () => {
     const p = plan();
     expect(p[p.length - 1].veri.gun).toBe('2026-10-11');
-    expect(p.length).toBeLessThanOrEqual(64);
+  });
+
+  it('sınır verilirse en yakın bildirimleri tutar, son soruya uyarı eklenir', () => {
+    const a = ayarlar();
+    a.bildirim.yaklasmaDakika = 15;
+    const tam = plan({ ayarlar: a });
+    expect(tam.length).toBeGreaterThan(64);
+    const p = plan({ ayarlar: a, sinir: 64 });
+    expect(p).toHaveLength(64);
+    expect(p.map((b) => b.id)).toEqual(tam.slice(0, 64).map((b) => b.id));
+    const sonSoru = [...p].reverse().find((b) => b.kategori === 'SORU')!;
+    expect(sonSoru.govde).toContain('uygulamayı bir kez aç');
   });
 
   it('metinler', () => {
@@ -165,5 +177,45 @@ describe('bildirimPlani: geçersiz zaman', () => {
     const p = bildirimPlani({ ayarlar: ayarlar(), gunluk: {}, bugun: BUGUN, simdi: SIMDI, araliklar: bozuk });
     expect(p.some((b) => b.veri.vakit === 'yatsi')).toBe(false);
     expect(p.length).toBeGreaterThan(0);
+  });
+});
+
+describe('yeni bildirim türleri', () => {
+  it('vakit yaklaşıyor: girişten dk önce, cevaplanmış vakit için yok', () => {
+    const a = ayarlar();
+    a.bildirim.yaklasmaDakika = 15;
+    const p = plan({ ayarlar: a, gunluk: { [BUGUN]: { aksam: 'kilindi' } } });
+    const ikindi = p.find((b) => b.id === '2026-10-06_ikindi_yaklasma')!;
+    expect(ikindi).toMatchObject({ kategori: 'BILGI', baslik: 'İkindi vaktine 15 dakika' });
+    expect(saatMetni(ikindi.zaman)).toBe('15:45');
+    expect(p.some((b) => b.id === '2026-10-06_aksam_yaklasma')).toBe(false);
+  });
+
+  it("sahur: yalnızca Ramazan günlerinde, imsaktan dk önce", () => {
+    const ramazan = plan({ bugun: '2027-02-07', simdi: new Date(2027, 1, 7, 12) });
+    const sahur = ramazan.filter((b) => b.veri.tur === 'sahur');
+    expect(sahur[0].id).toBe('2027-02-08_sabah_sahur');
+    expect(saatMetni(sahur[0].zaman)).toBe('04:15'); // imsak 05:00 − 45 dk
+    expect(plan().some((b) => b.veri.tur === 'sahur')).toBe(false);
+  });
+
+  it('dini gün: saat 10:00, kandil metni', () => {
+    const p = plan({ bugun: '2026-12-08', simdi: new Date(2026, 11, 8, 12) });
+    const dg = p.filter((b) => b.veri.tur === 'dinigun');
+    expect(dg.map((b) => b.baslik)).toEqual(['Üç Ayların Başlangıcı', 'Regaip Kandili']);
+    expect(dg[1].govde).toBe('Bu gece Regaip Kandili. Hayırlı kandiller.');
+    expect(saatMetni(dg[0].zaman)).toBe('10:00');
+  });
+
+  it('kapatılınca planlanmaz', () => {
+    const a = ayarlar();
+    a.bildirim.sahurDakika = 0;
+    a.bildirim.diniGunBildirimi = false;
+    const p = plan({ ayarlar: a, bugun: '2027-02-07', simdi: new Date(2027, 1, 7, 12) });
+    expect(p.some((b) => b.veri.tur === 'sahur' || b.veri.tur === 'dinigun')).toBe(false);
+  });
+
+  it('bilgi bildirimine düğme cevabı kaydedilmez', () => {
+    expect(bildirimCevabi({}, { gun: BUGUN, vakit: 'ogle', tur: 'yaklasma' }, 'KILDIM')).toBeNull();
   });
 });

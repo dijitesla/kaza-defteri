@@ -5,7 +5,8 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dugme } from '../bilesenler/Dugme';
 import { GeriAlCubugu, useGeriAlCubugu } from '../bilesenler/GeriAlCubugu';
-import { orucOzeti } from '../logic/islemler';
+import { etkiMetni, islemAciklamasi, orucOzeti } from '../logic/islemler';
+import { gunAyMetni, gunAnahtari, saatMetni } from '../logic/tarih';
 import { sayiBicimle } from '../logic/kazaHesap';
 import { t } from '../metinler';
 import { buyukSayi, olcu, renk, yaziTipi } from '../tema';
@@ -16,6 +17,8 @@ const SAYI = /^\d{1,5}$/;
 export default function KazaOrucu() {
   const { veri, orucTut, orucDuzelt, geriAl } = useVeri();
   const o = orucOzeti(veri.kaza);
+  // Oruçla ilgili son kayıtlar (oruç alanı olan her işlem, geri almalar dahil), yeniden eskiye.
+  const kayitlar = veri.islemler.filter((i) => i.oruc !== undefined).slice(-10).reverse();
   const { cubuk, goster, kapat } = useGeriAlCubugu();
   const [giris, setGiris] = useState(String(o.kalan));
   // Kalan değişince (tuttum, geri al) giriş kutusu güncel sayıyı gösterir.
@@ -76,6 +79,25 @@ export default function KazaOrucu() {
               </View>
             </View>
           </View>
+
+          <View style={stil.kart}>
+            <Text style={stil.kartBaslik}>{t('oruc.kayitlar')}</Text>
+            {kayitlar.length === 0 ? <Text style={stil.not}>{t('oruc.kayitYok')}</Text> : null}
+            {kayitlar.map((k) => {
+              const z = new Date(k.zaman);
+              return (
+                <View key={k.id} style={stil.kayit}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={stil.kayitMetin}>{islemAciklamasi(k, veri.islemler)}</Text>
+                    <Text style={stil.not}>
+                      {gunAyMetni(gunAnahtari(z))} · {saatMetni(z)}
+                    </Text>
+                  </View>
+                  <Text style={stil.etki}>{etkiMetni(k)}</Text>
+                </View>
+              );
+            })}
+          </View>
         </ScrollView>
         {cubuk ? (
           <View style={stil.cubukKap}>
@@ -112,6 +134,9 @@ const stil = StyleSheet.create({
   kartBaslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   not: { fontFamily: yaziTipi.normal, fontSize: 13, color: renk.ikincilMetin, lineHeight: 19 },
   satir: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  kayit: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6, borderTopWidth: 1, borderTopColor: renk.zemin },
+  kayitMetin: { fontFamily: yaziTipi.normal, fontSize: 14, color: renk.metin },
+  etki: { fontFamily: yaziTipi.kalin, fontSize: 13, color: renk.ikincilMetin, fontVariant: ['tabular-nums'] },
   giris: {
     width: 110,
     minHeight: olcu.dokunmaMin,

@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { ayEvresi, geriSayimMetni, gunEvresi, type GunEvresi } from '../logic/gokyuzu';
-import { saatMetni } from '../logic/tarih';
+import { ramazanGunu, ramazanSayaci } from '../logic/diniGun';
+import { gunAnahtari, saatMetni } from '../logic/tarih';
 import { girisZamani, siradakiBaslik, type GununVakitleri } from '../logic/vakitler';
-import { VAKIT_ADLARI } from '../metinler';
+import { t, VAKIT_ADLARI } from '../metinler';
 import { olcu, renk, yaziTipi } from '../tema';
 import { VAKITLER, type Vakit } from '../types';
 import { CamiSilueti } from './CamiSilueti';
@@ -46,7 +47,22 @@ export function GokyuzuKarti({ bugun, yarin }: { bugun: GununVakitleri; yarin: G
 
   const evre = gunEvresi(simdi, bugun);
   const gok = GOK[evre];
-  const s = siradaki(simdi, bugun, yarin);
+  // Ramazan'da sayaç iftara ya da imsaka kurulur; diğer zamanlarda sıradaki vakte.
+  const rs = ramazanSayaci(
+    simdi,
+    bugun,
+    yarin,
+    ramazanGunu(gunAnahtari(bugun.ogle)) !== null,
+    ramazanGunu(gunAnahtari(yarin.ogle)) !== null,
+  );
+  const sv = siradaki(simdi, bugun, yarin);
+  const s = rs
+    ? {
+        baslik: rs.tur === 'iftar' ? t('ramazan.iftaraKalan') : t('ramazan.imsakaKalan'),
+        ad: rs.tur === 'iftar' ? t('ramazan.iftar') : t('ramazan.imsak'),
+        zaman: rs.zaman,
+      }
+    : { baslik: siradakiBaslik(sv.vakit), ad: VAKIT_ADLARI[sv.vakit], zaman: sv.zaman };
   const gunduzMu = simdi >= bugun.gunes && simdi < bugun.aksam;
 
   return (
@@ -72,16 +88,16 @@ export function GokyuzuKarti({ bugun, yarin }: { bugun: GununVakitleri; yarin: G
 
       <View style={stil.icerik}>
         <View style={{ flex: 1 }}>
-          <Text style={stil.ust}>{siradakiBaslik(s.vakit)}</Text>
+          <Text style={stil.ust}>{s.baslik}</Text>
           <Text
             style={stil.sayac}
             accessibilityLiveRegion="none"
-            accessibilityLabel={`${siradakiBaslik(s.vakit)} ${geriSayimMetni(s.zaman.getTime() - simdi.getTime())}`}
+            accessibilityLabel={`${s.baslik} ${geriSayimMetni(s.zaman.getTime() - simdi.getTime())}`}
           >
             {geriSayimMetni(s.zaman.getTime() - simdi.getTime())}
           </Text>
           <View style={stil.cip}>
-            <Text style={stil.cipAd}>{VAKIT_ADLARI[s.vakit]}</Text>
+            <Text style={stil.cipAd}>{s.ad}</Text>
             <Text style={stil.cipSaat}>{saatMetni(s.zaman)}</Text>
           </View>
         </View>

@@ -21,6 +21,11 @@ export interface Ayarlar {
     girisBildirimi: boolean;
     soruDakika: 15 | 30 | 60;
     yatsiSoruSaati: string; // 'HH:mm'
+    // Sürüm 1.5: vakit girmeden kaç dk önce haber verilir (0 = kapalı), Ramazan'da sahur hatırlatması
+    // (imsaktan kaç dk önce, 0 = kapalı) ve kandil/bayram bildirimleri.
+    yaklasmaDakika: 0 | 10 | 15 | 30 | 45;
+    sahurDakika: 0 | 30 | 45 | 60;
+    diniGunBildirimi: boolean;
   };
   dakikaDuzeltme: Record<Vakit, number>; // -10..+10
   // Günde kaç kaza kılınması hedefleniyor; 0 = hedef yok. Bitiş tarihi tahmini buna göre. (Sürüm 1.3)
@@ -36,6 +41,9 @@ export interface KazaDurumu {
 
 // Günlük vakit durumu, anahtar 'YYYY-MM-DD'
 // 'muaf': özel hal (kadınlar); borca eklenmez, seriyi bozmaz. (Sürüm 1.3)
+// Ramazan orucu cevapları, anahtar 'YYYY-MM-DD'. (Sürüm 1.5)
+export type RamazanDurumu = Record<string, 'tuttu' | 'tutamadi'>;
+
 export type VakitDurumu = 'kilindi' | 'kilinamadi' | 'cevapsiz' | 'muaf';
 export type GunlukDurum = Record<string, Partial<Record<Vakit, VakitDurumu>>>;
 
@@ -46,7 +54,8 @@ export type IslemTuru =
   | 'yeniden_hesap'
   | 'geri_alindi'
   | 'oruc_tutuldu'
-  | 'oruc_duzeltme';
+  | 'oruc_duzeltme'
+  | 'oruc_tutulamadi';
 
 export interface Islem {
   id: string;

@@ -2,6 +2,7 @@
 import { t, VAKIT_ADLARI } from '../metinler';
 import type { Ayarlar, GunlukDurum, Vakit } from '../types';
 import { VAKITLER } from '../types';
+import { bugunkuGunler, ramazanGunu } from './diniGun';
 import { vakitHadisi } from './hadis';
 import { gunEkle, gunOglesi, kucukHarf, saatMetni } from './tarih';
 import type { VakitAraligi } from './vakitler';
@@ -9,8 +10,9 @@ import type { VakitAraligi } from './vakitler';
 /** Bugünden itibaren kaç gün planlanır (iOS'ta bekleyen bildirim sınırı 64). */
 export const PLAN_GUN_SAYISI = 6;
 
-export type BildirimTuru = 'giris' | 'soru';
-export type Kategori = 'GIRIS' | 'SORU';
+export type BildirimTuru = 'giris' | 'soru' | 'yaklasma' | 'sahur' | 'dinigun';
+/** GIRIS ve SORU düğmelidir; BILGI yalnızca bilgi verir (vakit yaklaşıyor, sahur, dini gün). */
+export type Kategori = 'GIRIS' | 'SORU' | 'BILGI';
 
 /** Bildirim düğmelerinin kimlikleri. */
 export const EYLEM = { kildim: 'KILDIM', kilamadim: 'KILAMADIM', sonra: 'SONRA' } as const;
@@ -31,6 +33,9 @@ export interface PlanliBildirim {
 }
 
 export const bildirimId = (gun: string, vakit: Vakit, tur: BildirimTuru) => `${gun}_${vakit}_${tur}`;
+
+/** Dini gün bildirimi saati (yerel). */
+const DINI_GUN_SAATI = 10;
 
 const DK = 60_000;
 
@@ -74,6 +79,8 @@ interface PlanGirdisi {
   bugun: string;
   simdi: Date;
   araliklar: (gun: string) => Record<Vakit, VakitAraligi>;
+  /** Planlanacak en fazla bildirim (iOS'ta bekleyen bildirim sınırı 64); en yakın olanlar tutulur. */
+  sinir?: number;
 }
 
 /** Planlanacak bildirimler, zamana göre sıralı. Cevaplanmış vakitler ve geçmiş zamanlar atlanır. */
@@ -89,6 +96,17 @@ export function bildirimPlani(g: PlanGirdisi): PlanliBildirim[] {
       if (g.gunluk[gun]?.[vakit] && g.gunluk[gun][vakit] !== 'cevapsiz') continue;
       const Vakit = VAKIT_ADLARI[vakit];
       const aralik = a[vakit];
+
+      if (bildirim.yaklasmaDakika > 0) {
+        liste.push({
+          id: bildirimId(gun, vakit, 'yaklasma'),
+          zaman: new Date(aralik.giris.getTime() - bildirim.yaklasmaDakika * DK),
+          kategori: 'BILGI',
+          baslik: t('bildirim.yaklasmaBaslik', { Vakit, dk: bildirim.yaklasmaDakika }),
+          govde: t('bildirim.yaklasmaGovde', { Konum: konum.ad, vakit: kucukHarf(Vakit), saat: saatMetni(aralik.giris) }),
+          veri: { gun, vakit, tur: 'yaklasma' },
+        });
+      }
 
       if (bildirim.girisBildirimi) {
         liste.push({
@@ -114,10 +132,47 @@ export function bildirimPlani(g: PlanGirdisi): PlanliBildirim[] {
     }
   }
 
+  // Ramazan'da sahur hatırlatması ve dini gün bildirimleri (vakit seçimlerinden bağımsız).
+  for (let fark = 0; fark < PLAN_GUN_SAYISI; fark++) {
+    const gun = gunEkle(g.bugun, fark);
+    if (bildirim.sahurDakika > 0 && ramazanGunu(gun)) {
+      const imsak = g.araliklar(gun).sabah.giris;
+      liste.push({
+        id: bildirimId(gun, 'sabah', 'sahur'),
+        zaman: new Date(imsak.getTime() - bildirim.sahurDakika * DK),
+        kategori: 'BILGI',
+        baslik: t('bildirim.sahurBaslik'),
+        govde: t('bildirim.sahurGovde', { dk: bildirim.sahurDakika, saat: saatMetni(imsak) }),
+        veri: { gun, vakit: 'sabah', tur: 'sahur' },
+      });
+    }
+    if (bildirim.diniGunBildirimi) {
+      bugunkuGunler(gun).forEach((dg, i) => {
+        const zaman = gunOglesi(gun);
+        zaman.setHours(DINI_GUN_SAATI, 0, 0, 0);
+        const govde =
+          dg.tur === 'kandil'
+            ? t('bildirim.kandilGovde', { ad: dg.ad })
+            : dg.tur === 'bayram'
+              ? t('bildirim.bayramGovde')
+              : t('bildirim.gunGovde', { ad: dg.ad });
+        liste.push({
+          id: `${gun}_dinigun_${i}`,
+          zaman,
+          kategori: 'BILGI',
+          baslik: t('bildirim.diniGunBaslik', { ad: dg.ad }),
+          govde,
+          veri: { gun, vakit: 'sabah', tur: 'dinigun' },
+        });
+      });
+    }
+  }
+
   // Geçersiz zamanlar (ör. kutup bölgelerinde hesaplanamayan vakit) planlanmaz.
   const gelecek = liste
     .filter((b) => Number.isFinite(b.zaman.getTime()) && b.zaman.getTime() > g.simdi.getTime())
-    .sort((x, y) => x.zaman.getTime() - y.zaman.getTime());
+    .sort((x, y) => x.zaman.getTime() - y.zaman.getTime())
+    .slice(0, g.sinir ?? Infinity);
 
   // Planın son soru bildirimi: kullanıcı uygulamayı açmazsa hatırlatmalar burada biter (SPEC 6.3).
   for (let i = gelecek.length - 1; i >= 0; i--) {
@@ -135,8 +190,8 @@ export function bildirimVerisiOku(x: unknown): BildirimVerisi | null {
   const v = x as Record<string, unknown>;
   if (typeof v.gun !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v.gun)) return null;
   if (!VAKITLER.includes(v.vakit as Vakit)) return null;
-  if (v.tur !== 'giris' && v.tur !== 'soru') return null;
-  return { gun: v.gun, vakit: v.vakit as Vakit, tur: v.tur };
+  if (!['giris', 'soru', 'yaklasma', 'sahur', 'dinigun'].includes(v.tur as string)) return null;
+  return { gun: v.gun, vakit: v.vakit as Vakit, tur: v.tur as BildirimTuru };
 }
 
 /**
@@ -149,7 +204,7 @@ export function bildirimCevabi(
   eylem: string,
 ): { gun: string; vakit: Vakit; cevap: 'kilindi' | 'kilinamadi' } | null {
   const v = bildirimVerisiOku(veri);
-  if (!v) return null;
+  if (!v || (v.tur !== 'giris' && v.tur !== 'soru')) return null;
   let cevap: 'kilindi' | 'kilinamadi';
   if (eylem === EYLEM.kildim) cevap = 'kilindi';
   else if (eylem === EYLEM.kilamadim && v.tur === 'soru') cevap = 'kilinamadi';

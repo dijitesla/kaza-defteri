@@ -1,6 +1,6 @@
 // Borcu değiştiren işlemler, geri alma ve işlem geçmişi. Kaynak: docs/SPEC.md, Bölüm 2.5, 2.6, 3.
 import { t, VAKIT_ADLARI } from '../metinler';
-import type { Ayarlar, GunlukDurum, Islem, KazaAyarlari, KazaDurumu, KazaVakit, Vakit } from '../types';
+import type { Ayarlar, GunlukDurum, Islem, KazaAyarlari, KazaDurumu, KazaVakit, RamazanDurumu, Vakit } from '../types';
 import { KAZA_VAKITLERI } from '../types';
 import { islemleriKirp } from './depolama';
 import { kazaHesapla, vakitBorclari, type HesapGirdisi } from './kazaHesap';
@@ -11,6 +11,7 @@ export interface VeriDurumu {
   kaza: KazaDurumu;
   gunluk: GunlukDurum;
   islemler: Islem[]; // eskiden yeniye
+  ramazan?: RamazanDurumu;
 }
 
 /**
@@ -126,6 +127,13 @@ export function geriAl(d: VeriDurumu, simdi: Date, id: string, beklenenId?: stri
     oruc = { ilkBorc: ilkOruc, kalan: kalanOruc };
   }
 
+  // Ramazan orucu "tutamadım" geri alınınca o günün cevabı da silinir.
+  let ramazan = d.ramazan;
+  if (hedef.tur === 'oruc_tutulamadi' && hedef.gun && ramazan) {
+    const { [hedef.gun]: _silinen, ...kalanGunler } = ramazan;
+    ramazan = kalanGunler;
+  }
+
   // Yeniden hesap geri alınınca başlangıç borcu ve kaza ayarları da eski haline döner.
   let ayarlar = d.ayarlar;
   let ilkBorc = d.kaza.ilkBorc;
@@ -139,6 +147,7 @@ export function geriAl(d: VeriDurumu, simdi: Date, id: string, beklenenId?: stri
     ayarlar,
     kaza: { ilkBorc, kalan, oruc },
     gunluk,
+    ...(ramazan !== d.ramazan ? { ramazan } : {}),
     islemler: islemEkle(d.islemler, {
       id,
       zaman: simdi.toISOString(),
@@ -257,6 +266,37 @@ export function orucDuzelt(d: VeriDurumu, yeniKalan: number, simdi: Date, id: st
   };
 }
 
+/**
+ * Ramazan orucu cevabı. "Tuttum" borcu değiştirmez (kayıt defterine girmez). "Tutamadım" kaza orucuna
+ * bir gün ekler (başlangıç borcu da artar, tutulan sayısı değişmez) ve kayıt yazar. Cevaplanmış gün için null.
+ */
+export function ramazanCevapla(
+  d: VeriDurumu,
+  gun: string,
+  cevap: 'tuttu' | 'tutamadi',
+  simdi: Date,
+  id: string,
+): VeriDurumu | null {
+  if (d.ramazan?.[gun]) return null;
+  const ramazan = { ...d.ramazan, [gun]: cevap };
+  if (cevap === 'tuttu') return { ...d, ramazan };
+  const { ilkBorc, kalan } = d.kaza.oruc;
+  return {
+    ...d,
+    ramazan,
+    kaza: { ...d.kaza, oruc: { ilkBorc: ilkBorc + 1, kalan: kalan + 1 } },
+    islemler: islemEkle(d.islemler, {
+      id,
+      zaman: simdi.toISOString(),
+      tur: 'oruc_tutulamadi',
+      gun,
+      degisim: {},
+      oruc: 1,
+      orucIlk: 1,
+    }),
+  };
+}
+
 /** Oruç özeti: tutulan = başlangıç borcu - kalan. */
 export function orucOzeti(kaza: KazaDurumu): { ilkBorc: number; tutulan: number; kalan: number } {
   const { ilkBorc, kalan } = kaza.oruc;
@@ -295,6 +335,8 @@ export function islemAciklamasi(islem: Islem, islemler: Islem[]): string {
       return t('gecmis.orucTutuldu');
     case 'oruc_duzeltme':
       return t('gecmis.orucDuzeltme');
+    case 'oruc_tutulamadi':
+      return t('gecmis.orucTutulamadi');
   }
 }
 

@@ -15,6 +15,7 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | sekme.vakitler | Vakitler |
 | sekme.gecmis | Geçmiş |
 | sekme.ayarlar | Ayarlar |
+| sekme.rehber | Rehber |
 
 ## Kurulum 1/3: Konum
 | Anahtar | Metin |
@@ -125,6 +126,7 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | gecmis.dun | Dün |
 | gecmis.buHafta | Bu hafta kılınan |
 | gecmis.buAy | Bu ay kılınan |
+| gecmis.orucTutulamadi | Ramazan orucu tutulamadı, kazaya eklendi |
 | gecmis.orucTutuldu | Kaza orucu tutuldu |
 | gecmis.orucDuzeltme | Kaza orucu borcu düzeltildi |
 | gecmis.haftalik | Son 4 hafta |
@@ -173,6 +175,8 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | oruc.duzelt | Borcu düzelt |
 | oruc.duzeltAlt | Kaç gün kaza orucun kaldığını gir. Uygulama oruç borcunu hesaplamaz; kendi bildiğin sayıyı yaz. |
 | oruc.ekle | Kaza orucu borcunu ekle |
+| oruc.kayitlar | Oruç kayıtları |
+| oruc.kayitYok | Henüz bir oruç kaydı yok. |
 | oruc.bitti | Kaza orucu borcun tamamlandı. Allah kabul etsin. |
 
 ## Takvim
@@ -185,6 +189,58 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | takvim.muaf | Özel hal |
 | takvim.onceki | Önceki ay |
 | takvim.sonraki | Sonraki ay |
+
+## Rehber
+| Anahtar | Metin |
+|---|---|
+| rehber.baslik | Rehber |
+| rehber.gununEsmasi | Günün esması |
+| rehber.yaklasan | Yaklaşan dini gün |
+| rehber.kalanGun | {n} gün kaldı |
+| rehber.bugun | Bugün |
+| rehber.buGece | Bu gece |
+| rehber.yarin | Yarın |
+| rehber.diniGunler | Dini günler |
+| rehber.diniGunlerAlt | Kandiller, bayramlar, Ramazan |
+| rehber.esma | Esmaü'l-Hüsna |
+| rehber.esmaAlt | Allah'ın güzel isimleri |
+| rehber.sureler | Namaz sureleri |
+| rehber.surelerAlt | Arapça, okunuş ve meal |
+| rehber.dualar | Namaz duaları |
+| rehber.dualarAlt | Okunuş ve anlam |
+| rehber.imsakiye | İmsakiye |
+| rehber.imsakiyeAlt | 30 günlük vakit çizelgesi |
+| rehber.kible | Kıble |
+| rehber.zikirmatik | Zikirmatik |
+| rehber.kazaOrucu | Kaza orucu |
+| rehber.diniGunlerNot | Tarihler Diyanet İşleri Başkanlığı takviminden alınmıştır. Yeni yılın takvimi uygulama güncellemesiyle eklenir. |
+| rehber.diniGunYok | Takvimde yaklaşan bir dini gün yok. Yeni takvim uygulama güncellemesiyle gelecek. |
+| rehber.esmaKaynak | Kaynak: Zikr (açık kaynak). |
+| rehber.sureKaynak | Arapça metin: Tanzil. Meal: Diyanet İşleri. Kaynak: quran-api (açık kaynak). |
+| rehber.duaKaynak | Kaynak: {kaynak} |
+| rehber.duaNot | Kunut duaları kaynak bulunduğunda eklenecek. |
+| rehber.okunus | Okunuşu |
+| rehber.meal | Meali |
+| rehber.anlam | Anlamı |
+| rehber.arapca | Arapça |
+| rehber.ayetSayisi | {n} ayet |
+| rehber.imsakiyeTarih | Tarih |
+| rehber.imsakiyeNot | Vakitler {konum} için telefonda hesaplanır. |
+
+## Ramazan
+| Anahtar | Metin |
+|---|---|
+| ramazan.iftaraKalan | İftara kalan |
+| ramazan.imsakaKalan | İmsaka kalan |
+| ramazan.iftar | İftar |
+| ramazan.imsak | İmsak |
+| ramazan.gun | Ramazan'ın {n}. günü |
+| ramazan.soru | Bugün oruç tuttun mu? |
+| ramazan.tuttum | Tuttum |
+| ramazan.tutamadim | Tutamadım |
+| ramazan.tutuldu | Oruç tutuldu. Allah kabul etsin. |
+| ramazan.tutulamadi | Kaza orucuna 1 gün eklendi. |
+| ramazan.hayirli | Hayırlı Ramazanlar |
 
 ## Hadis
 | Anahtar | Metin |
@@ -236,6 +292,14 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | bildirim.dugmeSonra | Sonra |
 | bildirim.kanalGiris | Vakit girdi uyarısı |
 | bildirim.kanalSoru | Kıldın mı? soruları |
+| bildirim.yaklasmaBaslik | {Vakit} vaktine {dk} dakika |
+| bildirim.yaklasmaGovde | {Konum} için {vakit} vakti {saat}'te giriyor. |
+| bildirim.sahurBaslik | Sahur vakti |
+| bildirim.sahurGovde | İmsaka {dk} dakika kaldı. İmsak {saat}. |
+| bildirim.diniGunBaslik | {ad} |
+| bildirim.kandilGovde | Bu gece {ad}. Hayırlı kandiller. |
+| bildirim.bayramGovde | Bayramınız mübarek olsun. |
+| bildirim.gunGovde | Bugün {ad}. |
 
 ## Ayarlar
 | Anahtar | Metin |
@@ -257,6 +321,13 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | ayar.yatsiSaati | Yatsı soru saati |
 | ayar.vakitDuzelt | Vakit düzeltmeleri |
 | ayar.vakitDuzeltAlt | Vakitler bulunduğun yerin takviminden farklıysa dakika ekle ya da çıkar. |
+| ayar.yaklasma | Vakit yaklaşıyor bildirimi |
+| ayar.yaklasmaAlt | Vakit girmeden önce haber verir. |
+| ayar.sahur | Sahur hatırlatması |
+| ayar.sahurAlt | Ramazan'da imsaktan önce. |
+| ayar.diniGunBildirimi | Kandil ve bayram bildirimleri |
+| ayar.diniGunBildirimiAlt | Dini günlerde sabah kısa bir bildirim. |
+| ayar.kapali | Kapalı |
 | ayar.izinYok | Bildirim izni kapalı. Hatırlatmalar gelmeyecek. |
 | ayar.izinVer | İzin ver |
 | ayar.kesinAlarm | Hatırlatmalar gecikebilir. "Alarmlar ve hatırlatıcılar" iznini aç. |

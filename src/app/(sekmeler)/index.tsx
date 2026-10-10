@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnahtarSatiri } from '../../bilesenler/AnahtarSatiri';
 import { GeriAlCubugu, useGeriAlCubugu } from '../../bilesenler/GeriAlCubugu';
 import { CumaKarti } from '../../bilesenler/CumaKarti';
+import { DiniGunKarti } from '../../bilesenler/DiniGunKarti';
+import { RamazanKarti } from '../../bilesenler/RamazanKarti';
 import { GokyuzuKarti } from '../../bilesenler/GokyuzuKarti';
 import { GunYayi } from '../../bilesenler/GunYayi';
 import { HadisKarti } from '../../bilesenler/HadisKarti';
@@ -15,6 +17,7 @@ import { depolama } from '../../depolama';
 import { ayEvresi, gokCismi, gunEvresi } from '../../logic/gokyuzu';
 import type { ZikirDurumu } from '../../logic/zikir';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
+import { enYakinDiniGun, gunFarki, ramazanGunu } from '../../logic/diniGun';
 import { saatlikHadis } from '../../logic/hadis';
 import { cevapsizVakitler, ozelHalVar, yayDurumu, type CevapsizVakit } from '../../logic/gunluk';
 import { bitisTarihi, hedefIlerlemesi } from '../../logic/hedef';
@@ -36,7 +39,7 @@ function cevapsizMetni(c: CevapsizVakit, bugun: string): string {
 }
 
 export default function Bugun() {
-  const { veri, vakitCevapla, geriAl, ozelHal, cevapKaldir } = useVeri();
+  const { veri, vakitCevapla, geriAl, ozelHal, cevapKaldir, ramazanCevapla } = useVeri();
   const simdi = useSimdi();
   const { cubuk, goster, kapat } = useGeriAlCubugu();
   const { konum, dakikaDuzeltme, kurulumZamani } = veri.ayarlar;
@@ -97,6 +100,9 @@ export default function Bugun() {
   const bitis = bitisTarihi(kalanKaza, hedef, simdi);
   const oruc = orucOzeti(veri.kaza);
   const ozelHalAcik = veri.ayarlar.ozelGun.acik;
+  const ramazan = ramazanGunu(bugun);
+  const diniGun = enYakinDiniGun(bugun);
+  const diniGunFark = diniGun ? gunFarki(bugun, diniGun.tarih) : Infinity;
 
   const cevapla = (c: CevapsizVakit, cevap: 'kilindi' | 'kilinamadi' | 'muaf') => {
     const id = vakitCevapla(c.gun, c.vakit, cevap);
@@ -117,6 +123,22 @@ export default function Bugun() {
           </View>
 
           <GokyuzuKarti bugun={vakitler} yarin={yarinVakitleri} />
+
+          {ramazan ? (
+            <RamazanKarti
+              gun={ramazan.gun}
+              toplam={ramazan.toplam}
+              bas={ramazan.bas}
+              bugun={bugun}
+              kayit={veri.ramazan}
+              onCevap={(c) => {
+                const id = ramazanCevapla(bugun, c);
+                if (id) goster(t('ramazan.tutulamadi'), id);
+              }}
+            />
+          ) : null}
+
+          {diniGun && diniGunFark <= 7 ? <DiniGunKarti gun={diniGun} fark={diniGunFark} /> : null}
 
           {simdi.getDay() === 5 ? <CumaKarti ogle={vakitler.ogle} simdi={simdi} /> : null}
 

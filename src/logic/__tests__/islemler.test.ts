@@ -15,6 +15,7 @@ import {
   orucDuzelt,
   orucOzeti,
   orucTut,
+  ramazanCevapla,
   ozet,
   vakitCevapla,
   yenidenHesapla,
@@ -335,5 +336,27 @@ describe('haftalikOzet', () => {
     expect(h.map((x) => x.bas.getDate())).toEqual([14, 21, 28, 5]);
     expect(h.map((x) => x.kaza)).toEqual([0, 0, 1, 1]);
     expect(h.map((x) => x.vakit)).toEqual([1, 0, 0, 2]);
+  });
+});
+
+describe('ramazanCevapla', () => {
+  it('tuttum: yalnızca cevap yazılır', () => {
+    const d = ramazanCevapla(durum(), '2027-02-10', 'tuttu', SIMDI, 'r')!;
+    expect(d.ramazan).toEqual({ '2027-02-10': 'tuttu' });
+    expect(d.islemler).toEqual([]);
+    expect(d.kaza).toEqual(durum().kaza);
+  });
+  it('tutamadım: kaza orucuna eklenir, kayıt yazılır, geri alınır', () => {
+    let d = ramazanCevapla(durum(), '2027-02-10', 'tutamadi', SIMDI, 'r')!;
+    expect(d.kaza.oruc).toEqual({ ilkBorc: 1, kalan: 1 });
+    expect(islemAciklamasi(d.islemler[0], d.islemler)).toBe('Ramazan orucu tutulamadı, kazaya eklendi');
+    expect(etkiMetni(d.islemler[0])).toBe('+1');
+    d = geriAl(d, SIMDI, 'g')!;
+    expect(d.kaza.oruc).toEqual({ ilkBorc: 0, kalan: 0 });
+    expect(d.ramazan).toEqual({});
+  });
+  it('cevaplanmış gün için null', () => {
+    const d = ramazanCevapla(durum(), '2027-02-10', 'tuttu', SIMDI, 'r')!;
+    expect(ramazanCevapla(d, '2027-02-10', 'tutamadi', SIMDI, 'x')).toBeNull();
   });
 });

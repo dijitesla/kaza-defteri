@@ -1,9 +1,13 @@
 import { useMemo } from 'react';
 import { DesenZemin } from '../../bilesenler/DesenZemin';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GokyuzuKarti } from '../../bilesenler/GokyuzuKarti';
+import { router } from 'expo-router';
+import { DiniGunKarti } from '../../bilesenler/DiniGunKarti';
 import { HadisKarti } from '../../bilesenler/HadisKarti';
+import { Simge } from '../../bilesenler/Simge';
+import { enYakinDiniGun, gunFarki } from '../../logic/diniGun';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
 import { simdikiVakit, vakitHadisi } from '../../logic/hadis';
 import { gunAnahtari, gunEkle, saatMetni, uzunTarihMetni } from '../../logic/tarih';
@@ -31,6 +35,8 @@ export default function Vakitler() {
   // Hadis yalnızca vakit değişince yenilenir (bildirimdeki hadisle aynı).
   const vakitSimdi = simdikiVakit(simdi, v, dun);
   const hadis = vakitHadisi(vakitSimdi.vakit, vakitSimdi.giris);
+
+  const diniGun = enYakinDiniGun(bugun);
 
   const satirlar = [
     { ad: t('vakitler.imsak'), zaman: v.imsak },
@@ -84,6 +90,23 @@ export default function Vakitler() {
         </View>
 
         <HadisKarti etiket={t('hadis.vakit', { Vakit: VAKIT_ADLARI[vakitSimdi.vakit] })} hadis={hadis} />
+
+        <Pressable
+          onPress={() => router.push('/imsakiye')}
+          accessibilityRole="button"
+          style={({ pressed }) => [stil.baglanti, pressed && { opacity: 0.85 }]}
+        >
+          <View style={stil.baglantiSimge}>
+            <Simge ad="takvim" renk={renk.altin} boyut={22} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={stil.baglantiBaslik}>{t('rehber.imsakiye')}</Text>
+            <Text style={stil.baglantiAlt}>{t('rehber.imsakiyeAlt')}</Text>
+          </View>
+          <Simge ad="ok" renk={renk.ikincilMetin} boyut={18} />
+        </Pressable>
+
+        {diniGun ? <DiniGunKarti gun={diniGun} fark={gunFarki(bugun, diniGun.tarih)} /> : null}
       </ScrollView>
       <ReklamBandi />
     </SafeAreaView>
@@ -113,6 +136,10 @@ const stil = StyleSheet.create({
   ad: { flex: 1, fontFamily: yaziTipi.kalin, fontSize: 16, color: renk.metin },
   saat: { fontFamily: yaziTipi.baslik, fontSize: 20, color: renk.ikincilMetin, fontVariant: ['tabular-nums'] },
   aktifMetin: { color: renk.beyaz },
+  baglanti: { backgroundColor: renk.kart, borderRadius: olcu.kartYaricap, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  baglantiSimge: { width: 42, height: 42, borderRadius: 21, backgroundColor: renk.altinZemin, alignItems: 'center', justifyContent: 'center' },
+  baglantiBaslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
+  baglantiAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin },
   cip: { backgroundColor: renk.altinZemin, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2 },
   cipMetin: { fontFamily: yaziTipi.kalin, fontSize: 11, color: renk.altin },
 });

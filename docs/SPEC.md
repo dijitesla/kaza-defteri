@@ -235,3 +235,15 @@ Ekran düzeni için `docs/tasarim.html` dosyasına bak.
 - **Haftalık grafik** (`haftalikOzet`): Geçmiş'te son 4 hafta, kılınan kaza ve "kıldım" işaretlenen vakit.
 - **Cuma kartı:** cuma günleri ana ekranda, öğle vaktiyle.
 - **Esmaü'l-Hüsna:** lisansı belli güvenilir bir açık kaynak bulunamadığı için eklenmedi; kaynak gelince yapılacak.
+
+## 15. Sürüm 1.5: Rehber, Ramazan ve yeni bildirimler
+- **Rehber sekmesi** (5. sekme): günün esması, en yakın dini gün, kısayollar (dini günler, Esmaü'l-Hüsna, namaz sureleri, namaz duaları, imsakiye, kıble, zikirmatik, kaza orucu).
+- **Kaynaklar** (yayından önce izinleri netleştirilmeli):
+  - Esmaü'l-Hüsna: github.com/esref-ak/Zikr (MIT).
+  - Sureler ve Kur'an duaları (Rabbenâ Âtinâ, Rabbenağfirlî): fawazahmed0/quran-api; Arapça Tanzil, okunuş Türkçe Latin harfli, meal Diyanet İşleri.
+  - Namaz duaları (Sübhâneke, Ettehiyyâtü, Salli, Bârik): hadis kitaplarındaki okunuş ve anlamlar (İbn Mâce 804, Buhârî 6265, 3370). Kunut duaları ve rükû/secde tesbihleri kaynak bulunamadığı (ya da senedi zayıf olduğu) için eklenmedi.
+  - Dini günler: Diyanet 2027 takvimi (`src/data/diniGunler.ts`). Her yıl Diyanet takvimi yayımlanınca tabloya eklenir; tabloda olmayan tarihler için dini gün ve Ramazan özellikleri görünmez.
+- **Ramazan** (yalnızca `RAMAZANLAR` tablosundaki günlerde, kendiliğinden açılır ve kapanır): gökyüzü kartında iftara/imsaka kalan süre (arifede yatsıdan sonra ilk sahura), ana ekranda Ramazan kartı (gün, şerit, "Bugün oruç tuttun mu?"). "Tutamadım" kaza orucuna 1 gün ekler, kayıt defterine yazılır (`oruc_tutulamadi`) ve geri alınabilir; "Tuttum" borcu değiştirmez. Cevaplar `kd:ramazan` anahtarında ve yedekte.
+- **Yeni bildirimler** (`BILGI` kategorisi, düğmesiz): vakit yaklaşıyor (girişten 10/15/30/45 dk önce, varsayılan 15), sahur (Ramazan'da imsaktan 30/45/60 dk önce, varsayılan 45), kandil ve bayram (o gün 10:00). iOS'ta toplam en fazla 64 bildirim planlanır, en yakınlar tutulur.
+- **İmsakiye:** bugünden itibaren 30 günün vakitleri; Ramazan günleri işaretli.
+- Ana ekranda 7 gün içindeki dini gün kartı; aynı güne düşen dini günler tek kartta birleşir.

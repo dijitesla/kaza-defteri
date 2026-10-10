@@ -1,5 +1,5 @@
 // Depolama katmanı. AsyncStorage dışarıdan verilir, böylece testte bellek içi depo kullanılabilir.
-import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit } from '../types';
+import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, RamazanDurumu } from '../types';
 import { zikriTamamla, type ZikirDurumu } from './zikir';
 
 /** AsyncStorage'ın kullandığımız kısmı. */
@@ -15,6 +15,7 @@ export const ANAHTAR = {
   gunluk: 'kd:gunluk',
   islemler: 'kd:islemler',
   zikir: 'kd:zikir',
+  ramazan: 'kd:ramazan',
 } as const;
 
 export const ISLEM_SINIRI = 2000;
@@ -40,6 +41,9 @@ export function varsayilanAyarlar(): Ayarlar {
       girisBildirimi: true,
       soruDakika: 30,
       yatsiSoruSaati: '23:00',
+      yaklasmaDakika: 15,
+      sahurDakika: 45,
+      diniGunBildirimi: true,
     },
     dakikaDuzeltme: { sabah: 0, ogle: 0, ikindi: 0, aksam: 0, yatsi: 0 },
     gunlukHedef: 0,
@@ -100,6 +104,16 @@ export function kazayiTamamla(kayitli: unknown): KazaDurumu {
   };
 }
 
+/** Ramazan orucu kayıtları; geçersiz girdiler atılır. */
+export function ramazaniTamamla(x: unknown): RamazanDurumu {
+  if (!nesneMi(x)) return {};
+  const r: RamazanDurumu = {};
+  for (const [gun, c] of Object.entries(x)) {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(gun) && (c === 'tuttu' || c === 'tutamadi')) r[gun] = c;
+  }
+  return r;
+}
+
 /** En yeni ISLEM_SINIRI kaydı tutar (liste eskiden yeniye sıralıdır). */
 export function islemleriKirp(islemler: Islem[]): Islem[] {
   return islemler.length > ISLEM_SINIRI ? islemler.slice(-ISLEM_SINIRI) : islemler;
@@ -148,6 +162,13 @@ export function depolamaOlustur(depo: Depo) {
     },
     islemleriYaz(islemler: Islem[]): Promise<void> {
       return yaz(ANAHTAR.islemler, islemleriKirp(islemler));
+    },
+
+    async ramazanOku(): Promise<RamazanDurumu> {
+      return ramazaniTamamla(await oku(ANAHTAR.ramazan));
+    },
+    ramazanYaz(ramazan: RamazanDurumu): Promise<void> {
+      return yaz(ANAHTAR.ramazan, ramazan);
     },
 
     async zikirOku(): Promise<ZikirDurumu> {

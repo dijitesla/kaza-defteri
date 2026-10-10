@@ -14,6 +14,7 @@ function veri(): YedekVerisi {
     kaza,
     gunluk: { '2026-10-05': { yatsi: 'kilinamadi', ikindi: 'muaf' } },
     islemler: [{ id: 'a', zaman: SIMDI.toISOString(), tur: 'kaza_kilindi', vakit: 'sabah', degisim: { sabah: -1 } }],
+    ramazan: { '2027-02-08': 'tuttu' },
   };
 }
 

@@ -11,6 +11,7 @@ type SekmeCubuguProps = Parameters<NonNullable<ComponentProps<typeof Tabs>['tabB
 const SIMGELER: Record<string, SimgeAdi> = {
   index: 'gunes',
   vakitler: 'saat',
+  rehber: 'kitap',
   gecmis: 'defter',
   ayarlar: 'ayar',
 };
@@ -99,7 +100,7 @@ const stil = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 22,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     height: 44,
   },
   etiketKap: { overflow: 'hidden' },

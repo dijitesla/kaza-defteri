@@ -189,6 +189,28 @@ export default function AyarlarEkrani() {
           onKapat={() => setSaatAcik(false)}
           onSec={(s) => bildirimDegistir({ yatsiSoruSaati: s })}
         />
+        <Text style={stil.etiket}>{t('ayar.yaklasma')}</Text>
+        <Text style={stil.not}>{t('ayar.yaklasmaAlt')}</Text>
+        <Secenekler<Ayarlar['bildirim']['yaklasmaDakika']>
+          gorunum="cip"
+          secenekler={([0, 10, 15, 30, 45] as const).map((n) => ({ deger: n, etiket: n ? t('hatirlat.dk', { n }) : t('ayar.kapali') }))}
+          deger={b.yaklasmaDakika}
+          onChange={(n) => bildirimDegistir({ yaklasmaDakika: n })}
+        />
+        <Text style={stil.etiket}>{t('ayar.sahur')}</Text>
+        <Text style={stil.not}>{t('ayar.sahurAlt')}</Text>
+        <Secenekler<Ayarlar['bildirim']['sahurDakika']>
+          gorunum="cip"
+          secenekler={([0, 30, 45, 60] as const).map((n) => ({ deger: n, etiket: n ? t('hatirlat.dk', { n }) : t('ayar.kapali') }))}
+          deger={b.sahurDakika}
+          onChange={(n) => bildirimDegistir({ sahurDakika: n })}
+        />
+        <AnahtarSatiri
+          baslik={t('ayar.diniGunBildirimi')}
+          alt={t('ayar.diniGunBildirimiAlt')}
+          deger={b.diniGunBildirimi}
+          onChange={(acik) => bildirimDegistir({ diniGunBildirimi: acik })}
+        />
       </Bolum>
 
       <Bolum baslik={t('ayar.vakitDuzelt')} alt={t('ayar.vakitDuzeltAlt')}>

@@ -37,6 +37,7 @@ const TUR_GORUNUMU: Record<IslemTuru, { simge: SimgeAdi; renk: string; zemin: st
   geri_alindi: { simge: 'geri', renk: renk.ikincilMetin, zemin: renk.pasifZemin },
   oruc_tutuldu: { simge: 'onay', renk: renk.oruc, zemin: renk.orucZemin },
   oruc_duzeltme: { simge: 'kalem', renk: renk.oruc, zemin: renk.orucZemin },
+  oruc_tutulamadi: { simge: 'arti', renk: renk.oruc, zemin: renk.orucZemin },
 };
 
 function gunBasligi(gun: string, bugun: string): string {

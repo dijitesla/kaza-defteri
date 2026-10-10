@@ -1,7 +1,7 @@
 // Yedek dosyası: oluşturma ve doğrulama. Kaynak: docs/SPEC.md, Bölüm 7.
-import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, VakitDurumu } from '../types';
+import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, RamazanDurumu, VakitDurumu } from '../types';
 import { KAZA_VAKITLERI, VAKITLER } from '../types';
-import { ayarlariTamamla, ISLEM_SINIRI, orucuTamamla } from './depolama';
+import { ayarlariTamamla, ISLEM_SINIRI, orucuTamamla, ramazaniTamamla } from './depolama';
 import { gunAnahtari } from './tarih';
 
 export const YEDEK_SURUMU = 1;
@@ -13,6 +13,7 @@ export interface Yedek {
   kaza: KazaDurumu;
   gunluk: GunlukDurum;
   islemler: Islem[];
+  ramazan?: RamazanDurumu;
 }
 
 export interface YedekVerisi {
@@ -20,6 +21,7 @@ export interface YedekVerisi {
   kaza: KazaDurumu;
   gunluk: GunlukDurum;
   islemler: Islem[];
+  ramazan: RamazanDurumu;
 }
 
 export function yedekOlustur(v: YedekVerisi, simdi: Date): Yedek {
@@ -48,6 +50,7 @@ const ISLEM_TURLERI: readonly Islem['tur'][] = [
   'geri_alindi',
   'oruc_tutuldu',
   'oruc_duzeltme',
+  'oruc_tutulamadi',
 ];
 
 function gunlukGecerli(x: unknown): x is GunlukDurum {
@@ -102,6 +105,7 @@ export function yedekDogrula(metin: string): { veri: YedekVerisi; tarih: string 
       kaza: { ilkBorc: { ...kaza.ilkBorc }, kalan: { ...kaza.kalan }, oruc: orucuTamamla(kaza.oruc) },
       gunluk: x.gunluk,
       islemler: (x.islemler as Islem[]).slice(-ISLEM_SINIRI),
+      ramazan: ramazaniTamamla(x.ramazan), // eski yedeklerde yok
     },
   };
 }
