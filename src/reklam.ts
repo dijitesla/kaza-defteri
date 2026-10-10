@@ -3,15 +3,22 @@ import { Platform } from 'react-native';
 import mobileAds, { AdsConsent, AdsConsentPrivacyOptionsRequirementStatus, TestIds } from 'react-native-google-mobile-ads';
 
 /**
- * Gerçek banner reklam birimi kimlikleri (AdMob > Uygulamalar > Reklam birimleri).
- * Boş kaldıkça Google'ın test reklamı gösterilir. Uygulama kimlikleri app.json'da İKİ yerde:
- * expo.plugins içindeki react-native-google-mobile-ads eklentisi ve kökteki
- * "react-native-google-mobile-ads" anahtarı (kütüphanenin Android derleme betiği bunu okur).
+ * Gerçek banner reklam birimi kimlikleri (AdMob > Uygulamalar > Kaza Defteri > Reklam birimleri).
+ * Uygulama kimlikleri app.json'da İKİ yerde: expo.plugins içindeki react-native-google-mobile-ads
+ * eklentisi ve kökteki "react-native-google-mobile-ads" anahtarı (kütüphanenin Android derleme betiği
+ * bunu okur). iOS için henüz AdMob uygulaması yok; boş kaldıkça test reklamı gösterilir.
  */
-const BANNER_KIMLIKLERI = { android: '', ios: '' };
+const BANNER_KIMLIKLERI = { android: 'ca-app-pub-4620185704256647/9985042432', ios: '' };
+
+/**
+ * Gerçek reklam yalnızca Play Store derlemesinde gösterilir (aab.yml EXPO_PUBLIC_GERCEK_REKLAM=1 verir).
+ * Test APK'ları ve geliştirme test reklamı gösterir: geliştiricinin kendi reklamına dokunması
+ * AdMob'da geçersiz trafik sayılır.
+ */
+const GERCEK_REKLAM = process.env.EXPO_PUBLIC_GERCEK_REKLAM === '1';
 
 const gercekKimlik = Platform.OS === 'ios' ? BANNER_KIMLIKLERI.ios : BANNER_KIMLIKLERI.android;
-export const BANNER_KIMLIGI = __DEV__ || !gercekKimlik ? TestIds.ADAPTIVE_BANNER : gercekKimlik;
+export const BANNER_KIMLIGI = __DEV__ || !GERCEK_REKLAM || !gercekKimlik ? TestIds.ADAPTIVE_BANNER : gercekKimlik;
 
 let hazirlik: Promise<boolean> | null = null;
 

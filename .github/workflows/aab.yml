@@ -18,6 +18,10 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # Play Store derlemesinde gerçek AdMob reklam birimi kullanılır (src/reklam.ts).
+  EXPO_PUBLIC_GERCEK_REKLAM: '1'
+
 jobs:
   aab:
     # Dal push'larında yalnızca commit mesajında [aab] varsa çalışır.
