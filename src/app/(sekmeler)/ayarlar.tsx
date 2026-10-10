@@ -36,6 +36,9 @@ async function kesinAlarmAyariniAc() {
   }
 }
 
+/** Play Store ve AdMob için yayımlanan gizlilik politikası (docs/gizlilik.html, GitHub Pages). */
+const GIZLILIK_ADRESI = 'https://dijitesla.github.io/kaza-defteri/gizlilik.html';
+
 export default function AyarlarEkrani() {
   const { veri, ayarlariGuncelle, yedektenYukle, bildirimleriYenile } = useVeri();
   const a = veri.ayarlar;
@@ -244,6 +247,7 @@ export default function AyarlarEkrani() {
         <Text style={stil.metin}>{t('hakkinda.metin')}</Text>
         <Text style={stil.metin}>{t('hakkinda.vakit')}</Text>
         <Text style={stil.metin}>{t('hakkinda.gizlilik')}</Text>
+        <SatirDugme baslik={t('hakkinda.gizlilikPolitikasi')} sag="›" onPress={() => Linking.openURL(GIZLILIK_ADRESI)} />
         <Text style={stil.metin}>{t('hadis.kaynakNotu')}</Text>
         <Text style={stil.not}>{t('hakkinda.surum', { surum: Constants.expoConfig?.version ?? '' })}</Text>
       </Bolum>

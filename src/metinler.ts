@@ -275,6 +275,7 @@ export const METINLER = {
   "hakkinda.metin": "Kaza Defteri, kaza namazı borcunu kendi girdiğin bilgilere göre hesaplamana ve takip etmene yardımcı olur. Dini bir hüküm bildirmez. Hesaplama ve vakitlerle ilgili emin olmadığın durumlar için müftülüğe danışabilirsin.",
   "hakkinda.vakit": "Namaz vakitleri telefonunda astronomik olarak hesaplanır. Resmi takvimle birkaç dakikalık fark olabilir; Ayarlar'dan düzeltebilirsin.",
   "hakkinda.gizlilik": "Kaza ve namaz kayıtların yalnızca bu telefonda saklanır, hiçbir yere gönderilmez. Uygulama ücretsizdir ve Google AdMob aracılığıyla reklam gösterir.",
+  "hakkinda.gizlilikPolitikasi": "Gizlilik politikası",
   "hakkinda.surum": "Sürüm {surum}",
 } as const;
 

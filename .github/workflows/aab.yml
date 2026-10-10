@@ -1,0 +1,94 @@
+# Play Store sürümü: imzalı AAB üretir.
+# Çalıştırma: commit mesajında [aab] geçen bir push, Actions > "Play Store AAB" > Run workflow
+# (iş akışı varsayılan dalda olunca görünür) ya da v* etiketi.
+# İmza anahtarı GitHub Secrets'tan gelir: ANDROID_ANAHTAR_BASE64, ANDROID_ANAHTAR_SIFRE,
+# ANDROID_ANAHTAR_ADI, ANDROID_ANAHTAR_ADI_SIFRE. Çıktı, çalıştırmanın "Artifacts" bölümündedir.
+name: Play Store AAB
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, claude/awesome-dijkstra-p8rc68]
+    tags: ['v*']
+
+concurrency:
+  group: aab-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  aab:
+    # Dal push'larında yalnızca commit mesajında [aab] varsa çalışır.
+    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[aab]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Bağımlılıkları kur
+        run: npm ci
+
+      - name: Tip denetimi ve testler
+        run: npm run kontrol
+
+      - name: Sürüm kodu
+        # Her yükleme bir öncekinden büyük olmalı; test APK'larıyla karışmasın diye 1000'den başlar.
+        run: node scripts/surum-kodu.js $((1000 + GITHUB_RUN_NUMBER))
+
+      - name: Android projesini üret
+        run: npx expo prebuild --platform android --no-install
+        env:
+          CI: 1
+
+      - name: İmza anahtarını hazırla
+        env:
+          ANAHTAR: ${{ secrets.ANDROID_ANAHTAR_BASE64 }}
+        run: |
+          if [ -z "$ANAHTAR" ]; then echo "ANDROID_ANAHTAR_BASE64 secret'ı yok"; exit 1; fi
+          echo "$ANAHTAR" | base64 -d > "$RUNNER_TEMP/yukleme.jks"
+          echo "KD_ANAHTAR_DOSYA=$RUNNER_TEMP/yukleme.jks" >> "$GITHUB_ENV"
+
+      - name: İmza ayarını ekle
+        run: node scripts/imza-ayarla.js
+        env:
+          KD_ANAHTAR_SIFRE: ${{ secrets.ANDROID_ANAHTAR_SIFRE }}
+          KD_ANAHTAR_ADI: ${{ secrets.ANDROID_ANAHTAR_ADI }}
+          KD_ANAHTAR_ADI_SIFRE: ${{ secrets.ANDROID_ANAHTAR_ADI_SIFRE }}
+
+      - name: AAB derle
+        working-directory: android
+        run: ./gradlew bundleRelease --no-daemon
+        env:
+          KD_ANAHTAR_SIFRE: ${{ secrets.ANDROID_ANAHTAR_SIFRE }}
+          KD_ANAHTAR_ADI: ${{ secrets.ANDROID_ANAHTAR_ADI }}
+          KD_ANAHTAR_ADI_SIFRE: ${{ secrets.ANDROID_ANAHTAR_ADI_SIFRE }}
+
+      - name: AAB'yi adlandır
+        id: aab
+        run: |
+          SURUM=$(node -p "require('./app.json').expo.version")
+          KOD=$(node -p "require('./app.json').expo.android.versionCode")
+          AD="kaza-defteri-${SURUM}-${KOD}.aab"
+          mv android/app/build/outputs/bundle/release/app-release.aab "$AD"
+          echo "ad=$AD" >> "$GITHUB_OUTPUT"
+
+      - name: AAB'yi sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.aab.outputs.ad }}
+          path: ${{ steps.aab.outputs.ad }}
+          retention-days: 30

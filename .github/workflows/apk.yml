@@ -1,6 +1,6 @@
 # Test APK'sı üretir ve GitHub Releases'e yükler.
 # Bu APK Android'in test anahtarıyla (debug.keystore) imzalanır: telefona kurup denemek içindir,
-# Play Store'a yüklenemez. Mağaza sürümü için EAS ya da kalıcı bir imza anahtarı gerekir.
+# Play Store'a yüklenemez. Mağaza sürümü .github/workflows/aab.yml ile üretilir.
 name: APK oluştur
 
 on:
