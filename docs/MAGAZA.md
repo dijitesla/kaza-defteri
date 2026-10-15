@@ -99,10 +99,10 @@ Hedef yaş grubu: **18 ve üzeri** (ya da 13+). 13 yaş altını seçme: aile po
 | Veri türü | Toplanıyor | Paylaşılıyor | Amaç | Not |
 |---|---|---|---|---|
 | Cihaz veya diğer kimlikler (reklam kimliği) | Evet | Evet | Reklam veya pazarlama | AdMob SDK'sı |
-| Yaklaşık konum | Hayır | Hayır | – | Konum yalnızca telefonda kullanılır, cihazdan çıkmaz |
+| Yaklaşık konum | Evet | Evet | Reklam, analiz, sahtekarlığı önleme | Uygulama konumu göndermez; AdMob SDK'sı IP adresinden kaba konum çıkarır |
 | Kesin konum | Hayır | Hayır | – | Aynı |
-| Uygulama etkinliği / Uygulama etkileşimleri | Evet | Evet | Reklam, analiz (AdMob) | AdMob reklam etkileşimleri |
-| Uygulama bilgileri ve performans (kilitlenme, tanılama) | Evet | Evet | Analiz (AdMob) | AdMob SDK'sı |
+| Uygulama etkinliği / Uygulama işlemleri (etkileşimler) | Evet | Evet | Reklam, analiz, sahtekarlığı önleme | AdMob reklam etkileşimleri |
+| Uygulama bilgileri ve performans (kilitlenme, teşhis, diğer) | Evet | Evet | Reklam, analiz, sahtekarlığı önleme | AdMob SDK'sı |
 
 Not: Google'ın "Veri güvenliği formu için AdMob" belgesi güncel cevapları verir; formu doldururken onunla karşılaştır.
 
