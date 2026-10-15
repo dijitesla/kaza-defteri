@@ -2,7 +2,9 @@
 # Çalıştırma: commit mesajında [aab] geçen bir push, Actions > "Play Store AAB" > Run workflow
 # (iş akışı varsayılan dalda olunca görünür) ya da v* etiketi.
 # İmza anahtarı GitHub Secrets'tan gelir: ANDROID_ANAHTAR_BASE64, ANDROID_ANAHTAR_SIFRE,
-# ANDROID_ANAHTAR_ADI, ANDROID_ANAHTAR_ADI_SIFRE. Çıktı, çalıştırmanın "Artifacts" bölümündedir.
+# ANDROID_ANAHTAR_ADI, ANDROID_ANAHTAR_ADI_SIFRE. Secret yoksa AAB hata ayıklama anahtarıyla imzalanır;
+# Play'e yüklemeden önce yükleme anahtarıyla yeniden imzalanmalıdır (scripts/aab-imzala.sh).
+# Çıktı, çalıştırmanın "Artifacts" bölümündedir.
 name: Play Store AAB
 
 on:
@@ -62,11 +64,15 @@ jobs:
         env:
           ANAHTAR: ${{ secrets.ANDROID_ANAHTAR_BASE64 }}
         run: |
-          if [ -z "$ANAHTAR" ]; then echo "ANDROID_ANAHTAR_BASE64 secret'ı yok"; exit 1; fi
+          if [ -z "$ANAHTAR" ]; then
+            echo "::warning::ANDROID_ANAHTAR_BASE64 secret'ı yok; AAB yüklemeden önce yeniden imzalanmalı"
+            exit 0
+          fi
           echo "$ANAHTAR" | base64 -d > "$RUNNER_TEMP/yukleme.jks"
           echo "KD_ANAHTAR_DOSYA=$RUNNER_TEMP/yukleme.jks" >> "$GITHUB_ENV"
 
       - name: İmza ayarını ekle
+        if: env.KD_ANAHTAR_DOSYA != ''
         run: node scripts/imza-ayarla.js
         env:
           KD_ANAHTAR_SIFRE: ${{ secrets.ANDROID_ANAHTAR_SIFRE }}
