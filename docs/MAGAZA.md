@@ -5,7 +5,7 @@ Play Console'a kopyalanacak metinler ve form cevapları. Görseller: `docs/magaz
 ## Uygulama bilgileri
 | Alan | Değer |
 |---|---|
-| Uygulama adı (en fazla 30) | Kaza Defteri: Namaz Vakti |
+| Uygulama adı (en fazla 30) | Kaza Defteri: Ezan Vakti |
 | Varsayılan dil | Türkçe (tr-TR) |
 | Uygulama mı, oyun mu | Uygulama |
 | Ücretsiz mi | Ücretsiz |
