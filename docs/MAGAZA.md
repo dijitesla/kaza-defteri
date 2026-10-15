@@ -114,7 +114,17 @@ Not: Google'ın "Veri güvenliği formu için AdMob" belgesi güncel cevapları 
 ## Yayın öncesi
 - Gerçek AdMob kimlikleri: `app.json` (iki yerde, aynı değer) ve `src/reklam.ts`.
 - Yeni geliştirici hesaplarında üretime çıkmadan önce **kapalı test: en az 12 test kullanıcısı, 14 gün** gerekir.
-- AAB: GitHub > Actions > "Play Store AAB" > Run workflow; çıkan dosya çalıştırmanın Artifacts bölümünde.
+- AAB: commit mesajında `[aab]` geçen bir push (ya da `v*` etiketi) "Play Store AAB" iş akışını başlatır; çıkan dosya GitHub > Actions > ilgili çalıştırma > Artifacts bölümünde (zip içinde `.aab`).
+- AAB imzası için 4 GitHub Secret gerekir: `ANDROID_ANAHTAR_BASE64`, `ANDROID_ANAHTAR_SIFRE`, `ANDROID_ANAHTAR_ADI`, `ANDROID_ANAHTAR_ADI_SIFRE`.
+
+## Yayın adımları (Play Console)
+1. Uygulama oluştur: ad, Türkçe, Uygulama, Ücretsiz, beyanları onayla.
+2. Kontrol paneli > "Uygulamanızı ayarlayın": gizlilik politikası, uygulama erişimi, reklamlar, içerik derecelendirmesi, hedef kitle, veri güvenliği, haber/sağlık/devlet formları (yukarıdaki cevaplar).
+3. Mağaza girişi: kısa ve tam açıklama, `docs/magaza/ikon-512.png`, `tanitim-1024x500.png`, `ekran-01..09.png`, kategori, e-posta.
+4. Test > Kapalı test: kanal oluştur, ülke seç (Türkiye), test kullanıcısı e-posta listesi (en az 12), AAB yükle, Play Uygulama İmzalama'yı kabul et, sürüm notu, incelemeye gönder.
+5. Onaydan sonra katılım bağlantısını test kullanıcılarıyla paylaş; en az 12 kişi 14 gün boyunca katılımda kalsın.
+6. 14 gün sonra Kontrol paneli > "Üretim erişimi için başvur"; onaydan sonra Üretim > yeni sürüm (aynı ya da yeni AAB) > incelemeye gönder.
+7. Yayından sonra AdMob > Uygulama ayarları > uygulamayı Play mağazasına bağla.
 
 ## Sürüm notu (1.0.0)
 ```
