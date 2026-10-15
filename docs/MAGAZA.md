@@ -115,6 +115,7 @@ Not: Google'ın "Veri güvenliği formu için AdMob" belgesi güncel cevapları 
 - Gerçek AdMob kimlikleri: `app.json` (iki yerde, aynı değer) ve `src/reklam.ts`.
 - Yeni geliştirici hesaplarında üretime çıkmadan önce **kapalı test: en az 12 test kullanıcısı, 14 gün** gerekir.
 - AAB: commit mesajında `[aab]` geçen bir push (ya da `v*` etiketi) "Play Store AAB" iş akışını başlatır; çıkan dosya GitHub > Actions > ilgili çalıştırma > Artifacts bölümünde (zip içinde `.aab`).
+- Secret yoksa CI, AAB'yi hata ayıklama anahtarıyla imzalar; yüklemeden önce `KD_ANAHTAR_SIFRE=… scripts/aab-imzala.sh girdi.aab anahtar.jks kazadefteri cikti.aab` ile yeniden imzala.
 - AAB imzası için 4 GitHub Secret gerekir: `ANDROID_ANAHTAR_BASE64`, `ANDROID_ANAHTAR_SIFRE`, `ANDROID_ANAHTAR_ADI`, `ANDROID_ANAHTAR_ADI_SIFRE`.
 
 ## Yayın adımları (Play Console)
