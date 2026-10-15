@@ -51,7 +51,7 @@ Kaza Defteri, kaza namazı borcunu hesaplamanı ve adım adım ödemeni kolayla�
 🧭 ARAÇLAR
 • Kıble pusulası
 • Zikirmatik ve namaz sonrası tesbihat
-• Cuma ve kandil bildirimleri
+• Kandil ve dini gün bildirimleri
 
 📊 GEÇMİŞ VE MOTİVASYON
 • Takvim görünümü, haftalık grafik
