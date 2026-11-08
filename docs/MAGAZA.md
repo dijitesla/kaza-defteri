@@ -127,6 +127,11 @@ Not: Google'ın "Veri güvenliği formu için AdMob" belgesi güncel cevapları 
 6. 14 gün sonra Kontrol paneli > "Üretim erişimi için başvur"; onaydan sonra Üretim > yeni sürüm (aynı ya da yeni AAB) > incelemeye gönder.
 7. Yayından sonra AdMob > Uygulama ayarları > uygulamayı Play mağazasına bağla.
 
+## Sürüm notu (1.0.1)
+```
+Performans iyileştirmesi: uygulama boyutu küçültüldü, açılış hızlandırıldı.
+```
+
 ## Sürüm notu (1.0.0)
 ```
 İlk sürüm: kaza namazı ve kaza orucu takibi, namaz vakitleri ve hatırlatmaları, kıble, zikirmatik, Esmaü'l-Hüsna, sureler ve dualar, dini günler takvimi, Ramazan sayacı.

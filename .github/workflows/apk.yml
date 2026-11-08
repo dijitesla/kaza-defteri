@@ -46,6 +46,9 @@ jobs:
         env:
           CI: 1
 
+      - name: Kod küçültmeyi aç
+        run: node scripts/kucultme-ac.js
+
       - name: APK derle
         working-directory: android
         # Yalnızca telefon işlemcileri (emülatör mimarileri derleme süresini uzatır).

@@ -60,6 +60,9 @@ jobs:
         env:
           CI: 1
 
+      - name: Kod küçültmeyi aç
+        run: node scripts/kucultme-ac.js
+
       - name: İmza anahtarını hazırla
         env:
           ANAHTAR: ${{ secrets.ANDROID_ANAHTAR_BASE64 }}
