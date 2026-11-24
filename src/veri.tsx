@@ -107,7 +107,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
 
   const bildirimleriYenile = useCallback(() => {
     const v = son.current;
-    if (v) bildirimleriPlanla(v.ayarlar, v.gunluk);
+    if (v) bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
   }, []);
 
   useEffect(() => {
@@ -134,8 +134,10 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     if (yeni.islemler !== onceki.islemler) yaz(() => depolama.islemleriYaz(yeni.islemler));
     if (yeni.ramazan && yeni.ramazan !== onceki.ramazan) yaz(() => depolama.ramazanYaz(yeni.ramazan!));
     // Cevaplanan vaktin sorusu iptal olur; geri alınan cevabın sorusu yeniden planlanır.
-    if (yeni.gunluk !== onceki.gunluk || yeni.ayarlar !== onceki.ayarlar) {
-      bildirimleriPlanla(v.ayarlar, v.gunluk);
+    // Kaza hedefi varsa kılınan kaza, akşamki hedef hatırlatmasını etkiler.
+    const kazaDegisti = yeni.islemler !== onceki.islemler && v.ayarlar.gunlukHedef > 0;
+    if (yeni.gunluk !== onceki.gunluk || yeni.ayarlar !== onceki.ayarlar || kazaDegisti) {
+      bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
     }
   }, []);
 
@@ -146,7 +148,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     const v: Veri = { ...son.current!, ayarlar: k.ayarlar, kaza: k.kaza };
     son.current = v;
     setVeri(v);
-    bildirimleriPlanla(v.ayarlar, v.gunluk);
+    bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
   }, []);
 
   const kazaKil = useCallback(
@@ -262,7 +264,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     await depolama.ayarlariYaz(v.ayarlar);
     son.current = v;
     setVeri(v);
-    bildirimleriPlanla(v.ayarlar, v.gunluk);
+    bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
   }, []);
 
   const deger = useMemo(

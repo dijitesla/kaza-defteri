@@ -31,6 +31,9 @@ export interface Ayarlar {
     diniGunBildirimi: boolean;
     // Sürüm 1.1: vakit girdi bildiriminin sesi.
     girisSesi: GirisSesi;
+    // Cuma günü öğleden önce hatırlatma; günlük kaza hedefi tamamlanmadıysa akşam hatırlatma.
+    cumaBildirimi: boolean;
+    kazaHatirlatma: boolean;
   };
   dakikaDuzeltme: Record<Vakit, number>; // -10..+10
   // Günde kaç kaza kılınması hedefleniyor; 0 = hedef yok. Bitiş tarihi tahmini buna göre. (Sürüm 1.3)

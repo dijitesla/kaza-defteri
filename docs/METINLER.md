@@ -316,6 +316,10 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | bildirim.kandilGovde | Bu gece {ad}. Hayırlı kandiller. |
 | bildirim.bayramGovde | Bayramınız mübarek olsun. |
 | bildirim.gunGovde | Bugün {ad}. |
+| bildirim.cumaBaslik | Hayırlı Cumalar |
+| bildirim.cumaGovde | Bugün Cuma. Öğle vakti {saat}. |
+| bildirim.kazaBaslik | Kaza hedefin |
+| bildirim.kazaGovde | Bugünkü hedefin {n} kaza namazı. Gün bitmeden kılabilirsin. |
 
 ## Ayarlar
 | Anahtar | Metin |
@@ -348,6 +352,10 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | ayar.sahurAlt | Ramazan'da imsaktan önce. |
 | ayar.diniGunBildirimi | Kandil ve bayram bildirimleri |
 | ayar.diniGunBildirimiAlt | Dini günlerde sabah kısa bir bildirim. |
+| ayar.cumaBildirimi | Cuma hatırlatması |
+| ayar.cumaBildirimiAlt | Cuma günü öğle vaktinden bir saat önce. |
+| ayar.kazaHatirlatma | Kaza hedefi hatırlatması |
+| ayar.kazaHatirlatmaAlt | Günlük hedefini tamamlamadığın günlerde saat 21:00'de. |
 | ayar.kapali | Kapalı |
 | ayar.izinYok | Bildirim izni kapalı. Hatırlatmalar gelmeyecek. |
 | ayar.izinVer | İzin ver |

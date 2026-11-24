@@ -10,7 +10,7 @@ import type { VakitAraligi } from './vakitler';
 /** Bugünden itibaren kaç gün planlanır (iOS'ta bekleyen bildirim sınırı 64). */
 export const PLAN_GUN_SAYISI = 6;
 
-export type BildirimTuru = 'giris' | 'soru' | 'yaklasma' | 'sahur' | 'dinigun';
+export type BildirimTuru = 'giris' | 'soru' | 'yaklasma' | 'sahur' | 'dinigun' | 'cuma' | 'kaza';
 /** GIRIS ve SORU düğmelidir; BILGI yalnızca bilgi verir (vakit yaklaşıyor, sahur, dini gün). */
 export type Kategori = 'GIRIS' | 'SORU' | 'BILGI';
 
@@ -36,6 +36,10 @@ export const bildirimId = (gun: string, vakit: Vakit, tur: BildirimTuru) => `${g
 
 /** Dini gün bildirimi saati (yerel). */
 const DINI_GUN_SAATI = 10;
+/** Cuma hatırlatması öğle vaktinden bu kadar dakika önce. */
+export const CUMA_ONCE_DK = 60;
+/** Kaza hedefi hatırlatması saati (yerel). */
+export const KAZA_HATIRLATMA_SAATI = 21;
 
 const DK = 60_000;
 
@@ -74,8 +78,10 @@ function girisGovdesi(ust: string, vakit: Vakit, giris: Date): string {
 }
 
 interface PlanGirdisi {
-  ayarlar: Pick<Ayarlar, 'konum' | 'bildirim'>;
+  ayarlar: Pick<Ayarlar, 'konum' | 'bildirim'> & Partial<Pick<Ayarlar, 'gunlukHedef'>>;
   gunluk: GunlukDurum;
+  /** Bugün kılınan kaza sayısı; hedef tamamsa bugünün kaza hatırlatması planlanmaz. */
+  bugunKilinanKaza?: number;
   bugun: string;
   simdi: Date;
   araliklar: (gun: string) => Record<Vakit, VakitAraligi>;
@@ -168,6 +174,35 @@ export function bildirimPlani(g: PlanGirdisi): PlanliBildirim[] {
     }
   }
 
+  // Cuma hatırlatması ve günlük kaza hedefi hatırlatması.
+  const hedef = g.ayarlar.gunlukHedef ?? 0;
+  for (let fark = 0; fark < PLAN_GUN_SAYISI; fark++) {
+    const gun = gunEkle(g.bugun, fark);
+    if (bildirim.cumaBildirimi && gunOglesi(gun).getDay() === 5) {
+      const ogle = g.araliklar(gun).ogle.giris;
+      liste.push({
+        id: bildirimId(gun, 'ogle', 'cuma'),
+        zaman: new Date(ogle.getTime() - CUMA_ONCE_DK * DK),
+        kategori: 'BILGI',
+        baslik: t('bildirim.cumaBaslik'),
+        govde: t('bildirim.cumaGovde', { saat: saatMetni(ogle) }),
+        veri: { gun, vakit: 'ogle', tur: 'cuma' },
+      });
+    }
+    if (bildirim.kazaHatirlatma && hedef > 0 && !(fark === 0 && (g.bugunKilinanKaza ?? 0) >= hedef)) {
+      const zaman = gunOglesi(gun);
+      zaman.setHours(KAZA_HATIRLATMA_SAATI, 0, 0, 0);
+      liste.push({
+        id: bildirimId(gun, 'yatsi', 'kaza'),
+        zaman,
+        kategori: 'BILGI',
+        baslik: t('bildirim.kazaBaslik'),
+        govde: t('bildirim.kazaGovde', { n: hedef }),
+        veri: { gun, vakit: 'yatsi', tur: 'kaza' },
+      });
+    }
+  }
+
   // Geçersiz zamanlar (ör. kutup bölgelerinde hesaplanamayan vakit) planlanmaz.
   const gelecek = liste
     .filter((b) => Number.isFinite(b.zaman.getTime()) && b.zaman.getTime() > g.simdi.getTime())
@@ -190,7 +225,7 @@ export function bildirimVerisiOku(x: unknown): BildirimVerisi | null {
   const v = x as Record<string, unknown>;
   if (typeof v.gun !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v.gun)) return null;
   if (!VAKITLER.includes(v.vakit as Vakit)) return null;
-  if (!['giris', 'soru', 'yaklasma', 'sahur', 'dinigun'].includes(v.tur as string)) return null;
+  if (!['giris', 'soru', 'yaklasma', 'sahur', 'dinigun', 'cuma', 'kaza'].includes(v.tur as string)) return null;
   return { gun: v.gun, vakit: v.vakit as Vakit, tur: v.tur as BildirimTuru };
 }
 

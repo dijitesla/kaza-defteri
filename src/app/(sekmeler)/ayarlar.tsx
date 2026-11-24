@@ -228,6 +228,20 @@ export default function AyarlarEkrani() {
           deger={b.diniGunBildirimi}
           onChange={(acik) => bildirimDegistir({ diniGunBildirimi: acik })}
         />
+        <AnahtarSatiri
+          baslik={t('ayar.cumaBildirimi')}
+          alt={t('ayar.cumaBildirimiAlt')}
+          deger={b.cumaBildirimi}
+          onChange={(acik) => bildirimDegistir({ cumaBildirimi: acik })}
+        />
+        {a.gunlukHedef > 0 ? (
+          <AnahtarSatiri
+            baslik={t('ayar.kazaHatirlatma')}
+            alt={t('ayar.kazaHatirlatmaAlt')}
+            deger={b.kazaHatirlatma}
+            onChange={(acik) => bildirimDegistir({ kazaHatirlatma: acik })}
+          />
+        ) : null}
       </Bolum>
 
       <Bolum baslik={t('ayar.vakitDuzelt')} alt={t('ayar.vakitDuzeltAlt')}>

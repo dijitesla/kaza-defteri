@@ -50,6 +50,8 @@ export function varsayilanAyarlar(): Ayarlar {
       sahurDakika: 45,
       diniGunBildirimi: true,
       girisSesi: 'ezan',
+      cumaBildirimi: true,
+      kazaHatirlatma: true,
     },
     dakikaDuzeltme: { sabah: 0, ogle: 0, ikindi: 0, aksam: 0, yatsi: 0 },
     gunlukHedef: 0,

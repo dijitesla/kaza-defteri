@@ -25,6 +25,7 @@ const ayarlar = () => {
   const a = varsayilanAyarlar();
   a.konum = { ad: 'Ankara', enlem: 39.92, boylam: 32.85 };
   a.bildirim.yaklasmaDakika = 0; // yeni bildirim türleri ayrı testlerde
+  a.bildirim.cumaBildirimi = false;
   return a;
 };
 const BUGUN = '2026-10-06';
@@ -217,5 +218,49 @@ describe('yeni bildirim türleri', () => {
 
   it('bilgi bildirimine düğme cevabı kaydedilmez', () => {
     expect(bildirimCevabi({}, { gun: BUGUN, vakit: 'ogle', tur: 'yaklasma' }, 'KILDIM')).toBeNull();
+  });
+});
+
+describe('Cuma ve kaza hedefi hatırlatmaları', () => {
+  const tur = (t: string) => (l: ReturnType<typeof plan>) => l.filter((b) => b.veri.tur === t);
+
+  const cumaAcik = () => {
+    const a = ayarlar();
+    a.bildirim.cumaBildirimi = true;
+    return a;
+  };
+
+  it('Cuma günü öğle vaktinden bir saat önce, yalnızca Cuma', () => {
+    const c = tur('cuma')(plan({ ayarlar: cumaAcik() }));
+    expect(c).toHaveLength(1); // 6-11 Ekim arasında tek Cuma: 9 Ekim
+    expect(c[0].zaman).toEqual(new Date(2026, 9, 9, 12, 0));
+    expect(c[0].kategori).toBe('BILGI');
+  });
+
+  it('Cuma hatırlatması kapatılabilir', () => {
+    expect(tur('cuma')(plan())).toHaveLength(0);
+  });
+
+  it('kaza hatırlatması yalnızca hedef varsa, her gün 21:00', () => {
+    expect(tur('kaza')(plan())).toHaveLength(0);
+    const a = ayarlar();
+    a.gunlukHedef = 3;
+    const k = tur('kaza')(plan({ ayarlar: a }));
+    expect(k).toHaveLength(PLAN_GUN_SAYISI);
+    expect(k[0].zaman).toEqual(new Date(2026, 9, 6, 21, 0));
+    expect(k[0].govde).toContain('3');
+  });
+
+  it('bugünün hedefi tamamsa bugünkü kaza hatırlatması planlanmaz', () => {
+    const a = ayarlar();
+    a.gunlukHedef = 3;
+    const k = tur('kaza')(plan({ ayarlar: a, bugunKilinanKaza: 3 }));
+    expect(k).toHaveLength(PLAN_GUN_SAYISI - 1);
+    expect(k[0].zaman).toEqual(new Date(2026, 9, 7, 21, 0));
+  });
+
+  it('bu bildirimler kayıt yapmaz', () => {
+    expect(bildirimCevabi({}, { gun: BUGUN, vakit: 'ogle', tur: 'cuma' }, 'KILDIM')).toBeNull();
+    expect(bildirimVerisiOku({ gun: BUGUN, vakit: 'yatsi', tur: 'kaza' })).toEqual({ gun: BUGUN, vakit: 'yatsi', tur: 'kaza' });
   });
 });

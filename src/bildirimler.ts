@@ -5,7 +5,8 @@ import { bildirimPlani, EYLEM } from './logic/bildirimPlani';
 import { gunAnahtari } from './logic/tarih';
 import { vakitAraliklari } from './logic/vakitler';
 import { t } from './metinler';
-import type { Ayarlar, GirisSesi, GunlukDurum } from './types';
+import { donemdeKilinan } from './logic/islemler';
+import type { Ayarlar, GirisSesi, GunlukDurum, Islem } from './types';
 
 // Android'de bildirim sesi kanala bağlıdır ve kanal kurulduktan sonra değiştirilemez;
 // bu yüzden vakit girişi (seslendirmeli) ve "Kıldın mı?" (normal ses) ayrı kanallardadır.
@@ -114,7 +115,7 @@ let sira: Promise<void> = Promise.resolve();
  * Tüm planlanmış bildirimleri iptal eder ve önümüzdeki 6 günü yeniden planlar (SPEC 6.3).
  * Art arda çağrılar sıraya girer; aynı anda iki planlama çalışmaz.
  */
-export function bildirimleriPlanla(ayarlar: Ayarlar, gunluk: GunlukDurum): Promise<void> {
+export function bildirimleriPlanla(ayarlar: Ayarlar, gunluk: GunlukDurum, islemler: Islem[] = []): Promise<void> {
   sira = sira
     .then(async () => {
       if (!ayarlar.kurulumTamam) return;
@@ -122,9 +123,12 @@ export function bildirimleriPlanla(ayarlar: Ayarlar, gunluk: GunlukDurum): Promi
       await Notifications.cancelAllScheduledNotificationsAsync();
       if (!(await bildirimIzniVar())) return;
       const simdi = new Date();
+      const gunBasi = new Date(simdi.getFullYear(), simdi.getMonth(), simdi.getDate());
+      const yarin = new Date(simdi.getFullYear(), simdi.getMonth(), simdi.getDate() + 1);
       const plan = bildirimPlani({
         ayarlar,
         gunluk,
+        bugunKilinanKaza: donemdeKilinan(islemler, gunBasi, yarin),
         bugun: gunAnahtari(simdi),
         simdi,
         araliklar: (gun) => vakitAraliklari(ayarlar.konum, gun, ayarlar.dakikaDuzeltme),
