@@ -3,6 +3,7 @@ import { GIRIS_SESLERI, type GirisSesi } from '../types';
 import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, RamazanDurumu } from '../types';
 import { zikriTamamla, type ZikirDurumu } from './zikir';
 import { puanDurumunuTamamla, type PuanDurumu } from './puanIstegi';
+import { teravihiTamamla, type TeravihDurumu } from './teravih';
 
 /** AsyncStorage'ın kullandığımız kısmı. */
 export interface Depo {
@@ -19,6 +20,7 @@ export const ANAHTAR = {
   zikir: 'kd:zikir',
   ramazan: 'kd:ramazan',
   puan: 'kd:puan',
+  teravih: 'kd:teravih',
 } as const;
 
 export const ISLEM_SINIRI = 2000;
@@ -183,6 +185,13 @@ export function depolamaOlustur(depo: Depo) {
     },
     zikirYaz(zikir: ZikirDurumu): Promise<void> {
       return yaz(ANAHTAR.zikir, zikir);
+    },
+
+    async teravihOku(): Promise<TeravihDurumu> {
+      return teravihiTamamla(await oku(ANAHTAR.teravih));
+    },
+    teravihYaz(teravih: TeravihDurumu): Promise<void> {
+      return yaz(ANAHTAR.teravih, teravih);
     },
 
     async puanOku(): Promise<PuanDurumu> {

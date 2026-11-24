@@ -20,6 +20,7 @@ import { bildirimIzniVar } from '../../bildirimler';
 import { kesinAlarmAyariniAc, kesinAlarmIzniVar } from '../../../modules/kesin-alarm';
 import { ayEvresi, gokCismi, gunEvresi } from '../../logic/gokyuzu';
 import type { ZikirDurumu } from '../../logic/zikir';
+import { teravihDegistir, teravihSayisi, type TeravihDurumu } from '../../logic/teravih';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
 import { enYakinDiniGun, gunFarki, ramazanGunu } from '../../logic/diniGun';
 import { saatlikHadis } from '../../logic/hadis';
@@ -73,9 +74,11 @@ export default function Bugun() {
   const cisim = gokCismi(simdi, vakitler, yarinVakitleri, dunVakitleri);
 
   const [zikir, setZikir] = useState<ZikirDurumu | null>(null);
+  const [teravih, setTeravih] = useState<TeravihDurumu>([]);
   useFocusEffect(
     useCallback(() => {
       depolama.zikirOku().then(setZikir).catch(() => {});
+      depolama.teravihOku().then(setTeravih).catch(() => {});
     }, []),
   );
 
@@ -177,6 +180,13 @@ export default function Bugun() {
               onCevap={(c) => {
                 const id = ramazanCevapla(bugun, c);
                 if (id) goster(t('ramazan.tutulamadi'), id);
+              }}
+              teravihBugun={teravih.includes(bugun)}
+              teravihSayi={teravihSayisi(teravih, ramazan.bas, gunEkle(ramazan.bas, ramazan.toplam - 1))}
+              onTeravih={() => {
+                const yeni = teravihDegistir(teravih, bugun);
+                setTeravih(yeni);
+                depolama.teravihYaz(yeni).catch(() => {});
               }}
             />
           ) : null}

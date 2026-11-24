@@ -1,7 +1,7 @@
 import { DUALAR } from '../../data/dualar';
 import { ESMA } from '../../data/esma';
 import { KURAN_DUALARI, SURELER } from '../../data/sureler';
-import { gununEsmasi, imsakiye } from '../rehber';
+import { gununEsmasi, imsakiye, imsakiyeMetni } from '../rehber';
 
 describe('veri', () => {
   it('99 esma, sıra numaraları 1..99', () => {
@@ -47,4 +47,20 @@ it('imsakiye 30 gün, ardışık tarihler', () => {
   expect(l[0].gun).toBe('2026-10-30');
   expect(l[2].gun).toBe('2026-11-01');
   expect(l[0].vakitler.imsak.getTime()).toBeLessThan(l[0].vakitler.aksam.getTime());
+});
+
+describe('imsakiyeMetni', () => {
+  it('her gün için imsak ve iftar satırı yazar', () => {
+    const satirlar = imsakiye({ ad: 'Fatsa', enlem: 41.03, boylam: 37.5 }, '2027-02-08', { sabah: 0, ogle: 0, ikindi: 0, aksam: 0, yatsi: 0 }, 2);
+    const metin = imsakiyeMetni(satirlar, {
+      baslik: 'Fatsa imsakiyesi',
+      satir: (s) => `${s.tarih} | ${s.imsak} | ${s.iftar}`,
+      son: 'son',
+    });
+    const satir = metin.split('\n');
+    expect(satir[0]).toBe('Fatsa imsakiyesi');
+    expect(satir[2]).toMatch(/^8 Şubat \| \d{2}:\d{2} \| \d{2}:\d{2}$/);
+    expect(satir[3]).toMatch(/^9 Şubat /);
+    expect(satir[satir.length - 1]).toBe('son');
+  });
 });

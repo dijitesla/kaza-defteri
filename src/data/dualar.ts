@@ -51,3 +51,24 @@ export const DUALAR: readonly Dua[] = [
     kaynak: 'Buhârî, 3370',
   },
 ];
+
+// İftar duaları: aynı kaynaktan (hadith-api, Ebû Dâvûd Türkçe çevirisi). Okunuş, hadisteki Arapça ifadenin
+// yaygın Türkçe okunuşudur; anlam kaynaktaki çeviriden alındı.
+export const ORUC_DUALARI: readonly Dua[] = [
+  {
+    id: 'iftar1',
+    ad: 'İftar duası',
+    aciklama: 'Oruç açıldığında',
+    okunus: "Zehebe'z-zamau vebtelleti'l-urûku ve sebete'l-ecru inşâallâh.",
+    anlam: 'Susuzluk gitti, damarlar nemlendi ve inşallah ecir hâsıl oldu.',
+    kaynak: 'Ebû Dâvûd, 2357',
+  },
+  {
+    id: 'iftar2',
+    ad: 'İftar duası',
+    aciklama: 'Oruç açıldığında',
+    okunus: 'Allâhümme leke sumtü ve alâ rızkıke eftartü.',
+    anlam: "Ey Allah'ım! Sadece senin için oruç tuttum ve senin rızkınla orucumu açtım.",
+    kaynak: 'Ebû Dâvûd, 2358',
+  },
+];

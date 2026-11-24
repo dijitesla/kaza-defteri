@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { gunEkle } from '../logic/tarih';
 import { t } from '../metinler';
@@ -13,6 +14,9 @@ export function RamazanKarti({
   bugun,
   kayit,
   onCevap,
+  teravihBugun,
+  teravihSayi,
+  onTeravih,
 }: {
   gun: number;
   toplam: number;
@@ -20,6 +24,9 @@ export function RamazanKarti({
   bugun: string;
   kayit: RamazanDurumu;
   onCevap: (c: 'tuttu' | 'tutamadi') => void;
+  teravihBugun: boolean;
+  teravihSayi: number;
+  onTeravih: () => void;
 }) {
   const cevap = kayit[bugun];
   return (
@@ -71,6 +78,30 @@ export function RamazanKarti({
           </View>
         </>
       )}
+
+      <View style={stil.alt}>
+        <Pressable
+          onPress={onTeravih}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: teravihBugun }}
+          style={({ pressed }) => [stil.teravih, pressed && { opacity: 0.8 }]}
+        >
+          <View style={[stil.kutu, teravihBugun && stil.kutuDolu]}>
+            {teravihBugun ? <Simge ad="onay" renk={renk.altinUstu} boyut={14} /> : null}
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={stil.teravihBaslik}>{t('ramazan.teravih')}</Text>
+            <Text style={stil.teravihAlt}>{t('ramazan.teravihSayi', { n: teravihSayi, toplam })}</Text>
+          </View>
+        </Pressable>
+        <Pressable
+          onPress={() => router.push('/dualar?bolum=oruc')}
+          accessibilityRole="link"
+          style={({ pressed }) => [stil.dua, pressed && { opacity: 0.8 }]}
+        >
+          <Text style={stil.duaMetin}>{t('ramazan.iftarDuasi')} ›</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -96,4 +127,27 @@ const stil = StyleSheet.create({
   birincil: { backgroundColor: renk.altin },
   dugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.beyaz },
   durum: { fontFamily: yaziTipi.kalin, fontSize: 13 },
+  alt: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255,255,255,0.18)',
+    paddingTop: 10,
+  },
+  teravih: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: olcu.dokunmaMin },
+  kutu: {
+    width: 24,
+    height: 24,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: renk.altin,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  kutuDolu: { backgroundColor: renk.altin },
+  teravihBaslik: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.beyaz },
+  teravihAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.koyuUstuSoluk },
+  dua: { minHeight: olcu.dokunmaMin, justifyContent: 'center', paddingHorizontal: 4 },
+  duaMetin: { fontFamily: yaziTipi.kalin, fontSize: 13, color: renk.altin },
 });

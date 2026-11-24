@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Share, StyleSheet, Text, View } from 'react-native';
+import { Dugme } from '../bilesenler/Dugme';
+import { MAGAZA_ADRESI } from '../puan';
 import { AltEkran } from '../bilesenler/AltEkran';
 import { GUN_ADLARI } from '../data/aylar';
 import { ramazanGunu } from '../logic/diniGun';
-import { imsakiye } from '../logic/rehber';
+import { imsakiye, imsakiyeMetni } from '../logic/rehber';
 import { gunAnahtari, gunAyMetni, gunOglesi, saatMetni } from '../logic/tarih';
 import { t, VAKIT_ADLARI } from '../metinler';
 import { olcu, renk, yaziTipi } from '../tema';
@@ -15,6 +17,14 @@ export default function Imsakiye() {
   const { konum, dakikaDuzeltme } = veri.ayarlar;
   const bugun = gunAnahtari(useSimdi());
   const satirlar = useMemo(() => imsakiye(konum, bugun, dakikaDuzeltme), [konum, bugun, dakikaDuzeltme]);
+  const paylas = () =>
+    Share.share({
+      message: imsakiyeMetni(satirlar, {
+        baslik: t('rehber.imsakiyePaylasBaslik', { konum: konum.ad }),
+        satir: (s) => t('rehber.imsakiyePaylasSatir', s),
+        son: t('rehber.imsakiyePaylasSon', { link: MAGAZA_ADRESI }),
+      }),
+    }).catch(() => {});
   const basliklar = [t('vakitler.imsak'), t('vakitler.gunes'), VAKIT_ADLARI.ogle, VAKIT_ADLARI.ikindi, VAKIT_ADLARI.aksam, VAKIT_ADLARI.yatsi];
 
   return (
@@ -51,6 +61,7 @@ export default function Imsakiye() {
           );
         })}
       </View>
+      <Dugme metin={t('rehber.imsakiyePaylas')} onPress={paylas} />
     </AltEkran>
   );
 }

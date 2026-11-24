@@ -208,6 +208,7 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | rehber.surelerAlt | Arapça, okunuş ve meal |
 | rehber.dualar | Namaz duaları |
 | rehber.dualarAlt | Okunuş ve anlam |
+| rehber.orucDualari | Oruç duaları |
 | rehber.imsakiye | İmsakiye |
 | rehber.imsakiyeAlt | 30 günlük vakit çizelgesi |
 | rehber.kible | Kıble |
@@ -226,6 +227,10 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | rehber.ayetSayisi | {n} ayet |
 | rehber.imsakiyeTarih | Tarih |
 | rehber.imsakiyeNot | Vakitler {konum} için telefonda hesaplanır. |
+| rehber.imsakiyePaylas | İmsakiyeyi paylaş |
+| rehber.imsakiyePaylasBaslik | {konum} imsakiyesi |
+| rehber.imsakiyePaylasSatir | {tarih}: İmsak {imsak}, İftar {iftar} |
+| rehber.imsakiyePaylasSon | Kaza Defteri ile hazırlandı: {link} |
 
 ## Ramazan
 | Anahtar | Metin |
@@ -241,6 +246,11 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | ramazan.tutuldu | Oruç tutuldu. Allah kabul etsin. |
 | ramazan.tutulamadi | Kaza orucuna 1 gün eklendi. |
 | ramazan.hayirli | Hayırlı Ramazanlar |
+| ramazan.teravih | Teravih namazı |
+| ramazan.teravihSayi | {n} / {toplam} gece |
+| ramazan.teravihKildim | Kıldım |
+| ramazan.teravihKilindi | Kılındı |
+| ramazan.iftarDuasi | İftar duası |
 
 ## Hadis
 | Anahtar | Metin |
