@@ -7,6 +7,9 @@ export type Mezhep = 'hanefi' | 'safii';
 export const VAKITLER: readonly Vakit[] = ['sabah', 'ogle', 'ikindi', 'aksam', 'yatsi'];
 export const KAZA_VAKITLERI: readonly KazaVakit[] = [...VAKITLER, 'vitir'];
 
+export type GirisSesi = 'ezan' | 'kisa' | 'titresim' | 'sessiz';
+export const GIRIS_SESLERI: readonly GirisSesi[] = ['ezan', 'kisa', 'titresim', 'sessiz'];
+
 export interface Ayarlar {
   kurulumTamam: boolean;
   // Kurulumun bittiği an (ISO). Bundan önce çıkmış vakitler "cevapsız" sayılmaz.
@@ -26,6 +29,8 @@ export interface Ayarlar {
     yaklasmaDakika: 0 | 10 | 15 | 30 | 45;
     sahurDakika: 0 | 30 | 45 | 60;
     diniGunBildirimi: boolean;
+    // Sürüm 1.1: vakit girdi bildiriminin sesi.
+    girisSesi: GirisSesi;
   };
   dakikaDuzeltme: Record<Vakit, number>; // -10..+10
   // Günde kaç kaza kılınması hedefleniyor; 0 = hedef yok. Bitiş tarihi tahmini buna göre. (Sürüm 1.3)

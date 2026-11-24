@@ -1,4 +1,5 @@
 // Depolama katmanı. AsyncStorage dışarıdan verilir, böylece testte bellek içi depo kullanılabilir.
+import { GIRIS_SESLERI, type GirisSesi } from '../types';
 import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, RamazanDurumu } from '../types';
 import { zikriTamamla, type ZikirDurumu } from './zikir';
 import { puanDurumunuTamamla, type PuanDurumu } from './puanIstegi';
@@ -46,6 +47,7 @@ export function varsayilanAyarlar(): Ayarlar {
       yaklasmaDakika: 15,
       sahurDakika: 45,
       diniGunBildirimi: true,
+      girisSesi: 'ezan',
     },
     dakikaDuzeltme: { sabah: 0, ogle: 0, ikindi: 0, aksam: 0, yatsi: 0 },
     gunlukHedef: 0,
@@ -79,6 +81,9 @@ export function ayarlariTamamla(kayitli: unknown): Ayarlar {
         ...v.bildirim.vakitler,
         ...(nesneMi(bildirim?.vakitler) ? bildirim.vakitler : {}),
       },
+      girisSesi: GIRIS_SESLERI.includes(bildirim?.girisSesi as GirisSesi)
+        ? (bildirim!.girisSesi as GirisSesi)
+        : v.bildirim.girisSesi,
     },
     dakikaDuzeltme: {
       ...v.dakikaDuzeltme,

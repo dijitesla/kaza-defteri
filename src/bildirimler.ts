@@ -5,14 +5,20 @@ import { bildirimPlani, EYLEM } from './logic/bildirimPlani';
 import { gunAnahtari } from './logic/tarih';
 import { vakitAraliklari } from './logic/vakitler';
 import { t } from './metinler';
-import type { Ayarlar, GunlukDurum } from './types';
+import type { Ayarlar, GirisSesi, GunlukDurum } from './types';
 
 // Android'de bildirim sesi kanala bağlıdır ve kanal kurulduktan sonra değiştirilemez;
 // bu yüzden vakit girişi (seslendirmeli) ve "Kıldın mı?" (normal ses) ayrı kanallardadır.
 const KANAL_SORU = 'vakit';
-const KANAL_GIRIS = 'vakit_girdi';
 /** Vakit girişinde çalan seslendirme (app.json > expo-notifications > sounds). */
 const GIRIS_SESI = 'vakit_girdi.wav';
+/** Vakit girdi bildiriminin her ses seçeneği için Android kanalı ve iOS sesi. */
+const GIRIS_KANALI: Record<GirisSesi, { kanal: string; ses: string | null }> = {
+  ezan: { kanal: 'vakit_girdi', ses: GIRIS_SESI },
+  kisa: { kanal: 'vakit_girdi_kisa', ses: 'default' },
+  titresim: { kanal: 'vakit_girdi_titresim', ses: null },
+  sessiz: { kanal: 'vakit_girdi_sessiz', ses: null },
+};
 
 /**
  * Düğmeler: "Kıldım" ve "Kılamadım" uygulamayı açar, cevap açılışta kaydedilir.
@@ -63,10 +69,26 @@ export async function androidKanali(): Promise<void> {
     name: t('bildirim.kanalSoru'),
     importance: Notifications.AndroidImportance.HIGH,
   });
-  await Notifications.setNotificationChannelAsync(KANAL_GIRIS, {
+  await Notifications.setNotificationChannelAsync(GIRIS_KANALI.ezan.kanal, {
     name: t('bildirim.kanalGiris'),
     importance: Notifications.AndroidImportance.HIGH,
     sound: GIRIS_SESI,
+  });
+  await Notifications.setNotificationChannelAsync(GIRIS_KANALI.kisa.kanal, {
+    name: t('bildirim.kanalGirisKisa'),
+    importance: Notifications.AndroidImportance.HIGH,
+  });
+  await Notifications.setNotificationChannelAsync(GIRIS_KANALI.titresim.kanal, {
+    name: t('bildirim.kanalGirisTitresim'),
+    importance: Notifications.AndroidImportance.HIGH,
+    sound: null,
+    enableVibrate: true,
+  });
+  await Notifications.setNotificationChannelAsync(GIRIS_KANALI.sessiz.kanal, {
+    name: t('bildirim.kanalGirisSessiz'),
+    importance: Notifications.AndroidImportance.DEFAULT,
+    sound: null,
+    enableVibrate: false,
   });
 }
 
@@ -109,6 +131,7 @@ export function bildirimleriPlanla(ayarlar: Ayarlar, gunluk: GunlukDurum): Promi
         // iOS en fazla 64 bekleyen bildirime izin verir.
         sinir: Platform.OS === 'ios' ? 64 : undefined,
       });
+      const giris = GIRIS_KANALI[ayarlar.bildirim.girisSesi] ?? GIRIS_KANALI.ezan;
       for (const b of plan) {
         await Notifications.scheduleNotificationAsync({
           identifier: b.id,
@@ -118,12 +141,12 @@ export function bildirimleriPlanla(ayarlar: Ayarlar, gunluk: GunlukDurum): Promi
             ...(b.kategori !== 'BILGI' ? { categoryIdentifier: b.kategori } : {}),
             data: { ...b.veri },
             // iOS'ta ses bildirimle gelir; Android'de kanalın sesi çalar.
-            sound: b.kategori === 'GIRIS' ? GIRIS_SESI : 'default',
+            ...(b.kategori === 'GIRIS' ? (giris.ses ? { sound: giris.ses } : {}) : { sound: 'default' }),
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.DATE,
             date: b.zaman,
-            channelId: b.kategori === 'GIRIS' ? KANAL_GIRIS : KANAL_SORU,
+            channelId: b.kategori === 'GIRIS' ? giris.kanal : KANAL_SORU,
           },
         });
       }

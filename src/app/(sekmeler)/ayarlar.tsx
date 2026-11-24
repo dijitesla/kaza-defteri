@@ -17,7 +17,7 @@ import { gunAnahtari, saatMetni, tamTarihMetni } from '../../logic/tarih';
 import { girisZamani, gununVakitleri } from '../../logic/vakitler';
 import { t, VAKIT_ADLARI } from '../../metinler';
 import { olcu, renk, yaziTipi } from '../../tema';
-import { VAKITLER, type Ayarlar, type Vakit } from '../../types';
+import { VAKITLER, type Ayarlar, type GirisSesi, type Vakit } from '../../types';
 import { gizlilikSecenegiGerekli, gizlilikSecenekleriniAc } from '../../reklam';
 import { arkadasinaOner, magazadaPuanla } from '../../puan';
 import { yedekAl, yedekSec } from '../../yedekleme';
@@ -175,6 +175,22 @@ export default function AyarlarEkrani() {
           deger={b.girisBildirimi}
           onChange={(acik) => bildirimDegistir({ girisBildirimi: acik })}
         />
+        {b.girisBildirimi ? (
+          <>
+            <Text style={stil.etiket}>{t('ayar.girisSesi')}</Text>
+            <Secenekler<GirisSesi>
+              gorunum="cip"
+              secenekler={[
+                { deger: 'ezan', etiket: t('ayar.sesEzan') },
+                { deger: 'kisa', etiket: t('ayar.sesKisa') },
+                { deger: 'titresim', etiket: t('ayar.sesTitresim') },
+                { deger: 'sessiz', etiket: t('ayar.sesSessiz') },
+              ]}
+              deger={b.girisSesi}
+              onChange={(s) => bildirimDegistir({ girisSesi: s })}
+            />
+          </>
+        ) : null}
         <Text style={stil.etiket}>{t('ayar.soruZamani')}</Text>
         <Secenekler<SoruDakika>
           gorunum="cip"

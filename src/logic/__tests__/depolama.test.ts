@@ -54,6 +54,11 @@ describe('varsayılanlar', () => {
 });
 
 describe('ayarlariTamamla', () => {
+  it('vakit girdi sesi: eski kayıtta seslendirme, geçersiz değerde varsayılan', () => {
+    expect(ayarlariTamamla({ bildirim: {} }).bildirim.girisSesi).toBe('ezan');
+    expect(ayarlariTamamla({ bildirim: { girisSesi: 'titresim' } }).bildirim.girisSesi).toBe('titresim');
+    expect(ayarlariTamamla({ bildirim: { girisSesi: 'davul' } }).bildirim.girisSesi).toBe('ezan');
+  });
   it('eksik iç içe alanları varsayılanla doldurur', () => {
     const a = ayarlariTamamla({ mezhep: 'safii', bildirim: { vakitler: { sabah: false } } });
     expect(a.mezhep).toBe('safii');

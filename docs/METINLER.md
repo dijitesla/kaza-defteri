@@ -292,6 +292,9 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | bildirim.dugmeSonra | Sonra |
 | bildirim.kanalGiris | Vakit girdi uyarısı |
 | bildirim.kanalSoru | Kıldın mı? soruları |
+| bildirim.kanalGirisKisa | Vakit girdi (kısa ses) |
+| bildirim.kanalGirisTitresim | Vakit girdi (titreşim) |
+| bildirim.kanalGirisSessiz | Vakit girdi (sessiz) |
 | bildirim.yaklasmaBaslik | {Vakit} vaktine {dk} dakika |
 | bildirim.yaklasmaGovde | {Konum} için {vakit} vakti {saat}'te giriyor. |
 | bildirim.sahurBaslik | Sahur vakti |
@@ -317,6 +320,11 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | ayar.bildirimler | Bildirimler |
 | ayar.girisBildirimi | Vakit girdi bildirimi |
 | ayar.girisBildirimiAlt | Kapatırsan yalnızca "Kıldın mı?" sorusu gelir. |
+| ayar.girisSesi | Vakit girdi sesi |
+| ayar.sesEzan | Seslendirme |
+| ayar.sesKisa | Kısa ses |
+| ayar.sesTitresim | Titreşim |
+| ayar.sesSessiz | Sessiz |
 | ayar.soruZamani | "Kıldın mı?" zamanı |
 | ayar.yatsiSaati | Yatsı soru saati |
 | ayar.vakitDuzelt | Vakit düzeltmeleri |
