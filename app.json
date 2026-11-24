@@ -2,7 +2,7 @@
   "expo": {
     "name": "Kaza Defteri",
     "slug": "kaza-defteri",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -39,6 +39,24 @@
     },
     "plugins": [
       "./plugins/dikey-ekran-istege-bagli",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "Vakitler",
+              "label": "Namaz vakitleri",
+              "description": "Bugünün vakitleri ve sıradaki vakit",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ],
       "expo-router",
       "expo-font",
       [

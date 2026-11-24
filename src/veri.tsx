@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppState } from 'react-native';
 import { bildirimleriPlanla } from './bildirimler';
+import { widgetiYenile } from './widget/guncelle';
 import { depolama } from './depolama';
 import { bildirimCevabi } from './logic/bildirimPlani';
 import type { HesapGirdisi } from './logic/kazaHesap';
@@ -107,7 +108,10 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
 
   const bildirimleriYenile = useCallback(() => {
     const v = son.current;
-    if (v) bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
+    if (v) {
+      bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
+      widgetiYenile();
+    }
   }, []);
 
   useEffect(() => {
@@ -138,6 +142,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     const kazaDegisti = yeni.islemler !== onceki.islemler && v.ayarlar.gunlukHedef > 0;
     if (yeni.gunluk !== onceki.gunluk || yeni.ayarlar !== onceki.ayarlar || kazaDegisti) {
       bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
+      widgetiYenile();
     }
   }, []);
 
@@ -149,6 +154,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     son.current = v;
     setVeri(v);
     bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
+    widgetiYenile();
   }, []);
 
   const kazaKil = useCallback(
@@ -265,6 +271,7 @@ export function VeriSaglayici({ children }: { children: (hazir: boolean) => Reac
     son.current = v;
     setVeri(v);
     bildirimleriPlanla(v.ayarlar, v.gunluk, v.islemler);
+    widgetiYenile();
   }, []);
 
   const deger = useMemo(

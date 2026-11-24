@@ -30,16 +30,17 @@ Kaza Defteri, kaza namazı borcunu hesaplamanı ve adım adım ödemeni kolayla�
 • Kaza orucu takibi
 
 🕌 NAMAZ VAKİTLERİ
-• 81 il ve 973 ilçe için Diyanet yöntemiyle hesaplanan vakitler
+• 81 il, 973 ilçe ile Avrupa ve KKTC'deki şehirler için Diyanet yöntemiyle hesaplanan vakitler
 • Sıradaki vakte saniyeli geri sayım, vakte göre değişen gökyüzü
 • Vakit girdi bildirimi, vakit yaklaşıyor hatırlatması
 • Her vakit için "Kıldın mı?" sorusu: Kıldım / Kılamadım
-• 30 günlük imsakiye
+• 30 günlük imsakiye, paylaşılabilir
+• Ana ekran widget'ı: bugünün vakitleri ve sıradaki vakit
 
 🌙 RAMAZAN
 • İftara ve imsaka kalan süre
 • Sahur hatırlatması
-• Ramazan orucu takibi
+• Ramazan orucu ve teravih takibi, iftar duaları
 
 📖 REHBER
 • Esmaü'l-Hüsna
@@ -51,7 +52,8 @@ Kaza Defteri, kaza namazı borcunu hesaplamanı ve adım adım ödemeni kolayla�
 🧭 ARAÇLAR
 • Kıble pusulası
 • Zikirmatik ve namaz sonrası tesbihat
-• Kandil ve dini gün bildirimleri
+• Kandil, dini gün ve Cuma bildirimleri
+• Kur'an okuma (hatim) takibi
 
 📊 GEÇMİŞ VE MOTİVASYON
 • Takvim görünümü, haftalık grafik
@@ -127,9 +129,9 @@ Not: Google'ın "Veri güvenliği formu için AdMob" belgesi güncel cevapları 
 6. 14 gün sonra Kontrol paneli > "Üretim erişimi için başvur"; onaydan sonra Üretim > yeni sürüm (aynı ya da yeni AAB) > incelemeye gönder.
 7. Yayından sonra AdMob > Uygulama ayarları > uygulamayı Play mağazasına bağla.
 
-## Sürüm notu (1.0.1)
+## Sürüm notu (1.1.0)
 ```
-Uygulama boyutu küçültüldü ve açılış hızlandırıldı. Ayarlar'a "Uygulamayı puanla" ve "Arkadaşına öner" eklendi. Tablet uyumluluğu iyileştirildi.
+Yeni: ana ekran widget'ı, Kur'an okuma (hatim) takibi, Ramazan için teravih takibi, iftar duaları ve imsakiyeyi paylaşma, Avrupa ve KKTC şehirleri, Cuma ve kaza hedefi hatırlatmaları, vakit girdi sesi seçimi. Bildirimler artık dakikasında gelir; uygulama küçüldü.
 ```
 
 ## Sürüm notu (1.0.0)

@@ -218,6 +218,15 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | rehber.zikirmatik | Zikirmatik |
 | rehber.kazaOrucu | Kaza orucu |
 
+## Ana ekran widget'ı
+| Anahtar | Metin |
+|---|---|
+| widget.etiket | Namaz vakitleri |
+| widget.aciklama | Bugünün vakitleri ve sıradaki vakit |
+| widget.siradaki | {vakit} {saat} |
+| widget.yarin | Yarın {vakit} {saat} |
+| widget.kurulum | Vakitleri görmek için Kaza Defteri'ni aç ve konumunu seç. |
+
 ## Kur'an okuma
 | Anahtar | Metin |
 |---|---|
