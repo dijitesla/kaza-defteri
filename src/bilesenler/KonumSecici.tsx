@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ILCELER } from '../data/ilceler';
 import { ILLER } from '../data/iller';
+import { YURT_DISI } from '../data/yurtdisi';
 import { ilAra, ilceAra, ilceKonumAdi } from '../logic/ilAra';
 import { t } from '../metinler';
 import { olcu, renk, yaziTipi } from '../tema';
@@ -39,17 +40,37 @@ export function KonumSecici({ secim, onSecim }: Props) {
   const [hata, setHata] = useState(false);
 
   const [acikIl, setAcikIl] = useState<string | null>(null);
+  // Yurt dışı: '' ülke listesi, ülke adı o ülkenin şehirleri, null kapalı.
+  const [yurtDisi, setYurtDisi] = useState<string | null>(null);
 
   const ilListesi = useMemo(() => ilAra(ILLER, aranan), [aranan]);
   const ilceListesi = useMemo(() => ilceAra(ILCELER, aranan), [aranan]);
+  const sehirListesi = useMemo(() => ilceAra(YURT_DISI, aranan), [aranan]);
   const gpsSecili = secim?.ad === t('konum.gpsAdi');
 
   const ilceSec = (il: string, ilce: { ad: string; enlem: number; boylam: number }) =>
     onSecim({ ad: ilceKonumAdi(il, ilce.ad), enlem: ilce.enlem, boylam: ilce.boylam });
 
   // Bir il açıksa ilçeleri (Merkez en üstte), değilse il listesi ve aramada eşleşen ilçeler.
-  const satirlar: { anahtar: string; ad: string; alt?: string; secili: boolean; ok?: boolean; onPress: () => void }[] =
-    acikIl
+  type SatirVerisi = { anahtar: string; ad: string; alt?: string; secili: boolean; ok?: boolean; onPress: () => void };
+  const sehirSatiri = (ulke: string, s: { ad: string; enlem: number; boylam: number }, alt?: string): SatirVerisi => ({
+    anahtar: `${ulke}/${s.ad}`,
+    ad: s.ad,
+    alt,
+    secili: secim?.ad === ilceKonumAdi(ulke, s.ad),
+    onPress: () => ilceSec(ulke, s),
+  });
+  const satirlar: SatirVerisi[] = yurtDisi === ''
+    ? Object.keys(YURT_DISI).map((ulke) => ({
+        anahtar: ulke,
+        ad: ulke,
+        secili: !!secim?.ad.endsWith(`, ${ulke}`),
+        ok: true,
+        onPress: () => setYurtDisi(ulke),
+      }))
+    : yurtDisi
+      ? YURT_DISI[yurtDisi].map((s) => sehirSatiri(yurtDisi, s))
+      : acikIl
       ? [...ILCELER[acikIl]]
           .sort((a, b) => (a.ad === 'Merkez' ? -1 : b.ad === 'Merkez' ? 1 : 0))
           .map((ilce) => ({
@@ -76,6 +97,19 @@ export function KonumSecici({ secim, onSecim }: Props) {
             secili: secim?.ad === ilceKonumAdi(il, ilce.ad),
             onPress: () => ilceSec(il, ilce),
           })),
+          ...sehirListesi.map(({ il: ulke, ilce: s }) => sehirSatiri(ulke, s, ulke)),
+          ...(aranan.trim()
+            ? []
+            : [
+                {
+                  anahtar: '__yurtdisi',
+                  ad: t('konum.yurtDisi'),
+                  alt: t('konum.yurtDisiAlt'),
+                  secili: Object.keys(YURT_DISI).some((ulke) => !!secim?.ad.endsWith(`, ${ulke}`)),
+                  ok: true,
+                  onPress: () => setYurtDisi(''),
+                },
+              ]),
         ];
 
   const konumumuBul = async () => {
@@ -100,7 +134,17 @@ export function KonumSecici({ secim, onSecim }: Props) {
       {gpsSecili && secim ? <Satir ad={secim.ad} secili ilk son onPress={() => {}} /> : null}
 
       <Text style={stil.yaDa}>{t('konum.yaDa')}</Text>
-      {acikIl ? (
+      {yurtDisi !== null ? (
+        <Pressable
+          onPress={() => setYurtDisi(yurtDisi ? '' : null)}
+          accessibilityRole="button"
+          style={stil.geri}
+          hitSlop={8}
+        >
+          <Text style={stil.geriMetin}>‹ {yurtDisi ? t('konum.yurtDisi') : t('konum.tumIller')}</Text>
+          <Text style={stil.ilBaslik}>{yurtDisi ? t('konum.sehirler', { ulke: yurtDisi }) : t('konum.yurtDisi')}</Text>
+        </Pressable>
+      ) : acikIl ? (
         <Pressable onPress={() => setAcikIl(null)} accessibilityRole="button" style={stil.geri} hitSlop={8}>
           <Text style={stil.geriMetin}>‹ {t('konum.tumIller')}</Text>
           <Text style={stil.ilBaslik}>{t('konum.ilceler', { il: acikIl })}</Text>
