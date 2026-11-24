@@ -1,10 +1,11 @@
 import Constants from 'expo-constants';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { Alert, AppState, Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, AppState, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AnahtarSatiri } from '../../bilesenler/AnahtarSatiri';
 import { Dugme } from '../../bilesenler/Dugme';
 import { Ekran } from '../../bilesenler/Ekran';
+import { UyariKarti } from '../../bilesenler/UyariKarti';
 import { Sayac } from '../../bilesenler/HesapFormu';
 import { SaatSecici } from '../../bilesenler/SaatSecici';
 import { Secenekler } from '../../bilesenler/Secenekler';
@@ -20,22 +21,12 @@ import { VAKITLER, type Ayarlar, type Vakit } from '../../types';
 import { gizlilikSecenegiGerekli, gizlilikSecenekleriniAc } from '../../reklam';
 import { arkadasinaOner, magazadaPuanla } from '../../puan';
 import { yedekAl, yedekSec } from '../../yedekleme';
+import { kesinAlarmIzniVar, kesinAlarmAyariniAc } from '../../../modules/kesin-alarm';
 import { useVeri } from '../../veri';
 
 type SoruDakika = Ayarlar['bildirim']['soruDakika'];
 const DUZELTME_SINIRI = 10;
 
-// Android 12 (API 31) ve sonrası kesin alarm için kullanıcı izni ister. İznin açık olup olmadığını
-// Expo'dan okumanın yolu olmadığı için uyarı bu sürümlerde her zaman gösterilir.
-const kesinAlarmUyarisi = Platform.OS === 'android' && Number(Platform.Version) >= 31;
-
-async function kesinAlarmAyariniAc() {
-  try {
-    await Linking.sendIntent('android.settings.REQUEST_SCHEDULE_EXACT_ALARM');
-  } catch {
-    await Linking.openSettings();
-  }
-}
 
 /** Play Store ve AdMob için yayımlanan gizlilik politikası (docs/gizlilik.html, GitHub Pages). */
 const GIZLILIK_ADRESI = 'https://dijitesla.github.io/kaza-defteri/gizlilik.html';
@@ -53,9 +44,15 @@ export default function AyarlarEkrani() {
     gizlilikSecenegiGerekli().then(setReklamGizlilik);
   }, []);
 
+  // Android 12+: kesin alarm izni yoksa bildirimler dakikalarca gecikebilir.
+  const [kesinAlarm, setKesinAlarm] = useState(true);
   const izniDenetle = useCallback(() => {
     bildirimIzniDurumu().then(setIzin).catch(() => {});
+    setKesinAlarm(kesinAlarmIzniVar());
   }, []);
+  const kesinAlarmAc = () => {
+    if (!kesinAlarmAyariniAc()) Linking.openSettings();
+  };
   useFocusEffect(izniDenetle);
   useEffect(() => {
     const abonelik = AppState.addEventListener('change', (d) => d === 'active' && izniDenetle());
@@ -128,10 +125,10 @@ export default function AyarlarEkrani() {
   return (
     <Ekran baslik={t('ayar.baslik')} reklam>
       {izin && !izin.izinVar ? (
-        <Uyari metin={t('ayar.izinYok')} dugme={t('ayar.izinVer')} onPress={izinVer} />
+        <UyariKarti metin={t('ayar.izinYok')} dugme={t('ayar.izinVer')} onPress={izinVer} />
       ) : null}
-      {kesinAlarmUyarisi && izin?.izinVar ? (
-        <Uyari metin={t('ayar.kesinAlarm')} dugme={t('ayar.kesinAlarmDugme')} onPress={kesinAlarmAyariniAc} />
+      {!kesinAlarm && izin?.izinVar ? (
+        <UyariKarti metin={t('ayar.kesinAlarm')} dugme={t('ayar.kesinAlarmDugme')} onPress={kesinAlarmAc} />
       ) : null}
 
       <Bolum baslik={t('ayar.konum')}>
@@ -286,16 +283,6 @@ function SatirDugme(p: { baslik: string; alt?: string; sag?: string; onPress: ()
   );
 }
 
-function Uyari(p: { metin: string; dugme: string; onPress: () => void }) {
-  return (
-    <View style={stil.uyari}>
-      <Text style={stil.uyariMetin}>{p.metin}</Text>
-      <Pressable onPress={p.onPress} accessibilityRole="button" style={stil.uyariDugme}>
-        <Text style={stil.uyariDugmeMetin}>{p.dugme}</Text>
-      </Pressable>
-    </View>
-  );
-}
 
 const stil = StyleSheet.create({
   bolum: { gap: 8, marginTop: 10 },
@@ -316,15 +303,4 @@ const stil = StyleSheet.create({
   kartBaslik: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.metin },
   kartAlt: { fontFamily: yaziTipi.normal, fontSize: 12, color: renk.ikincilMetin, marginTop: 2, lineHeight: 17 },
   sag: { fontFamily: yaziTipi.kalin, fontSize: 15, color: renk.ikincilMetin },
-  uyari: { backgroundColor: renk.uyariZemin, borderRadius: olcu.kartYaricap, padding: 12, gap: 8 },
-  uyariMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.uyariMetin, lineHeight: 20 },
-  uyariDugme: {
-    alignSelf: 'flex-start',
-    backgroundColor: renk.gece,
-    borderRadius: olcu.dugmeYaricap,
-    minHeight: olcu.dokunmaMin,
-    paddingHorizontal: 16,
-    justifyContent: 'center',
-  },
-  uyariDugmeMetin: { fontFamily: yaziTipi.kalin, fontSize: 14, color: renk.beyaz },
 });

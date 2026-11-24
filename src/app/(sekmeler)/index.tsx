@@ -1,7 +1,7 @@
 import { router, useFocusEffect } from 'expo-router';
 import { DesenZemin } from '../../bilesenler/DesenZemin';
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnahtarSatiri } from '../../bilesenler/AnahtarSatiri';
 import { GeriAlCubugu, useGeriAlCubugu } from '../../bilesenler/GeriAlCubugu';
@@ -15,6 +15,9 @@ import { NamazlarKarti } from '../../bilesenler/NamazlarKarti';
 import { Simge } from '../../bilesenler/Simge';
 import { depolama } from '../../depolama';
 import { puanIsteginiDene } from '../../puan';
+import { UyariKarti } from '../../bilesenler/UyariKarti';
+import { bildirimIzniVar } from '../../bildirimler';
+import { kesinAlarmAyariniAc, kesinAlarmIzniVar } from '../../../modules/kesin-alarm';
 import { ayEvresi, gokCismi, gunEvresi } from '../../logic/gokyuzu';
 import type { ZikirDurumu } from '../../logic/zikir';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
@@ -75,6 +78,20 @@ export default function Bugun() {
       depolama.zikirOku().then(setZikir).catch(() => {});
     }, []),
   );
+
+  // Android 12+: kesin alarm izni kapalıysa bildirimler gecikir; ana ekranda uyarılır.
+  const [alarmUyarisi, setAlarmUyarisi] = useState(false);
+  const alarmiDenetle = useCallback(() => {
+    if (kesinAlarmIzniVar()) return setAlarmUyarisi(false);
+    bildirimIzniVar()
+      .then(setAlarmUyarisi)
+      .catch(() => {});
+  }, []);
+  useFocusEffect(alarmiDenetle);
+  useEffect(() => {
+    const abonelik = AppState.addEventListener('change', (d) => d === 'active' && alarmiDenetle());
+    return () => abonelik.remove();
+  }, [alarmiDenetle]);
 
   // Puan penceresi ana ekrana dönüldükten kısa süre sonra, oturumda en fazla bir kez denenir.
   const puanDenendi = useRef(false);
@@ -137,6 +154,16 @@ export default function Bugun() {
               {uzunTarihMetni(simdi)}
             </Text>
           </View>
+
+          {alarmUyarisi ? (
+            <UyariKarti
+              metin={t('ayar.kesinAlarm')}
+              dugme={t('ayar.kesinAlarmDugme')}
+              onPress={() => {
+                if (!kesinAlarmAyariniAc()) Linking.openSettings();
+              }}
+            />
+          ) : null}
 
           <GokyuzuKarti bugun={vakitler} yarin={yarinVakitleri} />
 
