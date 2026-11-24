@@ -217,6 +217,26 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | rehber.kible | Kıble |
 | rehber.zikirmatik | Zikirmatik |
 | rehber.kazaOrucu | Kaza orucu |
+
+## Kur'an okuma
+| Anahtar | Metin |
+|---|---|
+| hatim.baslik | Kur'an okuma |
+| hatim.alt | Hatim takibi |
+| hatim.kaldigin | Kaldığın yer |
+| hatim.sayfa | {sayfa} / {toplam}. sayfa |
+| hatim.cuz | {n}. cüz |
+| hatim.basla | Yeni bir hatime başla: okuduğun sayfa sayısını aşağıdan ekle. |
+| hatim.tebrik | Hatim tamamlandı. Allah kabul etsin. Yeni hatime başlayabilirsin. |
+| hatim.bugun | Bugün {n} sayfa okudun. |
+| hatim.hafta | Son 7 günde {n} sayfa. |
+| hatim.tamamlanan | Tamamlanan hatim: {n} |
+| hatim.okudum | Okuduğun sayfa |
+| hatim.ekle | +{n} sayfa |
+| hatim.duzelt | Kaldığım sayfa |
+| hatim.duzeltAlt | Sayfa numarasını yazıp kaydet. Günlük sayılar değişmez. |
+| hatim.kaydet | Kaydet |
+| hatim.not | Sayfa numaraları 604 sayfalık mushafa göredir: 1. cüz 1–21. sayfalar, sonraki her cüz 20 sayfa. |
 | rehber.diniGunlerNot | Tarihler Diyanet İşleri Başkanlığı takviminden alınmıştır. Yeni yılın takvimi uygulama güncellemesiyle eklenir. |
 | rehber.diniGunYok | Takvimde yaklaşan bir dini gün yok. Yeni takvim uygulama güncellemesiyle gelecek. |
 | rehber.esmaKaynak | Kaynak: Zikr (açık kaynak). |

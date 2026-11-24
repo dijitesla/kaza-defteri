@@ -18,6 +18,7 @@ const KUTULAR: { baslik: MetinAnahtari; alt?: MetinAnahtari; simge: SimgeAdi; yo
   { baslik: 'rehber.sureler', alt: 'rehber.surelerAlt', simge: 'kitap', yol: '/sureler' },
   { baslik: 'rehber.dualar', alt: 'rehber.dualarAlt', simge: 'eller', yol: '/dualar' },
   { baslik: 'rehber.imsakiye', alt: 'rehber.imsakiyeAlt', simge: 'takvim', yol: '/imsakiye' },
+  { baslik: 'hatim.baslik', alt: 'hatim.alt', simge: 'kitap', yol: '/hatim' },
   { baslik: 'rehber.kible', simge: 'pusula', yol: '/kible' },
   { baslik: 'rehber.zikirmatik', simge: 'tespih', yol: '/zikirmatik' },
   { baslik: 'rehber.kazaOrucu', simge: 'defter', yol: '/kaza-orucu' },

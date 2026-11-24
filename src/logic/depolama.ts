@@ -4,6 +4,7 @@ import type { Ayarlar, GunlukDurum, Islem, KazaDurumu, KazaVakit, RamazanDurumu 
 import { zikriTamamla, type ZikirDurumu } from './zikir';
 import { puanDurumunuTamamla, type PuanDurumu } from './puanIstegi';
 import { teravihiTamamla, type TeravihDurumu } from './teravih';
+import { hatmiTamamla, type HatimDurumu } from './hatim';
 
 /** AsyncStorage'ın kullandığımız kısmı. */
 export interface Depo {
@@ -21,6 +22,7 @@ export const ANAHTAR = {
   ramazan: 'kd:ramazan',
   puan: 'kd:puan',
   teravih: 'kd:teravih',
+  hatim: 'kd:hatim',
 } as const;
 
 export const ISLEM_SINIRI = 2000;
@@ -194,6 +196,13 @@ export function depolamaOlustur(depo: Depo) {
     },
     teravihYaz(teravih: TeravihDurumu): Promise<void> {
       return yaz(ANAHTAR.teravih, teravih);
+    },
+
+    async hatimOku(): Promise<HatimDurumu> {
+      return hatmiTamamla(await oku(ANAHTAR.hatim));
+    },
+    hatimYaz(hatim: HatimDurumu): Promise<void> {
+      return yaz(ANAHTAR.hatim, hatim);
     },
 
     async puanOku(): Promise<PuanDurumu> {
