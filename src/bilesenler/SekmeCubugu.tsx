@@ -72,7 +72,7 @@ function SekmeDugmesi(p: { etiket: string; simge: SimgeAdi; secili: boolean; onP
       <Animated.View style={[stil.hap, hapStili]}>
         <Simge ad={p.simge} renk={p.secili ? renk.altin : renk.sekmePasif} boyut={22} />
         <Animated.View style={[stil.etiketKap, etiketStili]}>
-          <Text style={stil.etiket} numberOfLines={1}>
+          <Text style={stil.etiket} numberOfLines={1} maxFontSizeMultiplier={1.3}>
             {p.etiket}
           </Text>
         </Animated.View>

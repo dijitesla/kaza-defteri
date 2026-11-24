@@ -64,7 +64,7 @@ export function TakvimKarti({ gunluk, bugun, ozelHal }: { gunluk: GunlukDurum; b
 
       <View style={stil.hafta}>
         {GUN_KISA.map((g) => (
-          <Text key={g} style={stil.gunAdi}>
+          <Text key={g} style={stil.gunAdi} maxFontSizeMultiplier={1.3}>
             {g}
           </Text>
         ))}
@@ -85,7 +85,7 @@ export function TakvimKarti({ gunluk, bugun, ozelHal }: { gunluk: GunlukDurum; b
                     gelecek && { opacity: 0.35 },
                   ]}
                 >
-                  <Text style={[stil.gunNo, { color: r.metin }]}>{Number(gun.slice(8))}</Text>
+                  <Text style={[stil.gunNo, { color: r.metin }]} maxFontSizeMultiplier={1.3}>{Number(gun.slice(8))}</Text>
                 </View>
               </View>
             );

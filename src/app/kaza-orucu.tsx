@@ -45,7 +45,7 @@ export default function KazaOrucu() {
         <ScrollView contentContainerStyle={stil.icerik} keyboardShouldPersistTaps="handled">
           <View style={stil.ozet}>
             <Text style={stil.ozetEtiket}>{t('oruc.kalan')}</Text>
-            <Text style={[buyukSayi, stil.ozetSayi]}>{t('oruc.gun', { n: sayiBicimle(o.kalan) })}</Text>
+            <Text style={[buyukSayi, stil.ozetSayi]} maxFontSizeMultiplier={1.3}>{t('oruc.gun', { n: sayiBicimle(o.kalan) })}</Text>
             {o.ilkBorc > 0 ? (
               <View style={stil.ozetAlt}>
                 <Text style={stil.ozetAltMetin}>

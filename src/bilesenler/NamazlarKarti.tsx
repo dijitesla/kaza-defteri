@@ -131,10 +131,10 @@ function VakitDairesi({ s, onPress }: { s: NamazSatiri; onPress: () => void }) {
           </View>
         ) : null}
       </View>
-      <Text style={[stil.ad, (s.durum === 'gelecek' || s.durum === 'siradaki') && { color: renk.ikincilMetin }]} numberOfLines={1}>
+      <Text style={[stil.ad, (s.durum === 'gelecek' || s.durum === 'siradaki') && { color: renk.ikincilMetin }]} numberOfLines={1} maxFontSizeMultiplier={1.3}>
         {s.ad}
       </Text>
-      <Text style={stil.saat}>{s.saat}</Text>
+      <Text style={stil.saat} maxFontSizeMultiplier={1.3}>{s.saat}</Text>
     </Pressable>
   );
 }

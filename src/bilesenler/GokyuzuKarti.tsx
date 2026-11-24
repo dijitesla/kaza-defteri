@@ -91,6 +91,7 @@ export function GokyuzuKarti({ bugun, yarin }: { bugun: GununVakitleri; yarin: G
           <Text style={stil.ust}>{s.baslik}</Text>
           <Text
             style={stil.sayac}
+            maxFontSizeMultiplier={1.2}
             accessibilityLiveRegion="none"
             accessibilityLabel={`${s.baslik} ${geriSayimMetni(s.zaman.getTime() - simdi.getTime())}`}
           >
