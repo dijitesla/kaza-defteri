@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from 'expo-router';
 import { DesenZemin } from '../../bilesenler/DesenZemin';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnahtarSatiri } from '../../bilesenler/AnahtarSatiri';
@@ -14,6 +14,7 @@ import { HadisKarti } from '../../bilesenler/HadisKarti';
 import { NamazlarKarti } from '../../bilesenler/NamazlarKarti';
 import { Simge } from '../../bilesenler/Simge';
 import { depolama } from '../../depolama';
+import { puanIsteginiDene } from '../../puan';
 import { ayEvresi, gokCismi, gunEvresi } from '../../logic/gokyuzu';
 import type { ZikirDurumu } from '../../logic/zikir';
 import { ReklamBandi } from '../../bilesenler/ReklamBandi';
@@ -72,6 +73,21 @@ export default function Bugun() {
   useFocusEffect(
     useCallback(() => {
       depolama.zikirOku().then(setZikir).catch(() => {});
+    }, []),
+  );
+
+  // Puan penceresi ana ekrana dönüldükten kısa süre sonra, oturumda en fazla bir kez denenir.
+  const puanDenendi = useRef(false);
+  const veriRef = useRef(veri);
+  veriRef.current = veri;
+  useFocusEffect(
+    useCallback(() => {
+      if (puanDenendi.current) return;
+      const zamanlayici = setTimeout(() => {
+        puanDenendi.current = true;
+        puanIsteginiDene(veriRef.current);
+      }, 3000);
+      return () => clearTimeout(zamanlayici);
     }, []),
   );
 

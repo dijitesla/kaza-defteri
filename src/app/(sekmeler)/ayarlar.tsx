@@ -18,6 +18,7 @@ import { t, VAKIT_ADLARI } from '../../metinler';
 import { olcu, renk, yaziTipi } from '../../tema';
 import { VAKITLER, type Ayarlar, type Vakit } from '../../types';
 import { gizlilikSecenegiGerekli, gizlilikSecenekleriniAc } from '../../reklam';
+import { arkadasinaOner, magazadaPuanla } from '../../puan';
 import { yedekAl, yedekSec } from '../../yedekleme';
 import { useVeri } from '../../veri';
 
@@ -246,6 +247,8 @@ export default function AyarlarEkrani() {
       <Bolum baslik={t('ayar.hakkinda')}>
         <Text style={stil.metin}>{t('hakkinda.metin')}</Text>
         <Text style={stil.metin}>{t('hakkinda.vakit')}</Text>
+        <SatirDugme baslik={t('ayar.puanla')} sag="›" onPress={magazadaPuanla} />
+        <SatirDugme baslik={t('ayar.oner')} sag="›" onPress={arkadasinaOner} />
         <Text style={stil.metin}>{t('hakkinda.gizlilik')}</Text>
         <SatirDugme baslik={t('hakkinda.gizlilikPolitikasi')} sag="›" onPress={() => Linking.openURL(GIZLILIK_ADRESI)} />
         <Text style={stil.metin}>{t('hadis.kaynakNotu')}</Text>

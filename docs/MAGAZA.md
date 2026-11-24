@@ -129,7 +129,7 @@ Not: Google'ın "Veri güvenliği formu için AdMob" belgesi güncel cevapları 
 
 ## Sürüm notu (1.0.1)
 ```
-Performans iyileştirmesi: uygulama boyutu küçültüldü, açılış hızlandırıldı.
+Uygulama boyutu küçültüldü ve açılış hızlandırıldı. Ayarlar'a "Uygulamayı puanla" ve "Arkadaşına öner" eklendi. Tablet uyumluluğu iyileştirildi.
 ```
 
 ## Sürüm notu (1.0.0)

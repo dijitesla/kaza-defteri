@@ -337,6 +337,9 @@ Kurallar: sade Türkçe, "sen" hitabı, saygılı ve sakin ton. Uygulama hüküm
 | ayar.yedekAlAlt | Telefon değiştirmeden önce yedeğini al ve güvenli bir yere kaydet. |
 | ayar.geriYukle | Yedekten geri yükle |
 | ayar.reklamGizlilik | Reklam gizlilik seçenekleri |
+| ayar.puanla | Uygulamayı puanla |
+| ayar.oner | Arkadaşına öner |
+| ayar.onerMesaj | Kaza namazı takibi ve ezan vakitleri için Kaza Defteri'ni kullanıyorum, sen de dene: {link} |
 | ayar.hakkinda | Hakkında |
 
 ## Yedekleme
