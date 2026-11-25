@@ -128,6 +128,7 @@ Not: Google'ın "Veri güvenliği formu için AdMob" belgesi güncel cevapları 
 5. Onaydan sonra katılım bağlantısını test kullanıcılarıyla paylaş; en az 12 kişi 14 gün boyunca katılımda kalsın.
 6. 14 gün sonra Kontrol paneli > "Üretim erişimi için başvur"; onaydan sonra Üretim > yeni sürüm (aynı ya da yeni AAB) > incelemeye gönder.
 7. Yayından sonra AdMob > Uygulama ayarları > uygulamayı Play mağazasına bağla.
+8. 1.1.0 ile ülkeler: Üretim > Ülkeler/bölgeler > Türkiye'ye ek olarak Almanya, Avusturya, Belçika, Birleşik Krallık, Danimarka, Fransa, Hollanda, İsveç, İsviçre, Kıbrıs, Norveç (uygulamadaki yurt dışı şehir listesiyle aynı).
 
 ## Sürüm notu (1.1.0)
 ```
